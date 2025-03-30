@@ -1,0 +1,19 @@
+
+# Add a .gitignore file to exclude virtual environments, pycache, etc.
+__pycache__/
+.venv/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/
+
