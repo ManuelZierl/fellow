@@ -4,10 +4,9 @@ import importlib.resources as pkg_resources
 from pydantic.v1.utils import deep_update
 import fellow
 from fellow.clients.CommandClient import CommandClient
-from fellow.commands import COMMAND_DESCRIPTION
-
 from fellow.clients.OpenAIClient import OpenAIClient
-from fellow.clients.PromptClient import PromptClient
+from fellow.commands import COMMAND_DESCRIPTION
+from fellow.utils.format_message import format_message
 
 
 def main():
@@ -15,7 +14,7 @@ def main():
 
     parser.add_argument("--task", help="The task fellow should perform")
     parser.add_argument("--config", help="Path to the optional yml config file")
-    parser.add_argument("--log", help="Path to the json file where the memory should be stored")
+    parser.add_argument("--log", help="Path to the .md file where the memory should be stored")
     args = parser.parse_args()
 
     with pkg_resources.files(fellow).joinpath("default_fellow_config.yml").open("r") as f:
@@ -29,9 +28,23 @@ def main():
     if args.task:
         config["task"] = args.task
 
+    if args.log and not args.log.endswith(".md"):
+        raise ValueError("Log file must be a .md extension")
+
     introduction_prompt = config["introduction_prompt"]
     introduction_prompt = introduction_prompt.replace("{{TASK}}", config["task"])
     introduction_prompt = introduction_prompt.replace("{{COMMANDS}}", COMMAND_DESCRIPTION)
+
+    if args.log:
+        with open(args.log, "w", encoding="utf-8") as f:
+            f.write(
+                format_message(
+                    name="Instruction",
+                    color=0,
+                    content=introduction_prompt,
+                    language="txt",
+                )
+            )
 
     openai_client = OpenAIClient(
         system_content=introduction_prompt,
@@ -43,14 +56,54 @@ def main():
     command_client = CommandClient()
 
     first_message = "Starting now. First command?"
+    if args.log:
+        with open(args.log, "a", encoding="utf-8") as f:
+            f.write(
+                format_message(
+                    name="Instruction",
+                    color=0,
+                    content=first_message,
+                    language="txt",
+                )
+            )
     ai_response = openai_client.chat(first_message)
+    if args.log:
+        with open(args.log, "a", encoding="utf-8") as f:
+            f.write(
+                format_message(
+                    name="AI",
+                    color=1,
+                    content=ai_response,
+                    language="json",
+                )
+            )
+
     while True:
-        print("AI:", ai_response)
         prompt_response = command_client.run(ai_response)
-        print("Prompt:", prompt_response)
-        ai_response = openai_client.chat(prompt_response)
+        print("AI:", prompt_response)
         if args.log:
-            openai_client.store_memory(args.log)
+            with open(args.log, "a", encoding="utf-8") as f:
+                f.write(
+                    format_message(
+                        name="Output",
+                        color=2,
+                        content=prompt_response,
+                        language="txt",
+                    )
+                )
+        ai_response = openai_client.chat(prompt_response)
+        print("Prompt:", ai_response)
+        if args.log:
+            with open(args.log, "a", encoding="utf-8") as f:
+                f.write(
+                    format_message(
+                        name="AI",
+                        color=1,
+                        content=ai_response,
+                        language="json",
+                    )
+                )
+
         if ai_response == "END":
             break
 
