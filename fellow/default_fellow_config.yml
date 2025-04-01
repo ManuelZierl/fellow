@@ -20,6 +20,7 @@ introduction_prompt: |
   - The developer executes your commands and sends back the raw results.
   - You can edit files, run Python code or tests, inspect project structure, and query the file system as needed.
 task: null
+log: fellow_log.md
 openai_config:
   memory_max_tokens: 1500
   summary_memory_max_tokens: 1500

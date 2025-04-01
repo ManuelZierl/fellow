@@ -1,7 +1,6 @@
 import json
-from typing import Optional
 
-def format_message(name: str, color: int, content: str, language: Optional[str] = None) -> str:
+def format_message(name: str, color: int, content: str) -> str:
     colors = ['#000000', '#1f77b4', '#ff7f0e']
     color_code = colors[color%len(colors)]
 

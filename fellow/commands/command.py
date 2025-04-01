@@ -1,7 +1,5 @@
-import inspect
-
 from pydantic import BaseModel
-from typing import Protocol, Union, Callable, get_type_hints, TypeVar
+from typing import Protocol, Union, TypeVar
 
 from pydantic.v1.typing import get_origin, get_args
 

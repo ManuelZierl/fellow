@@ -1,5 +1,4 @@
 import json
-from typing import Any, Dict
 
 from fellow.commands import COMMANDS
 from fellow.commands.command import CommandInput

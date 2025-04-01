@@ -12,6 +12,8 @@ from fellow.commands.run_pytest import RunPytestInput, run_pytest
 from fellow.commands.run_python import RunPythonInput, run_python
 from fellow.commands.view_file import ViewFileInput, view_file
 
+# TODO: make this dynamic via the config
+
 COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
     "create_file": (CreateFileInput, create_file),
     "view_file": (ViewFileInput, view_file),
