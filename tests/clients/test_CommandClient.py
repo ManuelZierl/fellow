@@ -4,11 +4,12 @@ import tempfile
 import pytest
 
 from fellow.clients.CommandClient import CommandClient
+from fellow.commands import ALL_COMMANDS
 
 
 @pytest.fixture
 def client():
-    return CommandClient()
+    return CommandClient(ALL_COMMANDS, None)  # todo: Mock OpenAIClient for testing
 
 
 def test_valid_create_and_view(client):
@@ -84,7 +85,7 @@ def test_runtime_error(client, monkeypatch):
         raise RuntimeError("Something went wrong")
 
     from fellow import commands
-    commands.COMMANDS["view_file"] = (commands.COMMANDS["view_file"][0], broken_handler)
+    ALL_COMMANDS["view_file"] = (ALL_COMMANDS["view_file"][0], broken_handler)
 
     command = json.dumps({
         "view_file": {"filepath": "test.txt"}

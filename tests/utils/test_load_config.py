@@ -11,7 +11,7 @@ def write_yaml_file(path, data):
 
 
 # Sample config fixtures
-default_config = {"task": "default", "log": "log.md", "openai_config": {}}
+default_config = {"task": "default", "log": "log.md", "openai_config": {}, "commands": []}
 user_config = {"task": "user", "openai_config": {"model": "gpt-4"}}
 
 
@@ -22,7 +22,7 @@ def test_loads_default_config(mock_open_builtin, mock_files):
     mock_file.open.return_value = mock_open_builtin.return_value
     mock_files.return_value.joinpath.return_value = mock_file
 
-    args = SimpleNamespace(config=None, task=None, log=None)
+    args = SimpleNamespace(config=None, task=None, log=None, commands=None)
     config = load_config(args)
 
     assert config["task"] == "default"
@@ -46,7 +46,7 @@ def test_merges_user_config(tmp_path):
     config_mod.pkg_resources.files = lambda _: tmp_path
     config_mod.pkg_resources.files.return_value = tmp_path  # just in case
 
-    args = SimpleNamespace(config=str(user_config_path), task=None, log=None)
+    args = SimpleNamespace(config=str(user_config_path), task=None, log=None, commands=None)
     config = load_config(args)
 
     assert config["task"] == "user"
@@ -60,7 +60,7 @@ def test_cli_overrides_all(mock_open_builtin, mock_files):
     mock_file.open.return_value = mock_open_builtin.return_value
     mock_files.return_value.joinpath.return_value = mock_file
 
-    args = SimpleNamespace(config=None, task="cli-task", log="cli.md")
+    args = SimpleNamespace(config=None, task="cli-task", log="cli.md", commands=None)
     config = load_config(args)
 
     assert config["task"] == "cli-task"
@@ -74,7 +74,7 @@ def test_invalid_log_extension_raises(mock_open_builtin, mock_files):
     mock_file.open.return_value = mock_open_builtin.return_value
     mock_files.return_value.joinpath.return_value = mock_file
 
-    args = SimpleNamespace(config=None, task=None, log="log.txt")
+    args = SimpleNamespace(config=None, task=None, log="log.txt", commands=None)
 
     with pytest.raises(ValueError, match="Log file must be a .md extension"):
         load_config(args)

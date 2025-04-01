@@ -1,12 +1,21 @@
 import json
+from typing import Dict, Tuple, Type
 
-from fellow.commands import COMMANDS
-from fellow.commands.command import CommandInput
+from fellow.clients.OpenAIClient import OpenAIClient
+from fellow.commands.command import CommandInput, CommandHandler
 
 
 class CommandClient:
-    @staticmethod
-    def run(command: str) -> str:
+    def __init__(self, commands: Dict[str, Tuple[Type[CommandInput], CommandHandler]], ai_client: OpenAIClient):
+        """
+        Initializes the CommandClient with a dictionary of commands.
+        :param commands: A dictionary mapping command names to their input models and handler functions.
+        :param ai_client: An instance of OpenAIClient for AI interactions.
+        """
+        self.commands = commands
+        self.ai_client = ai_client
+
+    def run(self, command: str) -> str:
         """
         Run a structured command given as a JSON string with one top-level key.
         """
@@ -20,10 +29,10 @@ class CommandClient:
 
         cmd_name, cmd_args = next(iter(parsed.items()))
 
-        if cmd_name not in COMMANDS:
+        if cmd_name not in self.commands:
             return f"[ERROR] Unknown command: {cmd_name}"
 
-        input_model_cls, handler_fn = COMMANDS[cmd_name]
+        input_model_cls, handler_fn = self.commands[cmd_name]
 
         if not isinstance(cmd_args, dict):
             return "[ERROR] Command arguments must be an object."

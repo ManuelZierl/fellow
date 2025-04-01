@@ -15,7 +15,7 @@ def load_config(args):
             config = deep_update(config, user_config)
 
     # Override from CLI args
-    for key in ["task", "log"]:
+    for key in ["task", "log", "commands"]:
         value = getattr(args, key)
         if value:
             config[key] = value

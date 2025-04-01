@@ -25,3 +25,11 @@ openai_config:
   memory_max_tokens: 1500
   summary_memory_max_tokens: 1500
   model: "gpt-4"
+commands:
+  - "create_file"
+  - "view_file"
+  - "edit_file"
+  - "list_files"
+  - "run_python"
+  - "run_pytest"
+  - "list_definitions"

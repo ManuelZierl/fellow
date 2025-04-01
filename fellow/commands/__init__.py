@@ -7,6 +7,7 @@ from fellow.commands.command import CommandInput, CommandHandler
 from fellow.commands.create_file import CreateFileInput, create_file
 from fellow.commands.delete_file import DeleteFileInput, delete_file
 from fellow.commands.edit_file import EditFileInput, edit_file
+from fellow.commands.list_definitions import ListDefinitionsInput, list_definitions
 from fellow.commands.list_files import ListFilesInput, list_files
 from fellow.commands.run_pytest import RunPytestInput, run_pytest
 from fellow.commands.run_python import RunPythonInput, run_python
@@ -14,17 +15,18 @@ from fellow.commands.view_file import ViewFileInput, view_file
 
 # TODO: make this dynamic via the config
 
-COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
+ALL_COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
     "create_file": (CreateFileInput, create_file),
     "view_file": (ViewFileInput, view_file),
-    # "delete_file": (DeleteFileInput, delete_file),
+    "delete_file": (DeleteFileInput, delete_file),
     "edit_file": (EditFileInput, edit_file),
     "list_files": (ListFilesInput, list_files),
     "run_python": (RunPythonInput, run_python),
     "run_pytest": (RunPytestInput, run_pytest),
+    "list_definitions": (ListDefinitionsInput, list_definitions),
 }
 
-def generate_command_summary() -> str:
+def generate_commands_description(commands: Dict[str, Tuple[Type[CommandInput], CommandHandler]]) -> str:
     def extract_description(command_fn: Callable) -> dict:
         sig = inspect.signature(command_fn)
         param = list(sig.parameters.values())[0]
@@ -37,7 +39,7 @@ def generate_command_summary() -> str:
 
     lines = []
 
-    for name, (input_cls, handler_fn) in COMMANDS.items():
+    for name, (input_cls, handler_fn) in commands.items():
         info = extract_description(handler_fn)
 
         lines.append(f"### {name}")
@@ -55,5 +57,3 @@ def generate_command_summary() -> str:
         lines.append("")  # spacer
 
     return "\n".join(lines)
-
-COMMAND_DESCRIPTION = generate_command_summary()
