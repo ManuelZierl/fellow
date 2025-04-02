@@ -36,3 +36,6 @@ commands:
   - "get_code"
   - "make_plan"
   - "summarize_file"
+planning:
+  active: false
+  prompt: "You should start by making a plan using the 'make_plan' command"
