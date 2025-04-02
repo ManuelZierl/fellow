@@ -1,19 +1,18 @@
 import json
 from typing import Dict, Tuple, Type
 
-from fellow.clients.OpenAIClient import OpenAIClient
-from fellow.commands.command import CommandInput, CommandHandler
+from fellow.commands.command import CommandInput, CommandHandler, CommandContext
 
 
 class CommandClient:
-    def __init__(self, commands: Dict[str, Tuple[Type[CommandInput], CommandHandler]], ai_client: OpenAIClient):
+    def __init__(self, commands: Dict[str, Tuple[Type[CommandInput], CommandHandler]], context: CommandContext):
         """
         Initializes the CommandClient with a dictionary of commands.
         :param commands: A dictionary mapping command names to their input models and handler functions.
-        :param ai_client: An instance of OpenAIClient for AI interactions.
+        :param context: The context in which the command will be executed, typically containing the AI client.
         """
         self.commands = commands
-        self.ai_client = ai_client
+        self.context = context
 
     def run(self, command: str) -> str:
         """
@@ -43,6 +42,6 @@ class CommandClient:
             return f"[ERROR] Invalid command arguments: {e}"
 
         try:
-            return handler_fn(args_obj)
+            return handler_fn(args_obj, context=self.context)
         except Exception as e:
             return f"[ERROR] Command execution failed: {e}"

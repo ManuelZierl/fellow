@@ -1,9 +1,17 @@
-from pydantic import BaseModel
+from unittest.mock import MagicMock
+
+from pydantic import BaseModel, ConfigDict
 from typing import Protocol, Union, TypeVar
 
 from pydantic.v1.typing import get_origin, get_args
 
-T = TypeVar("T", bound=BaseModel)
+from fellow.clients.OpenAIClient import OpenAIClient
+
+
+class CommandContext(BaseModel):
+    ai_client: OpenAIClient
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 class CommandInput(BaseModel):
     @classmethod
@@ -30,7 +38,10 @@ class CommandInput(BaseModel):
             fields[name] = f"{type_str} - {description}"
         return fields
 
-class CommandHandler(Protocol[T]):
-    def __call__(self, args: T) -> str:
-        ...
 
+T = TypeVar("T", bound=CommandInput)
+
+
+class CommandHandler(Protocol[T]):
+    def __call__(self, args: T, context: CommandContext) -> str:
+        ...

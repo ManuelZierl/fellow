@@ -1,7 +1,7 @@
 from typing import Optional
 import os
 from pydantic import Field
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 
 
 class ListFilesInput(CommandInput):
@@ -10,7 +10,7 @@ class ListFilesInput(CommandInput):
     pattern: Optional[str] = Field(None, description="Optional substring to filter file names.")
 
 
-def list_files(args: ListFilesInput) -> str:
+def list_files(args: ListFilesInput, context: CommandContext) -> str:
     """
     List files in a directory up to a certain depth. Depth 1 = non-recursive. Optional name filter.
     """

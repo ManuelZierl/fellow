@@ -1,5 +1,7 @@
 import os
 import tempfile
+from unittest.mock import MagicMock
+
 import pytest
 
 from fellow.commands.create_file import create_file, CreateFileInput
@@ -9,7 +11,7 @@ def test_create_new_file():
     with tempfile.TemporaryDirectory() as tmpdir:
         filepath = os.path.join(tmpdir, "newfile.txt")
         args = CreateFileInput(filepath=filepath)
-        result = create_file(args)
+        result = create_file(args, MagicMock())
 
         assert result == f"[OK] Created file: {filepath}"
         assert os.path.isfile(filepath)
@@ -21,7 +23,7 @@ def test_create_file_already_exists():
 
     try:
         args = CreateFileInput(filepath=filepath)
-        result = create_file(args)
+        result = create_file(args, MagicMock())
         assert result == f"[INFO] File already exists: {filepath}"
     finally:
         os.remove(filepath)
@@ -33,7 +35,7 @@ def test_create_file_in_new_subdirectory():
         filepath = os.path.join(subdir, "newfile.txt")
 
         args = CreateFileInput(filepath=filepath)
-        result = create_file(args)
+        result = create_file(args, MagicMock())
 
         assert result == f"[OK] Created file: {filepath}"
         assert os.path.isfile(filepath)
@@ -48,6 +50,6 @@ def test_create_file_invalid_path(monkeypatch):
     monkeypatch.setattr(os, "makedirs", raise_oserror)
 
     args = CreateFileInput(filepath="/invalid/path/file.txt")
-    result = create_file(args)
+    result = create_file(args, MagicMock())
 
     assert result.startswith("[ERROR] Could not create file:")

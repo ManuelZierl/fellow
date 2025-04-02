@@ -7,13 +7,15 @@ from fellow.commands.command import CommandInput, CommandHandler
 from fellow.commands.create_file import CreateFileInput, create_file
 from fellow.commands.delete_file import DeleteFileInput, delete_file
 from fellow.commands.edit_file import EditFileInput, edit_file
+from fellow.commands.get_code import GetCodeInput, get_code
 from fellow.commands.list_definitions import ListDefinitionsInput, list_definitions
 from fellow.commands.list_files import ListFilesInput, list_files
+from fellow.commands.make_plan import MakePlanInput, make_plan
 from fellow.commands.run_pytest import RunPytestInput, run_pytest
 from fellow.commands.run_python import RunPythonInput, run_python
+from fellow.commands.summarize_file import SummarizeFileInput, summarize_file
 from fellow.commands.view_file import ViewFileInput, view_file
 
-# TODO: make this dynamic via the config
 
 ALL_COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
     "create_file": (CreateFileInput, create_file),
@@ -24,6 +26,9 @@ ALL_COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
     "run_python": (RunPythonInput, run_python),
     "run_pytest": (RunPytestInput, run_pytest),
     "list_definitions": (ListDefinitionsInput, list_definitions),
+    "get_code": (GetCodeInput, get_code),
+    "make_plan": (MakePlanInput, make_plan),
+    "summarize_file": (SummarizeFileInput, summarize_file)
 }
 
 def generate_commands_description(commands: Dict[str, Tuple[Type[CommandInput], CommandHandler]]) -> str:

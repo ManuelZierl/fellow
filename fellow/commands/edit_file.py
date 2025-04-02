@@ -1,7 +1,7 @@
 import os
 from pydantic import Field
 
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 
 
 class EditFileInput(CommandInput):
@@ -11,7 +11,7 @@ class EditFileInput(CommandInput):
     new_text: str = Field(..., description="Text block to insert or replace.")
 
 
-def edit_file(args: EditFileInput) -> str:
+def edit_file(args: EditFileInput, context: CommandContext) -> str:
     """
     Edit a file by replacing lines [from_line, to_line) with new_text.
     If from_line == to_line, new_text is inserted.

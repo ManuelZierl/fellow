@@ -5,3 +5,8 @@ def log_message(config, name, color, content):
     if config.get("log"):
         with open(config["log"], "a", encoding="utf-8") as f:
             f.write(format_message(name=name, color=color, content=content))
+
+def clear_log(config):
+    if config.get("log"):
+        with open(config["log"], "w", encoding="utf-8") as f:
+            f.write("")

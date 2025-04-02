@@ -1,13 +1,13 @@
 import os
 from pydantic import Field
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 
 
 class DeleteFileInput(CommandInput):
     filepath: str = Field(..., description="Path to the file to delete.")
 
 
-def delete_file(args: DeleteFileInput) -> str:
+def delete_file(args: DeleteFileInput, context: CommandContext) -> str:
     """
     Deletes a file from the filesystem. Fails if it's a directory or doesn't exist.
     """

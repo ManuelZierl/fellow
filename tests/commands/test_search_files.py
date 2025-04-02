@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from fellow.commands.search_files import SearchFilesInput, search_files
@@ -18,7 +20,7 @@ def test_search_finds_matches_case_insensitive(tmp_path):
         search="hello",
     )
 
-    result = search_files(args)
+    result = search_files(args, MagicMock())
     assert "example.txt:1: Hello World" in result
     assert "example.txt:2: hello again" in result
 
@@ -33,7 +35,7 @@ def test_search_filters_by_extension(tmp_path):
         extension=".py"
     )
 
-    result = search_files(args)
+    result = search_files(args, MagicMock())
     assert "keep.py" in result
     assert "ignore.txt" not in result
 
@@ -46,7 +48,7 @@ def test_search_no_matches(tmp_path):
         search="notfound",
     )
 
-    result = search_files(args)
+    result = search_files(args, MagicMock())
     assert "[INFO] No matches found" in result
 
 
@@ -56,5 +58,5 @@ def test_directory_not_found(tmp_path):
         search="hello"
     )
 
-    result = search_files(args)
+    result = search_files(args, MagicMock())
     assert "[ERROR] Directory not found" in result

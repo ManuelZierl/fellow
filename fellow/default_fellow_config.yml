@@ -33,3 +33,6 @@ commands:
   - "run_python"
   - "run_pytest"
   - "list_definitions"
+  - "get_code"
+  - "make_plan"
+  - "summarize_file"

@@ -1,5 +1,7 @@
 import os
 import tempfile
+from unittest.mock import MagicMock
+
 import pytest
 from fellow.commands.edit_file import edit_file, EditFileInput
 
@@ -20,7 +22,7 @@ def test_insert_line(sample_file):
         to_line=3,
         new_text="Inserted Line"
     )
-    result = edit_file(args)
+    result = edit_file(args, MagicMock())
     assert result.startswith("[OK]")
 
     with open(sample_file) as f:
@@ -36,7 +38,7 @@ def test_replace_lines(sample_file):
         to_line=4,
         new_text="New Line A\nNew Line B"
     )
-    result = edit_file(args)
+    result = edit_file(args, MagicMock())
     assert result.startswith("[OK]")
 
     with open(sample_file) as f:
@@ -53,7 +55,7 @@ def test_delete_lines(sample_file):
         to_line=4,
         new_text=""
     )
-    result = edit_file(args)
+    result = edit_file(args, MagicMock())
     assert result.startswith("[OK]")
 
     with open(sample_file) as f:
@@ -68,7 +70,7 @@ def test_append_line(sample_file):
         to_line=6,
         new_text="Appended Line"
     )
-    result = edit_file(args)
+    result = edit_file(args, MagicMock())
     assert result.startswith("[OK]")
 
     with open(sample_file) as f:
@@ -83,7 +85,7 @@ def test_invalid_line_range(sample_file):
         to_line=2,
         new_text="Should fail"
     )
-    result = edit_file(args)
+    result = edit_file(args, MagicMock())
     assert "[ERROR] Invalid line range" in result
 
 
@@ -94,5 +96,5 @@ def test_nonexistent_file():
         to_line=1,
         new_text="test"
     )
-    result = edit_file(args)
+    result = edit_file(args, MagicMock())
     assert result.startswith("[ERROR] File not found")

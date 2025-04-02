@@ -1,5 +1,7 @@
 import os
 import tempfile
+from unittest.mock import MagicMock
+
 from fellow.commands.list_files import list_files, ListFilesInput
 
 
@@ -25,7 +27,7 @@ def test_flat_listing():
         create_nested_test_structure(tmpdir)
 
         args = ListFilesInput(directory=tmpdir, max_depth=1)
-        result = list_files(args)
+        result = list_files(args, MagicMock())
 
         assert "file1.txt" in result
         assert "file2.py" in result
@@ -39,7 +41,7 @@ def test_recursive_depth_2():
         create_nested_test_structure(tmpdir)
 
         args = ListFilesInput(directory=tmpdir, max_depth=2)
-        result = list_files(args)
+        result = list_files(args, MagicMock())
 
         assert result == """file1.txt
 file2.py
@@ -54,7 +56,7 @@ def test_recursive_depth_3():
         create_nested_test_structure(tmpdir)
 
         args = ListFilesInput(directory=tmpdir, max_depth=3)
-        result = list_files(args)
+        result = list_files(args, MagicMock())
 
         assert "deep.py" in result
 
@@ -64,7 +66,7 @@ def test_filter_pattern():
         create_nested_test_structure(tmpdir)
 
         args = ListFilesInput(directory=tmpdir, max_depth=3, pattern=".py")
-        result = list_files(args)
+        result = list_files(args, MagicMock())
 
         assert "file2.py" in result
         assert "deep.py" in result
@@ -74,12 +76,12 @@ def test_filter_pattern():
 
 def test_invalid_directory():
     args = ListFilesInput(directory="/nonexistent", max_depth=1)
-    result = list_files(args)
+    result = list_files(args, MagicMock())
     assert result.startswith("[ERROR]")
 
 
 def test_depth_zero_invalid():
     with tempfile.TemporaryDirectory() as tmpdir:
         args = ListFilesInput(directory=tmpdir, max_depth=0)
-        result = list_files(args)
+        result = list_files(args, MagicMock())
         assert "[ERROR] max_depth must be >= 1" in result

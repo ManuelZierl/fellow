@@ -1,5 +1,5 @@
 from pydantic import Field
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 import subprocess
 
 
@@ -8,7 +8,7 @@ class RunPytestInput(CommandInput):
     args: str = Field(default="", description="Optional arguments to pass to pytest (e.g., '-k test_name').")
 
 
-def run_pytest(args: RunPytestInput) -> str:
+def run_pytest(args: RunPytestInput, context: CommandContext) -> str:
     """
     Runs pytest on the specified file or directory with optional arguments.
     Returns the captured output or error message.

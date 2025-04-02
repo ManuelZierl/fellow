@@ -1,5 +1,7 @@
 import os
 import tempfile
+from unittest.mock import MagicMock
+
 from fellow.commands.run_python import run_python, RunPythonInput
 
 
@@ -11,7 +13,7 @@ def test_run_python_success():
 
     try:
         args = RunPythonInput(filepath=filepath)
-        result = run_python(args)
+        result = run_python(args, MagicMock())
         assert "Hello from test" in result
     finally:
         os.remove(filepath)
@@ -28,7 +30,7 @@ print("ARGS:", sys.argv[1:])
 
     try:
         args = RunPythonInput(filepath=filepath, args="--test value")
-        result = run_python(args)
+        result = run_python(args, MagicMock())
         assert "ARGS: ['--test', 'value']" in result
     finally:
         os.remove(filepath)
@@ -42,7 +44,7 @@ def test_run_python_script_error():
 
     try:
         args = RunPythonInput(filepath=filepath)
-        result = run_python(args)
+        result = run_python(args, MagicMock())
         assert "[ERROR]" in result or "Something went wrong" in result
     finally:
         os.remove(filepath)
@@ -50,5 +52,5 @@ def test_run_python_script_error():
 
 def test_run_python_file_not_found():
     args = RunPythonInput(filepath="nonexistent_script.py")
-    result = run_python(args)
+    result = run_python(args, MagicMock())
     assert "[ERROR] File not found" in result or "[ERROR]" in result

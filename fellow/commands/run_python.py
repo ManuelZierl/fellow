@@ -1,5 +1,5 @@
 import subprocess
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 from pydantic import Field
 
 
@@ -8,7 +8,7 @@ class RunPythonInput(CommandInput):
     args: str = Field(default="", description="Optional arguments passed to the script.")
 
 
-def run_python(args: RunPythonInput) -> str:
+def run_python(args: RunPythonInput, context: CommandContext) -> str:
     """
     Runs a Python script in a subprocess and captures stdout and stderr.
     """

@@ -1,7 +1,7 @@
 import os
 import ast
 from pydantic import Field
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 
 
 class ListDefinitionsInput(CommandInput):
@@ -34,7 +34,7 @@ def format_function(node: ast.FunctionDef) -> str:
     return f"  - {signature}\n{doc_str}" if doc else f"  - {signature}"
 
 
-def list_definitions(args: ListDefinitionsInput) -> str:
+def list_definitions(args: ListDefinitionsInput, context: CommandContext) -> str:
     """
     List all functions and classes in a Python file, including args, types, and docstrings.
     """

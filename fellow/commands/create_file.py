@@ -1,13 +1,13 @@
 import os
 from pydantic import Field
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 
 
 class CreateFileInput(CommandInput):
     filepath: str = Field(..., description="The path of the file to create.")
 
 
-def create_file(args: CreateFileInput) -> str:
+def create_file(args: CreateFileInput, context: CommandContext) -> str:
     """
     Create an empty file at the given path. If the file already exists, it will not be modified.
     """

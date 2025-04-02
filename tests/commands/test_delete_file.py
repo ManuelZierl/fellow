@@ -1,5 +1,7 @@
 import os
 import tempfile
+from unittest.mock import MagicMock
+
 import pytest
 from fellow.commands.delete_file import delete_file, DeleteFileInput
 
@@ -11,6 +13,6 @@ def test_delete_existing_file():
     assert os.path.exists(filepath)
 
     args = DeleteFileInput(filepath=filepath)
-    result = delete_file(args)
+    result = delete_file(args, MagicMock())
 
     assert "[OK]" in result

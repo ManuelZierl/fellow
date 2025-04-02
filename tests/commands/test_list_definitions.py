@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 from fellow.commands.list_definitions import list_definitions, ListDefinitionsInput
 
@@ -16,7 +18,7 @@ def foo(a: int) -> str:
     write_file(file, code)
 
     args = ListDefinitionsInput(filepath=str(file))
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[INFO] Found 1 top-level function(s):" in result
     assert "- foo(a: int) -> str" in result
@@ -36,7 +38,7 @@ class Greeter:
     write_file(file, code)
 
     args = ListDefinitionsInput(filepath=str(file))
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[INFO] Found 1 class(es):" in result
     assert "- Greeter" in result
@@ -56,7 +58,7 @@ class A:
     write_file(file, code)
 
     args = ListDefinitionsInput(filepath=str(file))
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[INFO] Found 1 top-level function(s):" in result
     assert "[INFO] Found 1 class(es):" in result
@@ -70,7 +72,7 @@ def test_empty_file(tmp_path):
     write_file(file, "")
 
     args = ListDefinitionsInput(filepath=str(file))
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[INFO] No functions or classes found" in result
 
@@ -81,7 +83,7 @@ def test_syntax_error(tmp_path):
     write_file(file, code)
 
     args = ListDefinitionsInput(filepath=str(file))
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[ERROR] Could not parse file due to syntax error" in result
 
@@ -91,13 +93,13 @@ def test_non_py_file(tmp_path):
     write_file(file, "def foo(): pass")
 
     args = ListDefinitionsInput(filepath=str(file))
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[ERROR] Not a Python file" in result
 
 
 def test_file_not_found():
     args = ListDefinitionsInput(filepath="this/file/does_not_exist.py")
-    result = list_definitions(args)
+    result = list_definitions(args, MagicMock())
 
     assert "[ERROR] File not found" in result

@@ -41,7 +41,7 @@ def test_memory_summarization_triggered(mock_summarize, client):
         for i in range(5)
     ]
     client.summary_memory = []
-    client._count_tokens = lambda _: 300
+    client.count_tokens = lambda _: 300
     client.memory_max_tokens = 1000
     client.summary_memory_max_tokens = 1000
 

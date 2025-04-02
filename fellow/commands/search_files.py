@@ -1,7 +1,7 @@
 import os
 from typing import Optional, List
 from pydantic import Field
-from fellow.commands.command import CommandInput
+from fellow.commands.command import CommandInput, CommandContext
 
 
 class SearchFilesInput(CommandInput):
@@ -10,7 +10,7 @@ class SearchFilesInput(CommandInput):
     extension: Optional[str] = Field(None, description="Only include files with this extension (e.g., .py).")
 
 
-def search_files(args: SearchFilesInput) -> str:
+def search_files(args: SearchFilesInput, context: CommandContext) -> str:
     """
     Recursively search for a string (case-insensitive) in all files under a given directory.
     Optionally restrict to files with a given extension.

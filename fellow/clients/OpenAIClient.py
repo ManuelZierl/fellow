@@ -27,7 +27,7 @@ class OpenAIClient:
             {
                 "role": "system",
                 "content": system_content,
-                "tokens": self._count_tokens({"role": "system", "content": system_content})
+                "tokens": self.count_tokens({"role": "system", "content": system_content})
             }
         ]
         self.summary_memory = []
@@ -61,7 +61,7 @@ class OpenAIClient:
             {
                 "role": "user",
                 "content": message,
-                "tokens": self._count_tokens({"role": "user", "content": message})
+                "tokens": self.count_tokens({"role": "user", "content": message})
             }
         )
         response = openai.chat.completions.create(
@@ -72,7 +72,7 @@ class OpenAIClient:
         self.memory.append({
             "role": "assistant",
             "content": content,
-            "tokens": self._count_tokens({"role": "assistant", "content": content})
+            "tokens": self.count_tokens({"role": "assistant", "content": content})
         })
 
         memory_tokens = sum([message["tokens"] for message in self.memory])
@@ -84,7 +84,7 @@ class OpenAIClient:
                 {
                     "role": "system",
                     "content": summary_content,
-                    "tokens": self._count_tokens({"role": "system", "content": summary_content})
+                    "tokens": self.count_tokens({"role": "system", "content": summary_content})
                 }
             )
 
@@ -98,7 +98,7 @@ class OpenAIClient:
                 {
                     "role": "system",
                     "content": summary_content,
-                    "tokens": self._count_tokens({"role": "system", "content": summary_content})
+                    "tokens": self.count_tokens({"role": "system", "content": summary_content})
                 }
             )
         return response.choices[0].message.content
@@ -131,7 +131,7 @@ class OpenAIClient:
         )
         return response.choices[0].message.content
 
-    def _count_tokens(self, message: Dict) -> int:
+    def count_tokens(self, message: Dict) -> int:
         """
         Estimates the number of tokens a single message will consume when sent to the OpenAI API.
 

@@ -5,7 +5,7 @@ from fellow.clients.CommandClient import CommandClient
 from fellow.clients.OpenAIClient import OpenAIClient
 from fellow.commands import ALL_COMMANDS, CommandInput, CommandHandler, generate_commands_description
 from fellow.utils.load_config import load_config
-from fellow.utils.log_message import log_message
+from fellow.utils.log_message import log_message, clear_log
 
 
 def main():
@@ -31,6 +31,8 @@ def main():
     introduction_prompt = introduction_prompt.replace("{{TASK}}", config["task"])
     introduction_prompt = introduction_prompt.replace("{{COMMANDS}}", commands_description)
 
+    # Clear the log file
+    clear_log(config)
     log_message(config, name="Instruction", color=0, content=introduction_prompt)
 
     openai_client = OpenAIClient(
