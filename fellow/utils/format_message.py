@@ -67,10 +67,7 @@ def format_ai_message(name: str, color: int, content: str) -> str:
             # Handle optional pretty block for edit_file
             if isinstance(parsed, dict) and "edit_file" in parsed:
                 try:
-                    print("in here")
-
                     edit_file = EditFileInput(**parsed["edit_file"])
-                    print(edit_file)
                     extension = edit_file.filepath.split(".")[-1]
                     pretty_text_block = block(edit_file.new_text, extension)
                 except ValidationError:

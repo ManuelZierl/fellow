@@ -28,8 +28,8 @@ introduction_prompt: |
   Thought: Explain clearly your expected result or describe what you plan to do after this action.
 
   Important Instructions:
-  - Every response **must** follow the Thought → Action → Thought structure.
-  - The "Action" section **must** contain exactly one JSON-formatted command and nothing else.
+  - Every response should follow the Thought → Action → Thought structure.
+  - The "Action" section **must** contain exactly one JSON-formatted command.
   - Do not include explanations, markdown formatting, or additional commentary inside the JSON command block.
   - If you require additional context or information, use exploration commands such as `list_files`, `get_code`, or `summarize_file`.
   - Always consider carefully if exploration is necessary before making edits or running code.

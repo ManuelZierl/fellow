@@ -1,6 +1,3 @@
-import json
-from typing import Dict, Tuple, Type
-
 from fellow.commands.command import CommandInput, CommandHandler, CommandContext
 
 
@@ -8,7 +5,6 @@ class CommandClient:
     def __init__(self, context: CommandContext):
         """
         Initializes the CommandClient with a dictionary of commands.
-        :param commands: A dictionary mapping command names to their input models and handler functions.
         :param context: The context in which the command will be executed, typically containing the AI client.
         """
         self.context = context

@@ -1,15 +1,14 @@
-import json
+import pytest
 import os
 import tempfile
-import pytest
 
 from fellow.clients.CommandClient import CommandClient
-from fellow.commands import ALL_COMMANDS, CreateFileInput, ViewFileInput, create_file, view_file
+from fellow.commands import CreateFileInput, ViewFileInput, create_file, view_file
 
 
 @pytest.fixture
 def client():
-    return CommandClient(None)  # todo: Mock OpenAIClient for testing
+    return CommandClient(None)
 
 
 def test_valid_create_and_view(client):

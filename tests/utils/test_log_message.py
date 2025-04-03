@@ -16,7 +16,6 @@ def test_log_message_writes_to_file(tmp_path):
     log_message(config, name="AI", color=1, content="Hello world")
 
     content = log_file.read_text(encoding="utf-8")
-    print(content)
     assert content == """> <span style="color:#1f77b4">**AI:**</span>
 >
 > > Hello world

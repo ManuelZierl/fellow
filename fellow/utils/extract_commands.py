@@ -1,9 +1,6 @@
 import json
 from typing import Any, List, Tuple, Dict, Type, Union
-from pydantic import BaseModel  # assuming CommandInput inherits from this
-
-CommandInput = BaseModel  # or your actual base class
-CommandHandler = Any  # Function type, e.g. Callable[[CommandInput, CommandContext], str]
+from fellow.commands import CommandInput, CommandHandler
 
 
 def extract_json_objects(text: str) -> List[Any]:

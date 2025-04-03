@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock
-
 from pydantic import BaseModel, ConfigDict
 from typing import Protocol, Union, TypeVar
 
