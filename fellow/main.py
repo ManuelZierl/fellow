@@ -6,7 +6,7 @@ from fellow.clients.OpenAIClient import OpenAIClient
 from fellow.commands import ALL_COMMANDS, CommandInput, CommandHandler, generate_commands_description, MakePlanInput, \
     make_plan
 from fellow.commands.command import CommandContext
-from fellow.utils.extract_command_block import extract_command_block
+from fellow.utils.extract_commands import extract_commands
 from fellow.utils.format_message import format_output_message
 from fellow.utils.load_config import load_config
 from fellow.utils.log_message import log_message, clear_log
@@ -56,24 +56,32 @@ def main():
     context = CommandContext(
         ai_client=openai_client
     )
-    command_client = CommandClient(commands, context)
+    command_client = CommandClient(context)
 
     log_message(config, name="Instruction", color=0, content=first_message)
     ai_response = openai_client.chat(first_message)
     log_message(config, name="AI", color=1, content=ai_response)
 
     while True:
-        command = extract_command_block(ai_response)
-        # todo: we could also allow multiple commands in one message
-        if isinstance(command, dict):
-            prompt_response = command_client.run(command)
+        extracted_commands = extract_commands(ai_response, commands)
+
+        if isinstance(extracted_commands, str):
+            prompt_response = extracted_commands
         else:
-            prompt_response = command
-        print("AI:", prompt_response)
+            responses = []
+            for cmd_input, handler in extracted_commands:
+                try:
+                    # result = handler(cmd_input, context=command_client.context)
+                    result = command_client.run(cmd_input, handler)
+                except Exception as e:
+                    result = f"[ERROR] Command execution failed: {e}"
+                responses.append(result)
+            prompt_response = "\n\n".join(responses)
+        print("PROMPT:", prompt_response)
         log_message(config, name="Output", color=2, content=prompt_response, formatter=format_output_message)
 
         ai_response = openai_client.chat(prompt_response)
-        print("Prompt:", ai_response)
+        print("AI:", ai_response)
         log_message(config, name="AI", color=1, content=ai_response)
 
         if ai_response.endswith("END"):

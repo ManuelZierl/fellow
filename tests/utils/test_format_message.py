@@ -59,6 +59,7 @@ def test_valid_json_no_new_text():
 > >   "number": 42
 > > }
 > > ```
+> > 
 
 ---
 """
@@ -68,8 +69,7 @@ def test_invalid_json_falls_back_to_text():
     result = format_ai_message("Alice", 1, "Action: {not valid json}")
     assert result == """> <span style="color:#1f77b4">**Alice:**</span>
 >
-> > Action: 
-> > {not valid json}
+> > Action: {not valid json}
 
 ---
 """
@@ -98,9 +98,7 @@ Some more thoughts'''
     assert result == """> <span style="color:#1f77b4">**Alice:**</span>
 >
 > > Some thoughst lorem ipsum
-> > 
 > > Action: 
-> > 
 > > ```json
 > > {
 > >   "edit_file": {
@@ -111,7 +109,6 @@ Some more thoughts'''
 > >   }
 > > }
 > > ```
-> > 
 > > 
 > > Some more thoughts
 > > ````py
@@ -136,8 +133,7 @@ def test_correct_extension():
     result = format_ai_message("Alice", 0, json_str)
     assert result == """> <span style="color:#000000">**Alice:**</span>
 >
-> > Action:
-> >         
+> > Action: 
 > > ```json
 > > {
 > >   "edit_file": {
@@ -148,6 +144,7 @@ def test_correct_extension():
 > >   }
 > > }
 > > ```
+> > 
 > > ````yml
 > > openai_config:
 > > 	model: 'o3-mini'
