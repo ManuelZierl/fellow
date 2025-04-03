@@ -20,6 +20,14 @@ def test_view_entire_file(sample_file):
     output = view_file(args, MagicMock())
     assert output == "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"
 
+def test_view_empty_file():
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as f:
+        file_path = f.name
+    args = ViewFileInput(filepath=file_path)
+    output = view_file(args, MagicMock())
+    assert output == "[INFO] The file is empty or the specified range contains no lines."
+    os.remove(file_path)
+
 
 def test_view_specific_lines(sample_file):
     args = ViewFileInput(filepath=sample_file, from_line=2, to_line=4)

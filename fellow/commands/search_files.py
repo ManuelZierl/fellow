@@ -13,7 +13,7 @@ class SearchFilesInput(CommandInput):
 def search_files(args: SearchFilesInput, context: CommandContext) -> str:
     """
     Recursively search for a string (case-insensitive) in all files under a given directory.
-    Optionally restrict to files with a given extension.
+    Optionally restrict to files with a given extension. Its essentially a grep command.
     """
     base_dir = os.path.abspath(os.path.join(os.getcwd(), args.directory))
 

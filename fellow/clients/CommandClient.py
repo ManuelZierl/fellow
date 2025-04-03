@@ -14,19 +14,14 @@ class CommandClient:
         self.commands = commands
         self.context = context
 
-    def run(self, command: str) -> str:
+    def run(self, command: dict) -> str:
         """
         Run a structured command given as a JSON string with one top-level key.
         """
-        try:
-            parsed = json.loads(command)
-        except json.JSONDecodeError as e:
-            return f"[ERROR] Invalid JSON: {e}"
-
-        if not isinstance(parsed, dict) or len(parsed) != 1:
+        if not isinstance(command, dict) or len(command) != 1:
             return "[ERROR] Command must be a JSON object with exactly one top-level command key."
 
-        cmd_name, cmd_args = next(iter(parsed.items()))
+        cmd_name, cmd_args = next(iter(command.items()))
 
         if cmd_name not in self.commands:
             return f"[ERROR] Unknown command: {cmd_name}"

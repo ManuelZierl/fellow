@@ -5,7 +5,7 @@ from fellow.utils.log_message import log_message
 
 @pytest.fixture(autouse=True)
 def patch_format_message(monkeypatch):
-    monkeypatch.setattr("fellow.utils.log_message.format_message",
+    monkeypatch.setattr("fellow.utils.log_message.format_ai_message",
                         lambda **kwargs: f"{kwargs['name']}: {kwargs['content']}\n")
 
 
@@ -16,7 +16,13 @@ def test_log_message_writes_to_file(tmp_path):
     log_message(config, name="AI", color=1, content="Hello world")
 
     content = log_file.read_text(encoding="utf-8")
-    assert "AI: Hello world" in content
+    print(content)
+    assert content == """> <span style="color:#1f77b4">**AI:**</span>
+>
+> > Hello world
+
+---
+"""
 
 
 def test_log_message_skips_if_no_log():

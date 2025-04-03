@@ -1,10 +1,10 @@
-from fellow.utils.format_message import format_message
+from fellow.utils.format_message import format_ai_message
 
 
-def log_message(config, name, color, content):
+def log_message(config, name, color, content, formatter=format_ai_message):
     if config.get("log"):
         with open(config["log"], "a", encoding="utf-8") as f:
-            f.write(format_message(name=name, color=color, content=content))
+            f.write(formatter(name=name, color=color, content=content))
 
 def clear_log(config):
     if config.get("log"):

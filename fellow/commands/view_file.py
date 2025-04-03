@@ -30,7 +30,7 @@ def view_file(args: ViewFileInput, context:CommandContext) -> str:
         start = max(0, min(start, total_lines))
         end = max(0, min(end, total_lines))
         if end == 0:
-            return "" # file is empty
+            return "[INFO] The file is empty or the specified range contains no lines."
 
         if start >= end:
             return "[INFO] No lines to display (start >= end)."

@@ -6,6 +6,8 @@ from fellow.clients.OpenAIClient import OpenAIClient
 from fellow.commands import ALL_COMMANDS, CommandInput, CommandHandler, generate_commands_description, MakePlanInput, \
     make_plan
 from fellow.commands.command import CommandContext
+from fellow.utils.extract_command_block import extract_command_block
+from fellow.utils.format_message import format_output_message
 from fellow.utils.load_config import load_config
 from fellow.utils.log_message import log_message, clear_log
 
@@ -61,15 +63,20 @@ def main():
     log_message(config, name="AI", color=1, content=ai_response)
 
     while True:
-        prompt_response = command_client.run(ai_response)
+        command = extract_command_block(ai_response)
+        # todo: we could also allow multiple commands in one message
+        if isinstance(command, dict):
+            prompt_response = command_client.run(command)
+        else:
+            prompt_response = command
         print("AI:", prompt_response)
-        log_message(config, name="Output", color=2, content=prompt_response)
+        log_message(config, name="Output", color=2, content=prompt_response, formatter=format_output_message)
 
         ai_response = openai_client.chat(prompt_response)
         print("Prompt:", ai_response)
         log_message(config, name="AI", color=1, content=ai_response)
 
-        if ai_response == "END":
+        if ai_response.endswith("END"):
             break
 
 
