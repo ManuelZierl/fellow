@@ -99,7 +99,7 @@ def test_correct_extension():
 > {
 >   "edit_file": {
 >     "filepath": "test.yml",
->     "new_text": "openai_config:\n\tmodel: 'o3-mini'\nplanning:\n\tactive: true",
+>     "new_text": "openai_config:\\n\\tmodel: 'o3-mini'\\nplanning:\\n\\tactive: true",
 >     "from_line": 1,
 >     "to_line": 1
 >   }
@@ -111,4 +111,5 @@ def test_correct_extension():
 > planning:
 > 	active: true
 > ```
----"""
+---
+"""
