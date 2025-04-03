@@ -4,86 +4,36 @@ import tempfile
 import pytest
 
 from fellow.clients.CommandClient import CommandClient
-from fellow.commands import ALL_COMMANDS
+from fellow.commands import ALL_COMMANDS, CreateFileInput, ViewFileInput, create_file, view_file
 
 
 @pytest.fixture
 def client():
-    return CommandClient(ALL_COMMANDS, None)  # todo: Mock OpenAIClient for testing
+    return CommandClient(None)  # todo: Mock OpenAIClient for testing
 
 
 def test_valid_create_and_view(client):
     with tempfile.TemporaryDirectory() as tmpdir:
         file_path = os.path.join(tmpdir, "test.txt")
 
-        create_cmd = {
-            "create_file": {
-                "filepath": file_path
-            }
-        }
-
-        view_cmd = {
-            "view_file": {
-                "filepath": file_path
-            }
-        }
+        create_cmd = CreateFileInput(filepath=file_path)
+        view_cmd = ViewFileInput(filepath=file_path)
 
         # Run create
-        result_create = client.run(create_cmd)
+        result_create = client.run(create_cmd, create_file)
         assert "[OK]" in result_create
         assert os.path.isfile(file_path)
 
         # Run view
-        result_view = client.run(view_cmd)
+        result_view = client.run(view_cmd, view_file)
         assert result_view.strip() == '[INFO] The file is empty or the specified range contains no lines.'
 
 
-def test_multiple_top_level_keys(client):
-    command = {
-        "create_file": {"filepath": "a.txt"},
-        "view_file": {"filepath": "a.txt"}
-    }
-    result = client.run(command)
-    assert "exactly one top-level" in result
-
-
-def test_unknown_command(client):
-    command = {
-        "not_a_real_command": {"foo": "bar"}
-    }
-    result = client.run(command)
-    assert "Unknown command" in result
-
-
-def test_non_dict_args(client):
-    command = {
-        "create_file": "this should be an object"
-    }
-    result = client.run(command)
-    assert "arguments must be an object" in result
-
-
-def test_invalid_args_validation(client):
-    command = {
-        "view_file": {"filepath": 123}  # should be str
-    }
-    result = client.run(command)
-    assert "Invalid command arguments" in result
-
-
-def test_runtime_error(client, monkeypatch):
-    # Force the handler to raise an error
-    from fellow.commands.view_file import view_file
-
+def test_runtime_error(client):
     def broken_handler(args):
         raise RuntimeError("Something went wrong")
 
-    from fellow import commands
-    ALL_COMMANDS["view_file"] = (ALL_COMMANDS["view_file"][0], broken_handler)
+    command = ViewFileInput(filepath="test.txt", from_line=1, to_line=10)
 
-    command = {
-        "view_file": {"filepath": "test.txt"}
-    }
-
-    result = client.run(command)
+    result = client.run(command, broken_handler)
     assert "Command execution failed" in result
