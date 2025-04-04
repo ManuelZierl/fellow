@@ -8,9 +8,9 @@ class OpenAIClient:
     def __init__(
             self,
             system_content: str,
-            memory_max_tokens: int=1500,
-            summary_memory_max_tokens: int=1500,
-            model:str ="gpt-4"
+            memory_max_tokens: int=15000,
+            summary_memory_max_tokens: int=15000,
+            model:str ="gpt-4o"
     ):
         """
         Initializes the OpenAIClient with system content prompt, token limits, and model configuration.
@@ -122,7 +122,7 @@ class OpenAIClient:
         summary_prompt = [
             {"role": "system", "content": "Summarize the following conversation for context retention."},
             {"role": "user", "content": "\n".join(
-                [f"{m['role'].capitalize()}: {m['content']}" for m in messages if m['role'] != "system"]
+                [f"{m['role'].capitalize()}: {m['content']}" for m in messages]
             )}
         ]
         response = openai.chat.completions.create(

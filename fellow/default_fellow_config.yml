@@ -46,9 +46,9 @@ introduction_prompt: |
 task: null
 log: fellow_log.md
 openai_config:
-  memory_max_tokens: 1500
-  summary_memory_max_tokens: 1500
-  model: "gpt-4"
+  memory_max_tokens: 15000
+  summary_memory_max_tokens: 15000
+  model: "gpt-4o"
 commands:
   - "create_file"
   - "view_file"

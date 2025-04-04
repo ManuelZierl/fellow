@@ -78,3 +78,35 @@ def test_split_on_token_limit():
     first, second = OpenAIClient._split_on_token_limit(messages, 6)
     assert sum(m["tokens"] for m in second) <= 6
     assert len(first) + len(second) == len(messages)
+
+
+def test__summarize_memory(client):
+    messages = [
+        {"role": "system", "content": "You are a bot."},
+        {"role": "user", "content": "What is Python?"},
+        {"role": "assistant", "content": "Python is a programming language."},
+        {"role": "user", "content": "Can you summarize that?"},
+        {"role": "assistant", "content": "Sure. It's a language for building software."}
+    ]
+
+    # Patch the OpenAI API call
+    with patch("openai.chat.completions.create") as mock_create:
+        mock_response = MagicMock()
+        mock_response.choices[
+            0].message.content = "The user asked about Python. Assistant explained it's a programming language."
+        mock_create.return_value = mock_response
+
+        summary = client._summarize_memory(messages)
+
+        # Verify the OpenAI call was constructed correctly
+        called_args = mock_create.call_args[1]["messages"]
+        # The user message content passed to OpenAI should not include "system" roles
+        assert called_args[0]["content"] == "Summarize the following conversation for context retention."
+        assert called_args[1]["content"]== """System: You are a bot.
+User: What is Python?
+Assistant: Python is a programming language.
+User: Can you summarize that?
+Assistant: Sure. It's a language for building software."""
+
+        # The result should match the mocked return
+        assert summary == "The user asked about Python. Assistant explained it's a programming language."

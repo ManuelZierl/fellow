@@ -51,7 +51,6 @@ def generate_commands_description(commands: Dict[str, Tuple[Type[CommandInput], 
         if info["description"]:
             lines.append(info["description"])
 
-        # Build JSON example with type placeholders
         args_example = {
             name: {
                 arg: desc
@@ -59,6 +58,6 @@ def generate_commands_description(commands: Dict[str, Tuple[Type[CommandInput], 
             }
         }
         lines.append(f"{json.dumps(args_example, indent=2)}")
-        lines.append("")  # spacer
+        lines.append("")
 
     return "\n".join(lines)
