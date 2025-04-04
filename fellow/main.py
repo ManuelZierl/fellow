@@ -77,7 +77,7 @@ def main():
                     result = f"[ERROR] Command execution failed: {e}"
                 responses.append(result)
             prompt_response = "\n\n".join(responses)
-        print("PROMPT:", prompt_response)
+        print("PROMPT:", prompt_response.split("\n")[0] + "...")
         log_message(config, name="Output", color=2, content=prompt_response, formatter=format_output_message)
 
         ai_response = openai_client.chat(prompt_response)
@@ -85,6 +85,7 @@ def main():
         log_message(config, name="AI", color=1, content=ai_response)
 
         if ai_response.endswith("END"):
+            openai_client.store_memory("memory.json")
             break
 
 

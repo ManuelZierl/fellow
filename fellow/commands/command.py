@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Protocol, Union, TypeVar
+from typing import Protocol, Union, TypeVar, Type
 
 from pydantic.v1.typing import get_origin, get_args
 
@@ -10,6 +10,7 @@ class CommandContext(BaseModel):
     ai_client: OpenAIClient
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
 
 class CommandInput(BaseModel):
     @classmethod
@@ -43,3 +44,16 @@ T = TypeVar("T", bound=CommandInput)
 class CommandHandler(Protocol[T]):
     def __call__(self, args: T, context: CommandContext) -> str:
         ...
+
+
+class Command:
+    def __init__(self, input_type: Type[CommandInput], command_handler: CommandHandler):
+        self.input_type = input_type
+        self.command_handler = command_handler
+
+    def openai_schema(self) -> dict:
+        return {
+            "name": self.command_handler.__name__,
+            "description": self.command_handler.__doc__,
+            "parameters": self.input_type.model_json_schema()
+        }

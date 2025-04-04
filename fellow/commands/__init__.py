@@ -1,9 +1,9 @@
-from typing import Dict, Tuple, Type
+from typing import Dict, Tuple, Type, List
 import json
 import inspect
 from typing import Callable, get_type_hints
 
-from fellow.commands.command import CommandInput, CommandHandler
+from fellow.commands.command import CommandInput, CommandHandler, Command
 from fellow.commands.create_file import CreateFileInput, create_file
 from fellow.commands.delete_file import DeleteFileInput, delete_file
 from fellow.commands.edit_file import EditFileInput, edit_file
@@ -17,7 +17,11 @@ from fellow.commands.summarize_file import SummarizeFileInput, summarize_file
 from fellow.commands.view_file import ViewFileInput, view_file
 
 
-ALL_COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
+ALL_COMMANDS: List[Command] = [
+    Command(CreateFileInput, create_file),
+]
+
+x = {
     "create_file": (CreateFileInput, create_file),
     "view_file": (ViewFileInput, view_file),
     "delete_file": (DeleteFileInput, delete_file),
@@ -30,34 +34,3 @@ ALL_COMMANDS: Dict[str, Tuple[Type[CommandInput], CommandHandler]] = {
     "make_plan": (MakePlanInput, make_plan),
     "summarize_file": (SummarizeFileInput, summarize_file)
 }
-
-def generate_commands_description(commands: Dict[str, Tuple[Type[CommandInput], CommandHandler]]) -> str:
-    def extract_description(command_fn: Callable) -> dict:
-        sig = inspect.signature(command_fn)
-        param = list(sig.parameters.values())[0]
-        model_cls = get_type_hints(command_fn).get(param.name)
-        return {
-            "command": command_fn.__name__,
-            "description": (command_fn.__doc__ or "").strip(),
-            "args": model_cls.command_schema()
-        }
-
-    lines = []
-
-    for name, (input_cls, handler_fn) in commands.items():
-        info = extract_description(handler_fn)
-
-        lines.append(f"### {name}")
-        if info["description"]:
-            lines.append(info["description"])
-
-        args_example = {
-            name: {
-                arg: desc
-                for arg, desc in info["args"].items()
-            }
-        }
-        lines.append(f"{json.dumps(args_example, indent=2)}")
-        lines.append("")
-
-    return "\n".join(lines)
