@@ -21,7 +21,8 @@ def mock_openai_api_key():
         os.environ["OPENAI_API_KEY"] = old_key
 
 
-def test_messages(client):
+@patch("openai.chat.completions.create")
+def test_messages(client, mock_openai_api_key):
     client.memory = [{"role": "user", "content": "Hi", "tokens": 5}]
     client.summary_memory = [{"role": "system", "content": "Summary", "tokens": 3}]
     result = client.messages(remove_tokens=True)
@@ -34,13 +35,15 @@ def test_messages(client):
 
 @patch("openai.chat.completions.create")
 def test_chat(mock_create, client, mock_openai_api_key):
-    mock_create.return_value = MagicMock(choices=[MagicMock(message=MagicMock(content="Hello!"))])
+    mock_choice = MagicMock()
+    mock_choice.message = MagicMock(content="Hello!", function_call=None)
+    mock_create.return_value = MagicMock(choices=[mock_choice])
+
     response = client.chat("Hi there")
-    assert response == "Hello!"
+    assert response == ("Hello!", None, None)  # Updated to match the new expected tuple
     assert len(client.memory) == 2
     assert client.memory[-1]["content"] == "Hello!"
     assert "tokens" in client.memory[-1]
-
 
 @patch.object(OpenAIClient, "_summarize_memory")
 def test_memory_summarization_triggered(mock_summarize, client):

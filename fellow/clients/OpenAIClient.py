@@ -1,8 +1,10 @@
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 import openai
 import tiktoken
+from openai.types.chat.chat_completion_message import FunctionCall
+
 
 class OpenAIClient:
     def __init__(
@@ -42,39 +44,108 @@ class OpenAIClient:
         """
         messages = self.system_content + self.summary_memory + self.memory
         if remove_tokens:
-            return [
-                {
-                    "role": message["role"],
-                    "content": message["content"]
-                } for message in messages
-            ]
+            stripped = []
+            for message in messages:
+                filtered = {"role": message["role"]}
+
+                # For role=function, also include name
+                if message["role"] == "function" and "name" in message:
+                    filtered["name"] = message["name"]
+
+                # Include content if present
+                if "content" in message and message["content"] is not None:
+                    filtered["content"] = message["content"]
+
+                # Include function_call if present
+                if "function_call" in message:
+                    filtered["function_call"] = message["function_call"]
+
+                stripped.append(filtered)
+            return stripped
+
         return messages
 
-    def chat(self, message: str) -> str:
+    def chat(
+            self,
+            message: str = "",
+            function_result: Optional[Tuple[str, str]] = None,
+            functions: Optional[List[Dict]] = None
+    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
-        Sends a message to the model, updates memory, and handles summarization if token limits are exceeded.
+        Sends a message or a function result to the model, can also handle function calls.
+        Updates memory, and handles summarization if token limits are exceeded.
 
         :param message: User input message.
-        :return: Assistant's response content.
+        :param function_result: Tuple of function name and output if a function was called.
+        :param functions: List of function schemas for the model to call.
+
+        :return: Tuple containing the assistant's response, function name, and function arguments.
         """
-        self.memory.append(
-            {
-                "role": "user",
-                "content": message,
-                "tokens": self.count_tokens({"role": "user", "content": message})
+
+        if function_result:
+            fn_name, fn_output = function_result
+            new_msg = {
+                "role": "function",
+                "name": fn_name,
+                "content": fn_output,
+                "tokens": self.count_tokens({"role": "function", "content": fn_output})
             }
-        )
+            self.memory.append(new_msg)
+        else:
+            if message.strip():
+                new_msg = {
+                    "role": "user",
+                    "content": message,
+                    "tokens": self.count_tokens({"role": "user", "content": message})
+                }
+                self.memory.append(new_msg)
+
+
         response = openai.chat.completions.create(
             model=self.model,
             messages=self.messages(remove_tokens=True),
+            functions=functions,
+            function_call="auto" if functions else None
         )
-        content = response.choices[0].message.content
-        self.memory.append({
-            "role": "assistant",
-            "content": content,
-            "tokens": self.count_tokens({"role": "assistant", "content": content})
-        })
 
+        choice = response.choices[0]
+        msg = choice.message
+
+        self._append_input_to_memory(msg.content, msg.function_call)
+
+        # Perform summarization if needed
+        self._maybe_summarize_memory()
+
+        if msg.function_call:
+            return msg.content, msg.function_call.name, msg.function_call.arguments
+        else:
+            return msg.content, None, None
+
+    def _append_input_to_memory(self, message, function_call: Optional[FunctionCall] = None):
+        # Handle assistant reasoning
+        if message:
+            self.memory.append({
+                "role": "assistant",
+                "content": message,
+                "tokens": self.count_tokens({"role": "assistant", "content": message})
+            })
+
+        # Handle function call
+        if function_call:
+            arguments = function_call.arguments
+            self.memory.append({
+                "role": "assistant",
+                "function_call": {
+                    "name": function_call.name,
+                    "arguments": arguments
+                },
+                "tokens": self.count_tokens({
+                    "role": "assistant",
+                    "content": f"[Function call] {function_call.name}({arguments})"
+                })
+            })
+
+    def _maybe_summarize_memory(self):
         memory_tokens = sum([message["tokens"] for message in self.memory])
         if memory_tokens > self.memory_max_tokens:
             old_memory, self.memory = self._split_on_token_limit(self.memory, self.memory_max_tokens)
@@ -101,7 +172,6 @@ class OpenAIClient:
                     "tokens": self.count_tokens({"role": "system", "content": summary_content})
                 }
             )
-        return response.choices[0].message.content
 
     def store_memory(self, filename: str):
         """
@@ -119,15 +189,29 @@ class OpenAIClient:
         :param messages: List of messages to summarize.
         :return: Summary string generated by the model.
         """
+
+        def stringify(msg: Dict) -> str:
+            role = msg["role"].capitalize()
+            parts = []
+
+            if msg.get("content"):
+                parts.append(msg["content"])
+
+            if "function_call" in msg:
+                fc = msg["function_call"]
+                parts.append(f"[Function call] {fc['name']}({fc['arguments']})")
+
+            return f"{role}: {' | '.join(parts) if parts else '[No content]'}"
+
         summary_prompt = [
             {"role": "system", "content": "Summarize the following conversation for context retention."},
-            {"role": "user", "content": "\n".join(
-                [f"{m['role'].capitalize()}: {m['content']}" for m in messages]
-            )}
+            {"role": "user", "content": "\n".join(stringify(m) for m in messages)}
         ]
+
         response = openai.chat.completions.create(
             model=self.model,
             messages=summary_prompt,
+            # todo: this could optionally use a different less expensive model, because summarization is not as difficult
         )
         return response.choices[0].message.content
 

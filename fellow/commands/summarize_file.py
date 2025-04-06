@@ -29,7 +29,9 @@ def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
             system_content="Summarize the following file content.",
             model=context.ai_client.model
         )
-        summary = client.chat(f"Please summarize the following file content:\n\n{content}")
+        # Adjusted to handle the tuple returned by chat()
+        summary, _, _ = client.chat(f"Please summarize the following file content:\n\n{content}")
+
         return f"[OK] Summary:\n{summary.strip()}"
 
     except Exception as e:
