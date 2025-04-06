@@ -31,6 +31,7 @@ commands:
   - "get_code"
   - "make_plan"
   - "summarize_file"
+  - "pip_install"
 planning:
   active: true
   prompt: |

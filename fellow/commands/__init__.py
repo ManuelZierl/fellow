@@ -12,7 +12,7 @@ from fellow.commands.run_pytest import RunPytestInput, run_pytest
 from fellow.commands.run_python import RunPythonInput, run_python
 from fellow.commands.summarize_file import SummarizeFileInput, summarize_file
 from fellow.commands.view_file import ViewFileInput, view_file
-
+from fellow.commands.pip_install import pip_install, PipInstallInput
 
 ALL_COMMANDS: Dict[str, Command] = {
     "create_file": Command(CreateFileInput, create_file),
@@ -25,5 +25,6 @@ ALL_COMMANDS: Dict[str, Command] = {
     "list_definitions": Command(ListDefinitionsInput, list_definitions),
     "get_code": Command(GetCodeInput, get_code),
     "make_plan": Command(MakePlanInput, make_plan),
-    "summarize_file": Command(SummarizeFileInput, summarize_file)
+    "summarize_file": Command(SummarizeFileInput, summarize_file),
+    "pip_install": Command(PipInstallInput, pip_install)
 }

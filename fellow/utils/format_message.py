@@ -1,99 +1,44 @@
 import json
+from typing import Optional
+
 from pydantic import ValidationError
 
-from fellow.commands import EditFileInput
+from fellow.commands import EditFileInput, MakePlanInput
 
 COLORS = ['#000000', '#1f77b4', '#ff7f0e']
 
 
-def block(text: str, extension: str):
-    text = text.replace("\\n", "\n")
-    text = text.replace("\n", "\n> > ")
-    return f"""> > ````{extension}\n> > {text}\n> > ````"""
-
-
-def format_ai_message(name: str, color: int, content: str) -> str:
+def format_message(name: str, color: int, content: str, language: Optional[str] = None) -> str:
     color_code = COLORS[color % len(COLORS)]
-    result_lines = []
-    pretty_text_block = ""
+    output = f'<span style="color:{color_code}">**{name}:**</span>\n\n'
+    addition = ""
 
-    i = 0
-    while i < len(content):
-        action_idx = content.find("Action:", i)
-        if action_idx == -1:
-            # No more actions; just indent rest and break
-            remainder = content[i:].strip()
-            if remainder:
-                result_lines.append('\n'.join(f"> > {line}" for line in remainder.splitlines()))
-            break
-
-        # Add everything before Action:
-        before_action = content[i:action_idx].strip()
-        if before_action:
-            result_lines.append('\n'.join(f"> > {line}" for line in before_action.splitlines()))
-
-        # Find start of JSON block
-        json_start = content.find("{", action_idx)
-        if json_start == -1:
-            # No JSON found after Action:
-            result_lines.append("> > Action: [malformed or missing JSON]")
-            break
-
-        # Match braces to find end of JSON
-        brace_count = 0
-        end_json = None
-        for j in range(json_start, len(content)):
-            if content[j] == "{":
-                brace_count += 1
-            elif content[j] == "}":
-                brace_count -= 1
-                if brace_count == 0:
-                    end_json = j + 1
-                    break
-
-        if end_json is None:
-            result_lines.append("> > Action: [unmatched braces]")
-            break
-
-        raw_json = content[json_start:end_json]
+    if language:
+        output += f"```{language}\n"
         try:
-            parsed = json.loads(raw_json)
-            pretty_json = json.dumps(parsed, indent=2)
-            json_block = '\n'.join(f"> > {line}" for line in f"```json\n{pretty_json}\n```\n\n".splitlines())
-
-            result_lines.append("> > Action: ")
-            result_lines.append(json_block)
-
-            # Handle optional pretty block for edit_file
-            if isinstance(parsed, dict) and "edit_file" in parsed:
-                try:
-                    edit_file = EditFileInput(**parsed["edit_file"])
-                    extension = edit_file.filepath.split(".")[-1]
-                    pretty_text_block = block(edit_file.new_text, extension)
-                except ValidationError:
-                    pass
+            # Attempt to parse the content as JSON
+            parsed_content = json.loads(content)
+            content = json.dumps(parsed_content, indent=2)
+            try:
+                if parsed_content.get("function_name") == "edit_file":
+                    edit_file = EditFileInput(**parsed_content["arguments"])
+                    lang = edit_file.filepath.split(".")[-1]
+                    addition = f"\n```{lang}\n{edit_file.new_text}\n```\n"
+                if parsed_content.get("function_name") == "make_plan":
+                    make_plan = MakePlanInput(**parsed_content["arguments"])
+                    addition = f"\n```txt\n{make_plan.plan}\n```\n"
+            except ValidationError:
+                pass
+            except KeyError:
+                pass
         except json.JSONDecodeError:
-            raw = content[action_idx:end_json]
-            result_lines.append('\n'.join(f"> > {line}" for line in raw.strip().splitlines()))
+            pass
 
-        i = end_json
 
-    indented_output = '\n'.join(result_lines)
 
-    return f"""> <span style="color:{color_code}">**{name}:**</span>
->
-{indented_output}
-{pretty_text_block}
----
-"""
+    output += content
 
-def format_output_message(name: str, color: int, content: str) -> str:
-    color_code = COLORS[color % len(COLORS)]
-    indented = '\n'.join(f"> {line}" for line in content.strip().splitlines())
-    return f"""> <span style=\"color:{color_code}\">**{name}:**</span>
->
-> ````txt
-{indented}
-> ````
----
-"""
+    if language:
+        output += f"\n````\n{addition}"
+
+    return output + "\n\n---\n\n"
