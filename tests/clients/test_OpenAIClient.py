@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from unittest.mock import MagicMock, patch
 from tempfile import NamedTemporaryFile
@@ -9,6 +11,15 @@ from fellow.clients.OpenAIClient import OpenAIClient
 @pytest.fixture
 def client():
     return OpenAIClient(system_content="You are a helpful assistant.")
+
+@pytest.fixture
+def mock_openai_api_key():
+    old_key = os.environ.get("OPENAI_API_KEY")
+    os.environ["OPENAI_API_KEY"] = "mock_api_key"
+    yield
+    if old_key is not None:
+        os.environ["OPENAI_API_KEY"] = old_key
+
 
 @patch("openai.chat.completions.create")
 def test_messages(client):
@@ -23,7 +34,7 @@ def test_messages(client):
     assert all("tokens" in msg for msg in result)
 
 @patch("openai.chat.completions.create")
-def test_chat(mock_create, client):
+def test_chat(mock_create, client, mock_openai_api_key):
     mock_choice = MagicMock()
     mock_choice.message = MagicMock(content="Hello!", function_call=None)
     mock_create.return_value = MagicMock(choices=[mock_choice])
