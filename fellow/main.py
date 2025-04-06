@@ -1,10 +1,10 @@
 import argparse
+import json
 from typing import Dict
 
 from fellow.clients.OpenAIClient import OpenAIClient
 from fellow.commands import ALL_COMMANDS
 from fellow.commands.command import CommandContext, Command
-from fellow.utils.format_message import format_output_message
 from fellow.utils.load_config import load_config
 from fellow.utils.log_message import log_message, clear_log
 
@@ -36,8 +36,8 @@ def main():
 
     # Logging
     clear_log(config)
-    log_message(config, name="Instruction", color=0, content=introduction_prompt, formatter=format_output_message)
-    log_message(config, name="Instruction", color=0, content=first_message, formatter=format_output_message)
+    log_message(config, name="Instruction", color=0, content=introduction_prompt)
+    log_message(config, name="Instruction", color=0, content=first_message)
 
     # Init AI client
     openai_client = OpenAIClient(
@@ -69,10 +69,21 @@ def main():
             log_message(config, name="AI", color=1, content=reasoning)
 
         if func_name and func_args:
-            print("FUNCTION CALL:", func_name, func_args)
-            log_message(config, name="Function Call", color=3, content=f"Calling {func_name} with args: {func_args}")
+            print("AI:", func_name, func_args)
+            log_message(
+                config,
+                name="AI",
+                color=1,
+                content=json.dumps(
+                    {
+                        "function_name": func_name,
+                        "arguments": json.loads(func_args)
+                    }
+                ),
+                language="json"
+            )
 
-        if reasoning and (reasoning.strip() == "END" or reasoning.endswith("END")):
+        if reasoning and (reasoning.strip() == "END" or reasoning.strip().endswith("END")):
             openai_client.store_memory("memory.json")
             break
 
@@ -81,14 +92,13 @@ def main():
             if func_name not in commands:
                 # Give error feedback to ai
                 message = f"[ERROR] Unknown function: {func_name}"
-                log_message(config, name="Output", color=2, content=message, formatter=format_output_message)
+                log_message(config, name="Output", color=2, content=message)
             else:
-                # todo: not logging the function call
                 command_output = commands[func_name].run(func_args, context)
 
                 # Log output of the command
                 print("PROMPT:", command_output.splitlines()[0] + "...")
-                log_message(config, name="Output", color=2, content=command_output, formatter=format_output_message)
+                log_message(config, name="Output", color=2, content=command_output, language="txt")
 
                 # Prepare for next loop
                 message = ""
