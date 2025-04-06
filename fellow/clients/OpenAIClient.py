@@ -1,8 +1,11 @@
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 import openai
 import tiktoken
+from openai import NOT_GIVEN, NotGiven
+from openai.types.chat import ChatCompletionMessage
+
 
 class OpenAIClient:
     def __init__(
@@ -50,31 +53,83 @@ class OpenAIClient:
             ]
         return messages
 
-    def chat(self, message: str) -> str:
+    def chat(
+            self,
+            message: str = "",
+            function_result: Optional[Tuple[str, str]] = None,
+            functions: Optional[List[Dict]] = None
+    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
-        Sends a message to the model, updates memory, and handles summarization if token limits are exceeded.
+        Sends a message or a function result to the model, can also handle function calls.
+        Updates memory, and handles summarization if token limits are exceeded.
 
         :param message: User input message.
-        :return: Assistant's response content.
+        :param function_result: Tuple of function name and output if a function was called.
+        :param functions: List of function schemas for the model to call.
+
+        :return: Tuple containing the assistant's response, function name, and function arguments.
         """
-        self.memory.append(
-            {
-                "role": "user",
-                "content": message,
-                "tokens": self.count_tokens({"role": "user", "content": message})
+
+        if function_result:
+            fn_name, fn_output = function_result
+            new_msg = {
+                "role": "function",
+                "name": fn_name,
+                "content": fn_output,
+                "tokens": self.count_tokens({"role": "function", "content": fn_output})
             }
-        )
+            self.memory.append(new_msg)
+        else:
+            if message.strip() == "":
+                new_msg = {
+                    "role": "user",
+                    "content": message,
+                    "tokens": self.count_tokens({"role": "user", "content": message})
+                }
+                self.memory.append(new_msg)
+
+
         response = openai.chat.completions.create(
             model=self.model,
             messages=self.messages(remove_tokens=True),
+            functions=functions,
+            function_call="auto" if functions else None
         )
-        content = response.choices[0].message.content
-        self.memory.append({
-            "role": "assistant",
-            "content": content,
-            "tokens": self.count_tokens({"role": "assistant", "content": content})
-        })
 
+        choice = response.choices[0]
+        msg = choice.message
+
+        # Handle assistant reasoning
+        if msg.content:
+            self.memory.append({
+                "role": "assistant",
+                "content": msg.content,
+                "tokens": self.count_tokens({"role": "assistant", "content": msg.content})
+            })
+
+        # Handle function call
+        if msg.function_call:
+            function_call = msg.function_call
+            arguments = function_call.arguments
+            self.memory.append({
+                "role": "assistant",
+                "function_call": {
+                    "name": function_call.name,
+                    "arguments": arguments
+                },
+                "tokens": self.count_tokens({
+                    "role": "assistant",
+                    "content": f"[Function call] {function_call.name}({arguments})"
+                })
+            })
+
+        # Perform summarization if needed
+        self._maybe_summarize_memory()
+
+        return msg.content, msg.function_call.name, msg.function_call.arguments
+
+
+    def _maybe_summarize_memory(self):
         memory_tokens = sum([message["tokens"] for message in self.memory])
         if memory_tokens > self.memory_max_tokens:
             old_memory, self.memory = self._split_on_token_limit(self.memory, self.memory_max_tokens)
@@ -101,7 +156,6 @@ class OpenAIClient:
                     "tokens": self.count_tokens({"role": "system", "content": summary_content})
                 }
             )
-        return response.choices[0].message.content
 
     def store_memory(self, filename: str):
         """

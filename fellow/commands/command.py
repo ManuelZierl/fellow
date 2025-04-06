@@ -1,4 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+import json
+
+from pydantic import BaseModel, ConfigDict, ValidationError
 from typing import Protocol, Union, TypeVar, Type
 
 from pydantic.v1.typing import get_origin, get_args
@@ -57,3 +59,14 @@ class Command:
             "description": self.command_handler.__doc__,
             "parameters": self.input_type.model_json_schema()
         }
+
+    def run(self, command_input_str: str, context: CommandContext) -> str:
+        try:
+            command_input = self.input_type(**json.loads(command_input_str))
+        except ValidationError as e:
+            return f"[ERROR] Invalid command input [{self.command_handler.__name__}]: " + str(e)
+
+        try:
+            return self.command_handler(command_input, context=context)
+        except Exception as e:
+            return f"[ERROR] Command execution failed: {e}"
