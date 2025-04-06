@@ -22,7 +22,7 @@ def mock_openai_api_key():
 
 
 @patch("openai.chat.completions.create")
-def test_messages(client):
+def test_messages(client, mock_openai_api_key):
     client.memory = [{"role": "user", "content": "Hi", "tokens": 5}]
     client.summary_memory = [{"role": "system", "content": "Summary", "tokens": 3}]
     result = client.messages(remove_tokens=True)
