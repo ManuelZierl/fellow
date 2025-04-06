@@ -30,7 +30,8 @@ def test_summary_output(tmp_path):
     file_path.write_text("Dies ist ein Testinhalt.")
 
     mock_client = MagicMock()
-    mock_client.chat.return_value = "Das ist eine Zusammenfassung."
+    # Adjust to return a tuple as expected by chat()
+    mock_client.chat.return_value = ("Das ist eine Zusammenfassung.", None, None)
 
     summarize_module.OpenAIClient = lambda **kwargs: mock_client
 
@@ -63,7 +64,8 @@ def test_max_chars_truncates(tmp_path):
     file_path.write_text("A" * 1000)
 
     mock_client = MagicMock()
-    mock_client.chat.return_value = "Zusammenfassung für 100 Zeichen."
+    # Adjust to return a tuple as expected by chat()
+    mock_client.chat.return_value = ("Zusammenfassung für 100 Zeichen.", None, None)
 
     summarize_module.OpenAIClient = lambda **kwargs: mock_client
 

@@ -68,6 +68,10 @@ def main():
             print("AI:", reasoning.strip())
             log_message(config, name="AI", color=1, content=reasoning)
 
+        if func_name and func_args:
+            print("FUNCTION CALL:", func_name, func_args)
+            log_message(config, name="Function Call", color=3, content=f"Calling {func_name} with args: {func_args}")
+
         if reasoning and (reasoning.strip() == "END" or reasoning.endswith("END")):
             openai_client.store_memory("memory.json")
             break
@@ -77,7 +81,9 @@ def main():
             if func_name not in commands:
                 # Give error feedback to ai
                 message = f"[ERROR] Unknown function: {func_name}"
+                log_message(config, name="Output", color=2, content=message, formatter=format_output_message)
             else:
+                # todo: not logging the function call
                 command_output = commands[func_name].run(func_args, context)
 
                 # Log output of the command

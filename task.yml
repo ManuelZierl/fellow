@@ -1,0 +1,2 @@
+task: |
+  the command summarize_file stopped working due to changes in the OpenAIClient, fix this, also adjust tests if needed.

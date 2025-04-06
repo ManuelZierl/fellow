@@ -1,7 +1,4 @@
-from typing import Dict, Tuple, Type, List
-import json
-import inspect
-from typing import Callable, get_type_hints
+from typing import Dict
 
 from fellow.commands.command import CommandInput, CommandHandler, Command
 from fellow.commands.create_file import CreateFileInput, create_file
@@ -17,20 +14,16 @@ from fellow.commands.summarize_file import SummarizeFileInput, summarize_file
 from fellow.commands.view_file import ViewFileInput, view_file
 
 
-ALL_COMMANDS: List[Command] = [
-    Command(CreateFileInput, create_file),
-]
-
-x = {
-    "create_file": (CreateFileInput, create_file),
-    "view_file": (ViewFileInput, view_file),
-    "delete_file": (DeleteFileInput, delete_file),
-    "edit_file": (EditFileInput, edit_file),
-    "list_files": (ListFilesInput, list_files),
-    "run_python": (RunPythonInput, run_python),
-    "run_pytest": (RunPytestInput, run_pytest),
-    "list_definitions": (ListDefinitionsInput, list_definitions),
-    "get_code": (GetCodeInput, get_code),
-    "make_plan": (MakePlanInput, make_plan),
-    "summarize_file": (SummarizeFileInput, summarize_file)
+ALL_COMMANDS: Dict[str, Command] = {
+    "create_file": Command(CreateFileInput, create_file),
+    "view_file": Command(ViewFileInput, view_file),
+    "delete_file": Command(DeleteFileInput, delete_file),
+    "edit_file": Command(EditFileInput, edit_file),
+    "list_files": Command(ListFilesInput, list_files),
+    "run_python": Command(RunPythonInput, run_python),
+    "run_pytest": Command(RunPytestInput, run_pytest),
+    "list_definitions": Command(ListDefinitionsInput, list_definitions),
+    "get_code": Command(GetCodeInput, get_code),
+    "make_plan": Command(MakePlanInput, make_plan),
+    "summarize_file": Command(SummarizeFileInput, summarize_file)
 }
