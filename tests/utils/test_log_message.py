@@ -5,6 +5,7 @@ from pathlib import Path
 from fellow.commands.list_definitions import format_function
 from fellow.utils.log_message import log_message
 
+
 def test_format_function_with_doc_and_defaults():
     source = '''
 def greet(name: str = "World") -> str:
@@ -21,15 +22,6 @@ def greet(name: str = "World") -> str:
     assert "-> str" in formatted
     assert '"""Return a greeting."""' in formatted
 
-
-    formatted = format_function(func_node)
-    print(formatted)
-    expected_signature = 'greet(name: str = "World") -> str'
-    expected_doc = '"""Return a greeting."""'
-
-    #assert expected_signature in formatted
-    #assert expected_doc in formatted
-    #assert formatted.strip().startswith("-") or formatted.strip().startswith("  -")
 
 def test_log_message_writes_to_file(tmp_path):
     log_file: Path = tmp_path / "test_log.md"
