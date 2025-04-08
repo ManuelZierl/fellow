@@ -1,5 +1,6 @@
 import json
 
+from openai.types.chat.completion_create_params import Function
 from pydantic import BaseModel, ConfigDict, ValidationError
 from typing import Protocol, Union, TypeVar, Type
 
@@ -8,39 +9,17 @@ from pydantic.v1.typing import get_origin, get_args
 from fellow.clients.OpenAIClient import OpenAIClient
 
 
-class CommandContext(BaseModel):
+class CommandContext(BaseModel): # todo: Typed dict might be better becuase we do no validation
     ai_client: OpenAIClient
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class CommandInput(BaseModel):
-    @classmethod
-    def command_schema(cls) -> dict:
-        fields = {}
-        for name, field in cls.model_fields.items():
-            field_type = field.annotation
-            is_optional = False
-
-            # Check for Optional[...] type
-            origin = get_origin(field_type)
-            args = get_args(field_type)
-            if origin is Union and type(None) in args:
-                field_type = [a for a in args if a is not type(None)][0]
-                is_optional = True
-
-            # Only mark as optional if either type is Optional[...] or it's not required
-            is_optional = is_optional or not field.is_required()
-
-            type_name = getattr(field_type, '__name__', str(field_type))
-            type_str = f"{type_name}{' (optional)' if is_optional else ''}"
-
-            description = field.description or ""
-            fields[name] = f"{type_str} - {description}"
-        return fields
+    ...
 
 
-T = TypeVar("T", bound=CommandInput)
+T = TypeVar("T", bound=CommandInput, contravariant=True)
 
 
 class CommandHandler(Protocol[T]):
@@ -53,7 +32,11 @@ class Command:
         self.input_type = input_type
         self.command_handler = command_handler
 
-    def openai_schema(self) -> dict:
+    def openai_schema(self) -> Function:
+        if not hasattr(self.command_handler, "__name__"):
+            raise ValueError("[ERROR] Command handler is not callable with __name__.")
+        if self.command_handler.__doc__ is None:
+            raise ValueError("[ERROR] Command handler is __doc__ is empty")
         return {
             "name": self.command_handler.__name__,
             "description": self.command_handler.__doc__,
@@ -64,6 +47,8 @@ class Command:
         try:
             command_input = self.input_type(**json.loads(command_input_str))
         except ValidationError as e:
+            if not hasattr(self.command_handler, "__name__"):
+                raise ValueError("[ERROR] Command handler is not callable with __name__.")
             return f"[ERROR] Invalid command input [{self.command_handler.__name__}]: " + str(e)
 
         try:

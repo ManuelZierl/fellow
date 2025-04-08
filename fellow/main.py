@@ -1,15 +1,15 @@
 import argparse
 import json
-from typing import Dict
+from typing import Dict, Optional
 
-from fellow.clients.OpenAIClient import OpenAIClient
+from fellow.clients.OpenAIClient import OpenAIClient, FunctionResult
 from fellow.commands import ALL_COMMANDS
 from fellow.commands.command import CommandContext, Command
 from fellow.utils.load_config import load_config
 from fellow.utils.log_message import log_message, clear_log
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Fellow CLI Tool")
     parser.add_argument("--config", help="Path to the optional yml config file")
     parser.add_argument("--task", help="The task fellow should perform")
@@ -53,7 +53,7 @@ def main():
 
     # === Start Loop ===
     message = first_message
-    function_result = None
+    function_result: Optional[FunctionResult] = None
 
     while True:
         # 1. Call OpenAI
@@ -88,9 +88,9 @@ def main():
             break
 
         # 3. If a function is called, run it and prepare result
-        if func_name:
+        if func_name is not None and func_args:
             if func_name not in commands:
-                # Give error feedback to ai
+                # Give error feedback to AI
                 message = f"[ERROR] Unknown function: {func_name}"
                 log_message(config, name="Output", color=2, content=message)
             else:
@@ -102,7 +102,10 @@ def main():
 
                 # Prepare for next loop
                 message = ""
-                function_result = (func_name, command_output)
+                function_result = {
+                    "name": func_name,
+                    "output": command_output
+                }
         else:
             # No function call, continue reasoning
             message = ""

@@ -3,7 +3,7 @@ from typing import Optional
 from fellow.utils.format_message import format_message
 
 
-def log_message(config, name, color, content, language: Optional[str] = None):
+def log_message(config, name, color, content, language: Optional[str] = None) -> None:
     if config.get("log"):
         with open(config["log"], "a", encoding="utf-8") as f:
             f.write(
@@ -16,7 +16,7 @@ def log_message(config, name, color, content, language: Optional[str] = None):
             )
 
 
-def clear_log(config):
+def clear_log(config) -> None:
     if config.get("log"):
         with open(config["log"], "w", encoding="utf-8") as f:
             f.write("")

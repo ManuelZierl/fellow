@@ -6,6 +6,7 @@ import tiktoken
 from openai import NotGiven, NOT_GIVEN
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionAssistantMessageParam
 from openai.types.chat.chat_completion_assistant_message_param import FunctionCall
+
 from openai.types.chat.completion_create_params import Function
 from typing_extensions import Required
 
@@ -17,6 +18,9 @@ class OpenAIClientMessage(TypedDict, total=False):
     name: str
     function_call: FunctionCall
 
+class FunctionResult(TypedDict):
+    name: Required[str]
+    output: Required[str]
 
 class OpenAIClient:
     def __init__(
@@ -91,7 +95,7 @@ class OpenAIClient:
     def chat(
             self,
             message: str = "",
-            function_result: FunctionCall | NotGiven = NOT_GIVEN,
+            function_result: Optional[FunctionResult] = None,
             functions: List[Function] | NotGiven = NOT_GIVEN
     ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
@@ -106,7 +110,7 @@ class OpenAIClient:
         """
         new_msg: OpenAIClientMessage
         if function_result:
-            fn_name, fn_output = function_result["name"], function_result["arguments"]
+            fn_name, fn_output = function_result["name"], function_result["output"]
             new_msg = {
                 "role": "function",
                 "name": fn_name,
