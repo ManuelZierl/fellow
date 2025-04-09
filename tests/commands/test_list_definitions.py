@@ -1,7 +1,8 @@
 from unittest.mock import MagicMock
 
 import pytest
-from fellow.commands.list_definitions import list_definitions, ListDefinitionsInput
+
+from fellow.commands.list_definitions import ListDefinitionsInput, list_definitions
 
 
 def write_file(path, content):

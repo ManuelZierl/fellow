@@ -1,4 +1,4 @@
-from fellow.commands.command import CommandInput, CommandHandler, CommandContext
+from fellow.commands.command import CommandContext, CommandHandler, CommandInput
 
 
 class CommandClient:

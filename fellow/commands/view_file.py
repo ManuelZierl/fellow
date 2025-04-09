@@ -1,16 +1,22 @@
 import os
-from pydantic import Field
 from typing import Optional
 
-from fellow.commands.command import CommandInput, CommandContext
+from pydantic import Field
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class ViewFileInput(CommandInput):
     filepath: str = Field(..., description="The path to the file to be viewed.")
-    from_line: Optional[int] = Field(None, description="Optional 1-based starting line number.")
-    to_line: Optional[int] = Field(None, description="Optional 1-based ending line number (inclusive).")
+    from_line: Optional[int] = Field(
+        None, description="Optional 1-based starting line number."
+    )
+    to_line: Optional[int] = Field(
+        None, description="Optional 1-based ending line number (inclusive)."
+    )
 
-def view_file(args: ViewFileInput, context:CommandContext) -> str:
+
+def view_file(args: ViewFileInput, context: CommandContext) -> str:
     """
     View the contents of a file, optionally between specific line numbers.
     """
@@ -39,5 +45,3 @@ def view_file(args: ViewFileInput, context:CommandContext) -> str:
 
     except Exception as e:
         return f"[ERROR] Could not read file: {e}"
-
-

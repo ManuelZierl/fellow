@@ -1,13 +1,19 @@
-from typing import Optional
 import os
+from typing import Optional
+
 from pydantic import Field
-from fellow.commands.command import CommandInput, CommandContext
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class ListFilesInput(CommandInput):
     directory: str = Field(default=".", description="Directory to list.")
-    max_depth: int = Field(..., description="Maximum depth for recursion. 1 means only top-level files.")
-    pattern: Optional[str] = Field(None, description="Optional substring to filter file names.")
+    max_depth: int = Field(
+        ..., description="Maximum depth for recursion. 1 means only top-level files."
+    )
+    pattern: Optional[str] = Field(
+        None, description="Optional substring to filter file names."
+    )
 
 
 def list_files(args: ListFilesInput, context: CommandContext) -> str:
@@ -49,4 +55,3 @@ def list_files(args: ListFilesInput, context: CommandContext) -> str:
 
     except Exception as e:
         return f"[ERROR] Could not list files: {e}"
-

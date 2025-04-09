@@ -1,7 +1,9 @@
-from unittest.mock import patch, mock_open, MagicMock
+from types import SimpleNamespace
+from unittest.mock import MagicMock, mock_open, patch
+
 import pytest
 import yaml
-from types import SimpleNamespace
+
 from fellow.utils.load_config import load_config
 
 
@@ -11,12 +13,21 @@ def write_yaml_file(path, data):
 
 
 # Sample config fixtures
-default_config = {"task": "default", "log": "log.md", "openai_config": {}, "commands": []}
+default_config = {
+    "task": "default",
+    "log": "log.md",
+    "openai_config": {},
+    "commands": [],
+}
 user_config = {"task": "user", "openai_config": {"model": "gpt-4"}}
 
 
 @patch("fellow.utils.load_config.pkg_resources.files")
-@patch("builtins.open", new_callable=mock_open, read_data="task: default\nlog: log.md\nopenai_config: {}")
+@patch(
+    "builtins.open",
+    new_callable=mock_open,
+    read_data="task: default\nlog: log.md\nopenai_config: {}",
+)
 def test_loads_default_config(mock_open_builtin, mock_files):
     mock_file = MagicMock()
     mock_file.open.return_value = mock_open_builtin.return_value
@@ -43,10 +54,13 @@ def test_merges_user_config(tmp_path):
 
     # Patch pkg_resources to return our temp file
     import fellow.utils.load_config as config_mod
+
     config_mod.pkg_resources.files = lambda _: tmp_path
     config_mod.pkg_resources.files.return_value = tmp_path  # just in case
 
-    args = SimpleNamespace(config=str(user_config_path), task=None, log=None, commands=None)
+    args = SimpleNamespace(
+        config=str(user_config_path), task=None, log=None, commands=None
+    )
     config = load_config(args)
 
     assert config["task"] == "user"
@@ -54,7 +68,11 @@ def test_merges_user_config(tmp_path):
 
 
 @patch("fellow.utils.load_config.pkg_resources.files")
-@patch("builtins.open", new_callable=mock_open, read_data="task: default\nlog: log.md\nopenai_config: {}")
+@patch(
+    "builtins.open",
+    new_callable=mock_open,
+    read_data="task: default\nlog: log.md\nopenai_config: {}",
+)
 def test_cli_overrides_all(mock_open_builtin, mock_files):
     mock_file = MagicMock()
     mock_file.open.return_value = mock_open_builtin.return_value
@@ -68,7 +86,11 @@ def test_cli_overrides_all(mock_open_builtin, mock_files):
 
 
 @patch("fellow.utils.load_config.pkg_resources.files")
-@patch("builtins.open", new_callable=mock_open, read_data="task: default\nlog: log.md\nopenai_config: {}")
+@patch(
+    "builtins.open",
+    new_callable=mock_open,
+    read_data="task: default\nlog: log.md\nopenai_config: {}",
+)
 def test_invalid_log_extension_raises(mock_open_builtin, mock_files):
     mock_file = MagicMock()
     mock_file.open.return_value = mock_open_builtin.return_value

@@ -3,7 +3,8 @@ import tempfile
 from unittest.mock import MagicMock
 
 import pytest
-from fellow.commands.delete_file import delete_file, DeleteFileInput
+
+from fellow.commands.delete_file import DeleteFileInput, delete_file
 
 
 def test_delete_existing_file():

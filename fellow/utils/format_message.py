@@ -5,10 +5,12 @@ from pydantic import ValidationError
 
 from fellow.commands import EditFileInput, MakePlanInput
 
-COLORS = ['#000000', '#1f77b4', '#ff7f0e']
+COLORS = ["#000000", "#1f77b4", "#ff7f0e"]
 
 
-def format_message(name: str, color: int, content: str, language: Optional[str] = None) -> str:
+def format_message(
+    name: str, color: int, content: str, language: Optional[str] = None
+) -> str:
     color_code = COLORS[color % len(COLORS)]
     output = f'<span style="color:{color_code}">**{name}:**</span>\n\n'
     addition = ""
@@ -33,8 +35,6 @@ def format_message(name: str, color: int, content: str, language: Optional[str] 
                 pass
         except json.JSONDecodeError:
             pass
-
-
 
     output += content
 

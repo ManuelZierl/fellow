@@ -1,11 +1,18 @@
-from pydantic import Field
-from fellow.commands.command import CommandInput, CommandContext
 import subprocess
+
+from pydantic import Field
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class RunPytestInput(CommandInput):
-    target: str = Field(..., description="Path to a test file or directory to run pytest on.")
-    args: str = Field(default="", description="Optional arguments to pass to pytest (e.g., '-k test_name').")
+    target: str = Field(
+        ..., description="Path to a test file or directory to run pytest on."
+    )
+    args: str = Field(
+        default="",
+        description="Optional arguments to pass to pytest (e.g., '-k test_name').",
+    )
 
 
 def run_pytest(args: RunPytestInput, context: CommandContext) -> str:
@@ -17,10 +24,7 @@ def run_pytest(args: RunPytestInput, context: CommandContext) -> str:
 
     try:
         result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=20  # prevent runaway tests
+            cmd, capture_output=True, text=True, timeout=20  # prevent runaway tests
         )
 
         output = result.stdout.strip()

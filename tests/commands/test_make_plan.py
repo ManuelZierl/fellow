@@ -1,7 +1,8 @@
 from unittest.mock import MagicMock
-from fellow.commands.make_plan import make_plan, MakePlanInput
-from fellow.commands.command import CommandContext
+
 from fellow.clients.OpenAIClient import OpenAIClient
+from fellow.commands.command import CommandContext
+from fellow.commands.make_plan import MakePlanInput, make_plan
 
 
 # Fake client that is Pydantic-compliant but internally mocked
@@ -28,7 +29,6 @@ def test_make_plan_appends_to_system_content():
     assert content_entry["role"] == "system"
     assert content_entry["content"] == plan_text
     assert content_entry["tokens"] == 42
-    fake_client.count_tokens.assert_called_once_with({
-        "role": "system",
-        "content": plan_text
-    })
+    fake_client.count_tokens.assert_called_once_with(
+        {"role": "system", "content": plan_text}
+    )

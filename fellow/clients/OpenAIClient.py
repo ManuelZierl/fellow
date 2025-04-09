@@ -1,12 +1,14 @@
 import json
-from typing import Dict, List, Tuple, Optional, TypedDict, Literal
+from typing import Dict, List, Literal, Optional, Tuple, TypedDict
 
 import openai
 import tiktoken
-from openai import NotGiven, NOT_GIVEN
-from openai.types.chat import ChatCompletionMessageParam, ChatCompletionAssistantMessageParam
+from openai import NOT_GIVEN, NotGiven
+from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionMessageParam,
+)
 from openai.types.chat.chat_completion_assistant_message_param import FunctionCall
-
 from openai.types.chat.completion_create_params import Function
 from typing_extensions import Required
 
@@ -18,17 +20,19 @@ class OpenAIClientMessage(TypedDict, total=False):
     name: str
     function_call: FunctionCall
 
+
 class FunctionResult(TypedDict):
     name: Required[str]
     output: Required[str]
 
+
 class OpenAIClient:
     def __init__(
-            self,
-            system_content: str,
-            memory_max_tokens: int = 15000,
-            summary_memory_max_tokens: int = 15000,
-            model: str = "gpt-4o"
+        self,
+        system_content: str,
+        memory_max_tokens: int = 15000,
+        summary_memory_max_tokens: int = 15000,
+        model: str = "gpt-4o",
     ):
         """
         Initializes the OpenAIClient with system content prompt, token limits, and model configuration.
@@ -45,7 +49,9 @@ class OpenAIClient:
             {
                 "role": "system",
                 "content": system_content,
-                "tokens": self.count_tokens({"role": "system", "content": system_content})
+                "tokens": self.count_tokens(
+                    {"role": "system", "content": system_content}
+                ),
             }
         ]
         self.summary_memory: List[OpenAIClientMessage] = []
@@ -63,16 +69,15 @@ class OpenAIClient:
 
         for message in messages:
             if message["role"] == "function":
-                output.append({
-                    "role": message["role"],
-                    "name": message["name"],
-                    "content": message["content"]
-                })
+                output.append(
+                    {
+                        "role": message["role"],
+                        "name": message["name"],
+                        "content": message["content"],
+                    }
+                )
             if message["role"] == "user":
-                output.append({
-                    "role": message["role"],
-                    "content": message["content"]
-                })
+                output.append({"role": message["role"], "content": message["content"]})
             if message["role"] == "assistant":
                 assistant_message: ChatCompletionAssistantMessageParam = {
                     "role": "assistant",
@@ -93,10 +98,10 @@ class OpenAIClient:
         return self.system_content + self.summary_memory + self.memory
 
     def chat(
-            self,
-            message: str = "",
-            function_result: Optional[FunctionResult] = None,
-            functions: List[Function] | NotGiven = NOT_GIVEN
+        self,
+        message: str = "",
+        function_result: Optional[FunctionResult] = None,
+        functions: List[Function] | NotGiven = NOT_GIVEN,
     ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
         Sends a message or a function result to the model, can also handle function calls.
@@ -115,7 +120,7 @@ class OpenAIClient:
                 "role": "function",
                 "name": fn_name,
                 "content": fn_output,
-                "tokens": self.count_tokens({"role": "function", "content": fn_output})
+                "tokens": self.count_tokens({"role": "function", "content": fn_output}),
             }
             self.memory.append(new_msg)
         else:
@@ -123,7 +128,7 @@ class OpenAIClient:
                 new_msg = {
                     "role": "user",
                     "content": message,
-                    "tokens": self.count_tokens({"role": "user", "content": message})
+                    "tokens": self.count_tokens({"role": "user", "content": message}),
                 }
                 self.memory.append(new_msg)
 
@@ -131,14 +136,15 @@ class OpenAIClient:
             model=self.model,
             messages=self.message_to_params(),
             functions=functions,
-            function_call="auto" if functions else NOT_GIVEN
+            function_call="auto" if functions else NOT_GIVEN,
         )
 
         msg = response.choices[0].message
-        function_call: Optional[FunctionCall] = {
-            "name": msg.function_call.name,
-            "arguments": msg.function_call.arguments
-        } if msg.function_call else None
+        function_call: Optional[FunctionCall] = (
+            {"name": msg.function_call.name, "arguments": msg.function_call.arguments}
+            if msg.function_call
+            else None
+        )
         self._append_input_to_memory(msg.content, function_call)
 
         # Perform summarization if needed
@@ -181,9 +187,9 @@ class OpenAIClient:
         return num_tokens + 2
 
     def _append_input_to_memory(
-            self,
-            message: Optional[str] = None,
-            function_call: Optional[FunctionCall] = None
+        self,
+        message: Optional[str] = None,
+        function_call: Optional[FunctionCall] = None,
     ):
         """
         Appends an assistant message or function call to the memory with token count.
@@ -196,26 +202,34 @@ class OpenAIClient:
         """
         # Handle assistant reasoning
         if message:
-            self.memory.append({
-                "role": "assistant",
-                "content": message,
-                "tokens": self.count_tokens({"role": "assistant", "content": message})
-            })
+            self.memory.append(
+                {
+                    "role": "assistant",
+                    "content": message,
+                    "tokens": self.count_tokens(
+                        {"role": "assistant", "content": message}
+                    ),
+                }
+            )
 
         # Handle function call
         if function_call:
             arguments = function_call["arguments"]
-            self.memory.append({
-                "role": "assistant",
-                "function_call": {
-                    "name": function_call["name"],
-                    "arguments": arguments
-                },
-                "tokens": self.count_tokens({
+            self.memory.append(
+                {
                     "role": "assistant",
-                    "content": f"[Function call] {function_call['name']}({arguments})"
-                })
-            })
+                    "function_call": {
+                        "name": function_call["name"],
+                        "arguments": arguments,
+                    },
+                    "tokens": self.count_tokens(
+                        {
+                            "role": "assistant",
+                            "content": f"[Function call] {function_call['name']}({arguments})",
+                        }
+                    ),
+                }
+            )
 
     def _maybe_summarize_memory(self):
         """
@@ -228,28 +242,37 @@ class OpenAIClient:
         """
         memory_tokens = sum([message["tokens"] for message in self.memory])
         if memory_tokens > self.memory_max_tokens:
-            old_memory, self.memory = self._split_on_token_limit(self.memory, self.memory_max_tokens)
+            old_memory, self.memory = self._split_on_token_limit(
+                self.memory, self.memory_max_tokens
+            )
             summary = self._summarize_memory(old_memory)
             summary_content = "Summary of previous conversation: " + summary
             self.summary_memory.append(
                 {
                     "role": "system",
                     "content": summary_content,
-                    "tokens": self.count_tokens({"role": "system", "content": summary_content})
+                    "tokens": self.count_tokens(
+                        {"role": "system", "content": summary_content}
+                    ),
                 }
             )
 
-        summary_memory_tokens = sum([message["tokens"] for message in self.summary_memory])
+        summary_memory_tokens = sum(
+            [message["tokens"] for message in self.summary_memory]
+        )
         if summary_memory_tokens > self.summary_memory_max_tokens:
-            old_summary_memory, self.summary_memory = self._split_on_token_limit(self.summary_memory,
-                                                                                 self.summary_memory_max_tokens)
+            old_summary_memory, self.summary_memory = self._split_on_token_limit(
+                self.summary_memory, self.summary_memory_max_tokens
+            )
             summary = self._summarize_memory(old_summary_memory)
             summary_content = "Summary of previous conversation: " + summary
             self.summary_memory.append(
                 {
                     "role": "system",
                     "content": summary_content,
-                    "tokens": self.count_tokens({"role": "system", "content": summary_content})
+                    "tokens": self.count_tokens(
+                        {"role": "system", "content": summary_content}
+                    ),
                 }
             )
 
@@ -275,8 +298,11 @@ class OpenAIClient:
             return f"{role}: {' | '.join(parts) if parts else '[No content]'}"
 
         summary_prompt: List[ChatCompletionMessageParam] = [
-            {"role": "system", "content": "Summarize the following conversation for context retention."},
-            {"role": "user", "content": "\n".join(stringify(m) for m in messages)}
+            {
+                "role": "system",
+                "content": "Summarize the following conversation for context retention.",
+            },
+            {"role": "user", "content": "\n".join(stringify(m) for m in messages)},
         ]
 
         response = openai.chat.completions.create(
@@ -287,7 +313,9 @@ class OpenAIClient:
         return response.choices[0].message.content or ""
 
     @staticmethod
-    def _split_on_token_limit(messages: List[Dict], token_limit: int) -> Tuple[List[Dict], List[Dict]]:
+    def _split_on_token_limit(
+        messages: List[Dict], token_limit: int
+    ) -> Tuple[List[Dict], List[Dict]]:
         """
         Splits the messages into two lists based on the token limit. `second` will contain the *last* messages
         that fit into the token limit. `first` will contain all earlier messages.
@@ -300,5 +328,5 @@ class OpenAIClient:
         for i in range(len(messages) - 1, -1, -1):
             token_count += messages[i]["tokens"]
             if token_count > token_limit:
-                return messages[:i + 1], messages[i + 1:]
+                return messages[: i + 1], messages[i + 1 :]
         return [], messages

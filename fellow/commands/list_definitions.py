@@ -1,10 +1,11 @@
-import os
 import ast
+import os
 from _ast import AST
 from typing import Optional, cast
 
 from pydantic import Field
-from fellow.commands.command import CommandInput, CommandContext
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class ListDefinitionsInput(CommandInput):
@@ -12,7 +13,11 @@ class ListDefinitionsInput(CommandInput):
 
 
 def format_arg(arg: ast.arg, default: Optional[ast.expr]) -> str:
-    annotation = ast.unparse(cast(AST, arg.annotation)) if isinstance(arg.annotation, ast.AST) else ""
+    annotation = (
+        ast.unparse(cast(AST, arg.annotation))
+        if isinstance(arg.annotation, ast.AST)
+        else ""
+    )
     default_str = f" = {ast.unparse(default)}" if isinstance(default, ast.AST) else ""
     return f"{arg.arg}: {annotation}{default_str}".strip(": ")
 
@@ -31,7 +36,11 @@ def format_function(node: ast.FunctionDef) -> str:
         args_with_defaults.append(format_arg(arg, default))
 
     args_str = ", ".join(args_with_defaults)
-    returns = f" -> {ast.unparse(cast(AST, node.returns))}" if isinstance(node.returns, ast.AST) else ""
+    returns = (
+        f" -> {ast.unparse(cast(AST, node.returns))}"
+        if isinstance(node.returns, ast.AST)
+        else ""
+    )
     signature = f"{node.name}({args_str}){returns}"
 
     doc = ast.get_docstring(node)
@@ -66,7 +75,9 @@ def list_definitions(args: ListDefinitionsInput, context: CommandContext) -> str
             elif isinstance(node, ast.ClassDef):
                 class_doc = ast.get_docstring(node)
                 doc_str = f'  """{class_doc}"""' if class_doc else ""
-                class_header = f"- {node.name}\n{doc_str}" if doc_str else f"- {node.name}"
+                class_header = (
+                    f"- {node.name}\n{doc_str}" if doc_str else f"- {node.name}"
+                )
                 methods = [
                     format_function(child)
                     for child in node.body
@@ -77,7 +88,9 @@ def list_definitions(args: ListDefinitionsInput, context: CommandContext) -> str
         output_lines = []
 
         if top_functions:
-            output_lines.append(f"[INFO] Found {len(top_functions)} top-level function(s):")
+            output_lines.append(
+                f"[INFO] Found {len(top_functions)} top-level function(s):"
+            )
             output_lines.extend(top_functions)
 
         if classes:

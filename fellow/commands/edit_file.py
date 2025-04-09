@@ -1,7 +1,8 @@
 import os
+
 from pydantic import Field
 
-from fellow.commands.command import CommandInput, CommandContext
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class EditFileInput(CommandInput):

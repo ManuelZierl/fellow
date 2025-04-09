@@ -2,7 +2,7 @@ import tempfile
 from textwrap import dedent
 from unittest.mock import MagicMock
 
-from fellow.commands.get_code import get_code, GetCodeInput
+from fellow.commands.get_code import GetCodeInput, get_code
 
 
 def write_temp_py(content: str) -> str:
@@ -64,7 +64,9 @@ def test_method_not_found():
             return f"Hi, {name}"
     """
     path = write_temp_py(code)
-    result = get_code(GetCodeInput(filepath=path, element="Greeter.say_hello"), MagicMock())
+    result = get_code(
+        GetCodeInput(filepath=path, element="Greeter.say_hello"), MagicMock()
+    )
     assert "[INFO] Method 'Greeter.say_hello' not found" in result
 
 

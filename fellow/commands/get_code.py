@@ -1,12 +1,17 @@
-import os
 import ast
+import os
+
 from pydantic import Field
-from fellow.commands.command import CommandInput, CommandContext
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class GetCodeInput(CommandInput):
     filepath: str = Field(..., description="Path to the Python file to analyze.")
-    element: str = Field(..., description="Name of the class, function, or method (e.g., 'MyClass', 'my_function', or 'MyClass.my_method').")
+    element: str = Field(
+        ...,
+        description="Name of the class, function, or method (e.g., 'MyClass', 'my_function', or 'MyClass.my_method').",
+    )
 
 
 def get_code(args: GetCodeInput, context: CommandContext) -> str:
@@ -43,7 +48,10 @@ def get_code(args: GetCodeInput, context: CommandContext) -> str:
             for node in tree.body:
                 if isinstance(node, ast.ClassDef) and node.name == class_name:
                     for child in node.body:
-                        if isinstance(child, ast.FunctionDef) and child.name == method_name:
+                        if (
+                            isinstance(child, ast.FunctionDef)
+                            and child.name == method_name
+                        ):
                             return "\n".join(lines[child.lineno - 1 : child.end_lineno])
             return f"[INFO] Method '{args.element}' not found in {args.filepath}"
 

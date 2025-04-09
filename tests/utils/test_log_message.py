@@ -1,6 +1,7 @@
-import pytest
 import ast
 from pathlib import Path
+
+import pytest
 
 from fellow.commands.list_definitions import format_function
 from fellow.utils.log_message import log_message
@@ -13,9 +14,7 @@ def greet(name: str = "World") -> str:
     return f"Hello, {name}!"
 '''
     tree = ast.parse(source)
-    func_node = next(
-        node for node in tree.body if isinstance(node, ast.FunctionDef)
-    )
+    func_node = next(node for node in tree.body if isinstance(node, ast.FunctionDef))
 
     formatted = format_function(func_node)
     assert formatted.startswith("  - greet(name: str = ")
@@ -30,10 +29,13 @@ def test_log_message_writes_to_file(tmp_path):
     log_message(config, name="AI", color=1, content="Hello world")
 
     content = log_file.read_text(encoding="utf-8")
-    assert content == """<span style="color:#1f77b4">**AI:**</span>
+    assert (
+        content
+        == """<span style="color:#1f77b4">**AI:**</span>
 
 Hello world
 
 ---
 
 """
+    )

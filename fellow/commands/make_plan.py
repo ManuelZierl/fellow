@@ -16,7 +16,9 @@ def make_plan(args: MakePlanInput, context: CommandContext) -> str:
         {
             "role": "system",
             "content": args.plan,
-            "tokens": context.ai_client.count_tokens({"role": "system", "content": args.plan})
+            "tokens": context.ai_client.count_tokens(
+                {"role": "system", "content": args.plan}
+            ),
         }
     )
     return "[OK] Plan created"
