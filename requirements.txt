@@ -18,3 +18,4 @@ setuptools~=68.2.0
 pexpect~=4.9.0
 pydantic~=2.11.0
 PyYAML~=6.0.2
+types-PyYAML==6.0.12.20250402
