@@ -14,6 +14,7 @@ class SummarizeFileInput(CommandInput):
 def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
     """
     Summarizes the contents of a file using OpenAIClient.
+    # todo: optional use different model
     """
     if not os.path.isfile(args.filepath):
         return f"[ERROR] File not found: {args.filepath}"
@@ -31,8 +32,8 @@ def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
         )
         # Adjusted to handle the tuple returned by chat()
         summary, _, _ = client.chat(f"Please summarize the following file content:\n\n{content}")
-
-        return f"[OK] Summary:\n{summary.strip()}"
+        summary = summary.strip() if summary else "[INFO] No summary generated."
+        return f"[OK] Summary:\n{summary}"
 
     except Exception as e:
         return f"[ERROR] Could not read or summarize file: {e}"

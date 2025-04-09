@@ -1,5 +1,8 @@
 import os
 import ast
+from _ast import AST
+from typing import Optional, cast
+
 from pydantic import Field
 from fellow.commands.command import CommandInput, CommandContext
 
@@ -8,9 +11,9 @@ class ListDefinitionsInput(CommandInput):
     filepath: str = Field(..., description="Path to the Python file to analyze.")
 
 
-def format_arg(arg: ast.arg, default: ast.expr | None, default_index: int, defaults: list[ast.expr]) -> str:
-    annotation = ast.unparse(arg.annotation) if arg.annotation else ""
-    default_str = f" = {ast.unparse(defaults[default_index])}" if default else ""
+def format_arg(arg: ast.arg, default: Optional[ast.expr]) -> str:
+    annotation = ast.unparse(cast(AST, arg.annotation)) if isinstance(arg.annotation, ast.AST) else ""
+    default_str = f" = {ast.unparse(default)}" if isinstance(default, ast.AST) else ""
     return f"{arg.arg}: {annotation}{default_str}".strip(": ")
 
 
@@ -20,12 +23,15 @@ def format_function(node: ast.FunctionDef) -> str:
 
     args_with_defaults = []
     for i, arg in enumerate(node.args.args):
-        default_index = i - defaults_start if i >= defaults_start else None
-        default = node.args.defaults[default_index] if default_index is not None else None
-        args_with_defaults.append(format_arg(arg, default, default_index, node.args.defaults))
+        if i >= defaults_start:
+            default_index = i - defaults_start
+            default = node.args.defaults[default_index]
+        else:
+            default = None
+        args_with_defaults.append(format_arg(arg, default))
 
     args_str = ", ".join(args_with_defaults)
-    returns = f" -> {ast.unparse(node.returns)}" if node.returns else ""
+    returns = f" -> {ast.unparse(cast(AST, node.returns))}" if isinstance(node.returns, ast.AST) else ""
     signature = f"{node.name}({args_str}){returns}"
 
     doc = ast.get_docstring(node)
@@ -87,4 +93,3 @@ def list_definitions(args: ListDefinitionsInput, context: CommandContext) -> str
         return f"[ERROR] Could not parse file due to syntax error: {e}"
     except Exception as e:
         return f"[ERROR] Failed to read or parse the file: {e}"
-
