@@ -16,4 +16,5 @@ venv.bak/
 *.egg-info/
 dist/
 build/
+.coverage
 
