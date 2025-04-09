@@ -1,3 +1,4 @@
+[![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
 ![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
 # Fellow
