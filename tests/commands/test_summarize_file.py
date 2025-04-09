@@ -1,5 +1,6 @@
 import importlib
 from unittest.mock import MagicMock
+
 import pytest
 
 # dynamischer Import, um Patch-Probleme zu umgehen

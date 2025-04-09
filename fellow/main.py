@@ -2,18 +2,20 @@ import argparse
 import json
 from typing import Dict, Optional
 
-from fellow.clients.OpenAIClient import OpenAIClient, FunctionResult
+from fellow.clients.OpenAIClient import FunctionResult, OpenAIClient
 from fellow.commands import ALL_COMMANDS
-from fellow.commands.command import CommandContext, Command
+from fellow.commands.command import Command, CommandContext
 from fellow.utils.load_config import load_config
-from fellow.utils.log_message import log_message, clear_log
+from fellow.utils.log_message import clear_log, log_message
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fellow CLI Tool")
     parser.add_argument("--config", help="Path to the optional yml config file")
     parser.add_argument("--task", help="The task fellow should perform")
-    parser.add_argument("--log", help="Path to the .md file where the memory should be stored")
+    parser.add_argument(
+        "--log", help="Path to the .md file where the memory should be stored"
+    )
     parser.add_argument("--commands", nargs="*", help="List of commands to be used")
     args = parser.parse_args()
 
@@ -21,7 +23,8 @@ def main() -> None:
 
     # Init commands
     commands: Dict[str, Command] = {
-        name: command for name, command in ALL_COMMANDS.items()
+        name: command
+        for name, command in ALL_COMMANDS.items()
         if name in config["commands"]
     }
 
@@ -31,8 +34,11 @@ def main() -> None:
     # Build prompt
     introduction_prompt = config["introduction_prompt"]
     introduction_prompt = introduction_prompt.replace("{{TASK}}", config["task"])
-    first_message = config["planning"]["prompt"] if config.get("planning", {}).get(
-        "active") else "Starting now. First command?"
+    first_message = (
+        config["planning"]["prompt"]
+        if config.get("planning", {}).get("active")
+        else "Starting now. First command?"
+    )
 
     # Logging
     clear_log(config)
@@ -58,9 +64,7 @@ def main() -> None:
     while True:
         # 1. Call OpenAI
         reasoning, func_name, func_args = openai_client.chat(
-            message=message,
-            function_result=function_result,
-            functions=functions_schema
+            message=message, function_result=function_result, functions=functions_schema
         )
 
         # 2. Log assistant reasoning (if any)
@@ -75,15 +79,14 @@ def main() -> None:
                 name="AI",
                 color=1,
                 content=json.dumps(
-                    {
-                        "function_name": func_name,
-                        "arguments": json.loads(func_args)
-                    }
+                    {"function_name": func_name, "arguments": json.loads(func_args)}
                 ),
-                language="json"
+                language="json",
             )
 
-        if reasoning and (reasoning.strip() == "END" or reasoning.strip().endswith("END")):
+        if reasoning and (
+            reasoning.strip() == "END" or reasoning.strip().endswith("END")
+        ):
             openai_client.store_memory("memory.json")
             break
 
@@ -98,19 +101,21 @@ def main() -> None:
 
                 # Log output of the command
                 print("PROMPT:", command_output.splitlines()[0] + "...")
-                log_message(config, name="Output", color=2, content=command_output, language="txt")
+                log_message(
+                    config,
+                    name="Output",
+                    color=2,
+                    content=command_output,
+                    language="txt",
+                )
 
                 # Prepare for next loop
                 message = ""
-                function_result = {
-                    "name": func_name,
-                    "output": command_output
-                }
+                function_result = {"name": func_name, "output": command_output}
         else:
             # No function call, continue reasoning
             message = ""
             function_result = None
-
 
 
 if __name__ == "__main__":

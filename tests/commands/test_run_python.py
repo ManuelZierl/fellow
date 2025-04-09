@@ -2,11 +2,11 @@ import os
 import tempfile
 from unittest.mock import MagicMock
 
-from fellow.commands.run_python import run_python, RunPythonInput
+from fellow.commands.run_python import RunPythonInput, run_python
 
 
 def test_run_python_success():
-    with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".py", delete=False) as f:
         f.write("print('Hello from test')\n")
         f.flush()
         filepath = f.name
@@ -20,11 +20,13 @@ def test_run_python_success():
 
 
 def test_run_python_with_args():
-    with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as f:
-        f.write("""
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".py", delete=False) as f:
+        f.write(
+            """
 import sys
 print("ARGS:", sys.argv[1:])
-""")
+"""
+        )
         f.flush()
         filepath = f.name
 
@@ -37,7 +39,7 @@ print("ARGS:", sys.argv[1:])
 
 
 def test_run_python_script_error():
-    with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".py", delete=False) as f:
         f.write("raise ValueError('Something went wrong')\n")
         f.flush()
         filepath = f.name

@@ -1,6 +1,7 @@
-import pytest
 import os
 import tempfile
+
+import pytest
 
 from fellow.clients.CommandClient import CommandClient
 from fellow.commands import CreateFileInput, ViewFileInput, create_file, view_file
@@ -25,7 +26,10 @@ def test_valid_create_and_view(client):
 
         # Run view
         result_view = client.run(view_cmd, view_file)
-        assert result_view.strip() == '[INFO] The file is empty or the specified range contains no lines.'
+        assert (
+            result_view.strip()
+            == "[INFO] The file is empty or the specified range contains no lines."
+        )
 
 
 def test_runtime_error(client):

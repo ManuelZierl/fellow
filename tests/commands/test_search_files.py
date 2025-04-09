@@ -29,11 +29,7 @@ def test_search_filters_by_extension(tmp_path):
     create_file(tmp_path / "keep.py", "search me\n")
     create_file(tmp_path / "ignore.txt", "search me\n")
 
-    args = SearchFilesInput(
-        directory=str(tmp_path),
-        search="search",
-        extension=".py"
-    )
+    args = SearchFilesInput(directory=str(tmp_path), search="search", extension=".py")
 
     result = search_files(args, MagicMock())
     assert "keep.py" in result
@@ -53,10 +49,7 @@ def test_search_no_matches(tmp_path):
 
 
 def test_directory_not_found(tmp_path):
-    args = SearchFilesInput(
-        directory="nonexistent_dir",
-        search="hello"
-    )
+    args = SearchFilesInput(directory="nonexistent_dir", search="hello")
 
     result = search_files(args, MagicMock())
     assert "[ERROR] Directory not found" in result

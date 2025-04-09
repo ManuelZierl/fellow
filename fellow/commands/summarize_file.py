@@ -1,14 +1,17 @@
 import os
-from pydantic import Field
 from typing import Optional
 
+from pydantic import Field
+
 from fellow.clients.OpenAIClient import OpenAIClient
-from fellow.commands.command import CommandInput, CommandContext
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class SummarizeFileInput(CommandInput):
     filepath: str = Field(..., description="Path to the file to summarize.")
-    max_chars: Optional[int] = Field(None, description="Optional limit on number of characters to read.")
+    max_chars: Optional[int] = Field(
+        None, description="Optional limit on number of characters to read."
+    )
 
 
 def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
@@ -28,10 +31,12 @@ def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
 
         client = OpenAIClient(
             system_content="Summarize the following file content.",
-            model=context.ai_client.model
+            model=context.ai_client.model,
         )
         # Adjusted to handle the tuple returned by chat()
-        summary, _, _ = client.chat(f"Please summarize the following file content:\n\n{content}")
+        summary, _, _ = client.chat(
+            f"Please summarize the following file content:\n\n{content}"
+        )
         summary = summary.strip() if summary else "[INFO] No summary generated."
         return f"[OK] Summary:\n{summary}"
 

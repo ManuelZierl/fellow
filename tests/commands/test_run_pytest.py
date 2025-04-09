@@ -2,7 +2,7 @@ import os
 import tempfile
 from unittest.mock import MagicMock
 
-from fellow.commands.run_pytest import run_pytest, RunPytestInput
+from fellow.commands.run_pytest import RunPytestInput, run_pytest
 
 
 def create_test_file(content: str) -> str:

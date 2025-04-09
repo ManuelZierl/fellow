@@ -2,7 +2,7 @@ import os
 import tempfile
 from unittest.mock import MagicMock
 
-from fellow.commands.list_files import list_files, ListFilesInput
+from fellow.commands.list_files import ListFilesInput, list_files
 
 
 def create_nested_test_structure(base_dir):
@@ -43,12 +43,15 @@ def test_recursive_depth_2():
         args = ListFilesInput(directory=tmpdir, max_depth=2)
         result = list_files(args, MagicMock())
 
-        assert result == """file1.txt
+        assert (
+            result
+            == """file1.txt
 file2.py
 subdir1/
   inner1.txt
   subsub/
 subdir2/"""
+        )
 
 
 def test_recursive_depth_3():

@@ -1,11 +1,15 @@
 import subprocess
-from fellow.commands.command import CommandInput, CommandContext
+
 from pydantic import Field
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class RunPythonInput(CommandInput):
     filepath: str = Field(..., description="Path to the Python script to run.")
-    args: str = Field(default="", description="Optional arguments passed to the script.")
+    args: str = Field(
+        default="", description="Optional arguments passed to the script."
+    )
 
 
 def run_python(args: RunPythonInput, context: CommandContext) -> str:
@@ -19,7 +23,7 @@ def run_python(args: RunPythonInput, context: CommandContext) -> str:
             cmd,
             capture_output=True,
             text=True,
-            timeout=10  # optional: prevent runaway processes
+            timeout=10,  # optional: prevent runaway processes
         )
 
         output = result.stdout.strip()

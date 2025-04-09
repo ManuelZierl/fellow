@@ -3,12 +3,13 @@ import tempfile
 from unittest.mock import MagicMock
 
 import pytest
-from fellow.commands.view_file import view_file, ViewFileInput
+
+from fellow.commands.view_file import ViewFileInput, view_file
 
 
 @pytest.fixture
 def sample_file():
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
         f.write("Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n")
         f.flush()
         yield f.name
@@ -20,12 +21,15 @@ def test_view_entire_file(sample_file):
     output = view_file(args, MagicMock())
     assert output == "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\n"
 
+
 def test_view_empty_file():
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
         file_path = f.name
     args = ViewFileInput(filepath=file_path)
     output = view_file(args, MagicMock())
-    assert output == "[INFO] The file is empty or the specified range contains no lines."
+    assert (
+        output == "[INFO] The file is empty or the specified range contains no lines."
+    )
     os.remove(file_path)
 
 
@@ -57,4 +61,3 @@ def test_file_not_found():
     args = ViewFileInput(filepath="nonexistent.txt")
     output = view_file(args, MagicMock())
     assert output.startswith("[ERROR] File not found")
-

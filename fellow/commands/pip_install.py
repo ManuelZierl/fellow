@@ -10,7 +10,9 @@ from fellow.commands.command import CommandContext
 
 class PipInstallInput(CommandInput):
     package_name: str = Field(..., description="Name of the package to install.")
-    version: Optional[str] = Field(None, description="Version of the package to install in the format 'x.y.z'")
+    version: Optional[str] = Field(
+        None, description="Version of the package to install in the format 'x.y.z'"
+    )
 
 
 def pip_install(args: PipInstallInput, context: CommandContext) -> str:
@@ -23,9 +25,10 @@ def pip_install(args: PipInstallInput, context: CommandContext) -> str:
         package_str = args.package_name
     try:
         result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", package_str], capture_output=True,
+            [sys.executable, "-m", "pip", "install", package_str],
+            capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         return result.stdout
     except subprocess.CalledProcessError as e:

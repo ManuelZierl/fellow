@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from fellow.commands.create_file import create_file, CreateFileInput
+from fellow.commands.create_file import CreateFileInput, create_file
 
 
 def test_create_new_file():

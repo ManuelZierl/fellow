@@ -1,13 +1,17 @@
 import os
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import Field
-from fellow.commands.command import CommandInput, CommandContext
+
+from fellow.commands.command import CommandContext, CommandInput
 
 
 class SearchFilesInput(CommandInput):
     directory: str = Field(..., description="The relative directory to search in.")
     search: str = Field(..., description="The string to search for (case-insensitive).")
-    extension: Optional[str] = Field(None, description="Only include files with this extension (e.g., .py).")
+    extension: Optional[str] = Field(
+        None, description="Only include files with this extension (e.g., .py)."
+    )
 
 
 def search_files(args: SearchFilesInput, context: CommandContext) -> str:
