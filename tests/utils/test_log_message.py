@@ -1,5 +1,6 @@
 import ast
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -24,7 +25,7 @@ def greet(name: str = "World") -> str:
 
 def test_log_message_writes_to_file(tmp_path):
     log_file: Path = tmp_path / "test_log.md"
-    config = {"log": str(log_file)}
+    config = MagicMock(log=MagicMock(active=True, filepath=str(log_file)))
 
     log_message(config, name="AI", color=1, content="Hello world")
 
