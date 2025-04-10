@@ -10,7 +10,6 @@ def test_plain_text_no_language():
     expected = (
         '<span style="color:#000000">**Alice:**</span>\n\nHello, world!\n\n---\n\n'
     )
-    print(result)
     assert result == expected
 
 
