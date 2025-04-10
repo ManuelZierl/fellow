@@ -87,6 +87,12 @@ class OpenAIClient:
                 if "function_call" in message:
                     assistant_message["function_call"] = message["function_call"]
                 output.append(assistant_message)
+            if message["role"] == "system":
+                system_message: ChatCompletionMessageParam = {
+                    "role": message["role"],
+                    "content": message["content"],
+                }
+                output.append(system_message)
         return output
 
     def messages(self) -> List[OpenAIClientMessage]:
