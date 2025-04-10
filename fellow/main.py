@@ -31,10 +31,9 @@ def main() -> None:
     )
 
     # Logging
-    if config.log.active:
-        clear_log(config)
-        log_message(config, name="Instruction", color=0, content=introduction_prompt)
-        log_message(config, name="Instruction", color=0, content=first_message)
+    clear_log(config)
+    log_message(config, name="Instruction", color=0, content=introduction_prompt)
+    log_message(config, name="Instruction", color=0, content=first_message)
 
     # Init AI client
     openai_client = OpenAIClient(
@@ -59,7 +58,7 @@ def main() -> None:
         )
 
         # 2. Log assistant reasoning (if any)
-        if config.log.active and reasoning and reasoning.strip():
+        if reasoning and reasoning.strip():
             print("AI:", reasoning.strip())
             log_message(config, name="AI", color=1, content=reasoning)
 
@@ -86,21 +85,18 @@ def main() -> None:
             if func_name not in commands:
                 # Give error feedback to AI
                 message = f"[ERROR] Unknown function: {func_name}"
-                if config.log:
-                    log_message(config, name="Output", color=2, content=message)
+                log_message(config, name="Output", color=2, content=message)
             else:
                 command_output = commands[func_name].run(func_args, context)
 
                 # Log output of the command
-                if config.log:
-                    print("PROMPT:", command_output.splitlines()[0] + "...")
-                    log_message(
-                        config,
-                        name="Output",
-                        color=2,
-                        content=command_output,
-                        language="txt",
-                    )
+                log_message(
+                    config,
+                    name="Output",
+                    color=2,
+                    content=command_output,
+                    language="txt",
+                )
 
                 # Prepare for next loop
                 message = ""
