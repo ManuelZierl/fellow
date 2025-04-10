@@ -14,6 +14,7 @@ def log_message(
                     name=name,
                     color=color,
                     content=content,
+                    spoiler=config.log.spoiler,
                     language=language,
                 )
             )
