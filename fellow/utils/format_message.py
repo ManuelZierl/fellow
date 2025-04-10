@@ -9,10 +9,19 @@ COLORS = ["#000000", "#1f77b4", "#ff7f0e"]
 
 
 def format_message(
-    name: str, color: int, content: str, language: Optional[str] = None
+    name: str,
+    color: int,
+    content: str,
+    spoiler: bool = False,
+    language: Optional[str] = None,
 ) -> str:
     color_code = COLORS[color % len(COLORS)]
     output = f'<span style="color:{color_code}">**{name}:**</span>\n\n'
+    if spoiler:
+        output += """<details>
+  <summary></summary>
+
+"""
     addition = ""
 
     if language:
@@ -40,5 +49,6 @@ def format_message(
 
     if language:
         output += f"\n````\n{addition}"
-
+    if spoiler:
+        output += "\n\n</details>"
     return output + "\n\n---\n\n"

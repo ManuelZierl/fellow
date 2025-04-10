@@ -1,4 +1,3 @@
-import argparse
 import json
 from typing import Dict, Optional
 
@@ -7,55 +6,42 @@ from fellow.commands import ALL_COMMANDS
 from fellow.commands.command import Command, CommandContext
 from fellow.utils.load_config import load_config
 from fellow.utils.log_message import clear_log, log_message
+from fellow.utils.parse_args import parse_args
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Fellow CLI Tool")
-    parser.add_argument("--config", help="Path to the optional yml config file")
-    parser.add_argument("--task", help="The task fellow should perform")
-    parser.add_argument(
-        "--log", help="Path to the .md file where the memory should be stored"
-    )
-    parser.add_argument("--commands", nargs="*", help="List of commands to be used")
-    args = parser.parse_args()
-
+    args = parse_args()
     config = load_config(args)
 
     # Init commands
     commands: Dict[str, Command] = {
         name: command
         for name, command in ALL_COMMANDS.items()
-        if name in config["commands"]
+        if name in config.commands
     }
 
-    if config.get("planning", {}).get("active"):
+    if config.planning.active:
         commands["make_plan"] = ALL_COMMANDS["make_plan"]
 
-    if config["task"] is None:
-        raise ValueError(
-            "Task is required. Please provide a task in the config file or via CLI."
-        )
-
     # Build prompt
-    introduction_prompt = config["introduction_prompt"]
-    introduction_prompt = introduction_prompt.replace("{{TASK}}", config["task"])
+    introduction_prompt = config.introduction_prompt
+    introduction_prompt = introduction_prompt.replace("{{TASK}}", config.task)
     first_message = (
-        config["planning"]["prompt"]
-        if config.get("planning", {}).get("active")
-        else "Starting now. First command?"
+        config.planning.prompt if config.planning.active else config.first_message
     )
 
     # Logging
-    clear_log(config)
-    log_message(config, name="Instruction", color=0, content=introduction_prompt)
-    log_message(config, name="Instruction", color=0, content=first_message)
+    if config.log.active:
+        clear_log(config)
+        log_message(config, name="Instruction", color=0, content=introduction_prompt)
+        log_message(config, name="Instruction", color=0, content=first_message)
 
     # Init AI client
     openai_client = OpenAIClient(
         system_content=introduction_prompt,
-        memory_max_tokens=config["openai_config"]["memory_max_tokens"],
-        summary_memory_max_tokens=config["openai_config"]["summary_memory_max_tokens"],
-        model=config["openai_config"]["model"],
+        memory_max_tokens=config.openai_config.memory_max_tokens,
+        summary_memory_max_tokens=config.openai_config.summary_memory_max_tokens,
+        model=config.openai_config.model,
     )
     context = CommandContext(ai_client=openai_client)
 
@@ -73,11 +59,11 @@ def main() -> None:
         )
 
         # 2. Log assistant reasoning (if any)
-        if reasoning and reasoning.strip():
+        if config.log.active and reasoning and reasoning.strip():
             print("AI:", reasoning.strip())
             log_message(config, name="AI", color=1, content=reasoning)
 
-        if func_name and func_args:
+        if config.log.active and func_name and func_args:
             print("AI:", func_name, func_args)
             log_message(
                 config,
@@ -100,19 +86,21 @@ def main() -> None:
             if func_name not in commands:
                 # Give error feedback to AI
                 message = f"[ERROR] Unknown function: {func_name}"
-                log_message(config, name="Output", color=2, content=message)
+                if config.log:
+                    log_message(config, name="Output", color=2, content=message)
             else:
                 command_output = commands[func_name].run(func_args, context)
 
                 # Log output of the command
-                print("PROMPT:", command_output.splitlines()[0] + "...")
-                log_message(
-                    config,
-                    name="Output",
-                    color=2,
-                    content=command_output,
-                    language="txt",
-                )
+                if config.log:
+                    print("PROMPT:", command_output.splitlines()[0] + "...")
+                    log_message(
+                        config,
+                        name="Output",
+                        color=2,
+                        content=command_output,
+                        language="txt",
+                    )
 
                 # Prepare for next loop
                 message = ""

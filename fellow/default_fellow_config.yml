@@ -14,8 +14,13 @@ introduction_prompt: |
   - Always reason clearly before invoking a tool.
   - When the task is complete, reply with a single word: END.
 
+first_message: |
+  Starting now. First command?
 task: null
-log: fellow_log.md
+log:
+  active: true
+  spoiler: true
+  filepath: fellow_log.md
 openai_config:
   memory_max_tokens: 15000
   summary_memory_max_tokens: 15000

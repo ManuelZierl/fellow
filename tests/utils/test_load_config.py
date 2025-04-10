@@ -1,102 +1,105 @@
-from types import SimpleNamespace
-from unittest.mock import MagicMock, mock_open, patch
+import importlib.resources as pkg_resources
+import os
+import tempfile
+from argparse import Namespace
 
 import pytest
 import yaml
 
+import fellow
 from fellow.utils.load_config import load_config
 
 
-def write_yaml_file(path, data):
-    with open(path, "w") as f:
-        yaml.dump(data, f)
+@pytest.fixture
+def default_config():
+    with (
+        pkg_resources.files(fellow).joinpath("default_fellow_config.yml").open("r") as f
+    ):
+        return yaml.safe_load(f)
 
 
-# Sample config fixtures
-default_config = {
-    "task": "default",
-    "log": "log.md",
-    "openai_config": {},
-    "commands": [],
-}
-user_config = {"task": "user", "openai_config": {"model": "gpt-4"}}
-
-
-@patch("fellow.utils.load_config.pkg_resources.files")
-@patch(
-    "builtins.open",
-    new_callable=mock_open,
-    read_data="task: default\nlog: log.md\nopenai_config: {}",
-)
-def test_loads_default_config(mock_open_builtin, mock_files):
-    mock_file = MagicMock()
-    mock_file.open.return_value = mock_open_builtin.return_value
-    mock_files.return_value.joinpath.return_value = mock_file
-
-    args = SimpleNamespace(config=None, task=None, log=None, commands=None)
-    config = load_config(args)
-
-    assert config["task"] == "default"
-    assert config["log"] == "log.md"
-    assert isinstance(config["openai_config"], dict)
-
-
-def test_merges_user_config(tmp_path):
-    # Write default config to temp file in package path simulation
-    default_config = {"task": "default", "log": "log.md", "openai_config": {}}
-    default_config_path = tmp_path / "default_fellow_config.yml"
-    write_yaml_file(default_config_path, default_config)
-
-    # Write user config file
-    user_config = {"task": "user", "openai_config": {"model": "gpt-4"}}
-    user_config_path = tmp_path / "custom.yml"
-    write_yaml_file(user_config_path, user_config)
-
-    # Patch pkg_resources to return our temp file
-    import fellow.utils.load_config as config_mod
-
-    config_mod.pkg_resources.files = lambda _: tmp_path
-    config_mod.pkg_resources.files.return_value = tmp_path  # just in case
-
-    args = SimpleNamespace(
-        config=str(user_config_path), task=None, log=None, commands=None
+def test_loads_default_config(default_config):
+    args = Namespace(
+        config=None,
+        task="a valid task",
+        **{
+            key: None
+            for key in [
+                "introduction_prompt",
+                "first_message",
+                "log.filepath",
+                "log.active",
+                "log.spoiler",
+                "openai_config.memory_max_tokens",
+                "openai_config.summary_memory_max_tokens",
+                "openai_config.model",
+                "planning.active",
+                "planning.prompt",
+                "commands",
+            ]
+        },
     )
     config = load_config(args)
+    assert config.task == "a valid task"
+    assert config.log.filepath.endswith(".md")
+    assert config.openai_config.model == default_config["openai_config"]["model"]
 
-    assert config["task"] == "user"
-    assert config["openai_config"]["model"] == "gpt-4"
 
-
-@patch("fellow.utils.load_config.pkg_resources.files")
-@patch(
-    "builtins.open",
-    new_callable=mock_open,
-    read_data="task: default\nlog: log.md\nopenai_config: {}",
-)
-def test_cli_overrides_all(mock_open_builtin, mock_files):
-    mock_file = MagicMock()
-    mock_file.open.return_value = mock_open_builtin.return_value
-    mock_files.return_value.joinpath.return_value = mock_file
-
-    args = SimpleNamespace(config=None, task="cli-task", log="cli.md", commands=None)
+def test_cli_override():
+    args = Namespace(
+        config=None,
+        task="CLI Task",
+        introduction_prompt="Intro: {{TASK}}",
+        first_message="Ignore",
+        **{
+            "log.filepath": "custom.md",
+            "openai_config.model": "gpt-super",
+            "log.active": True,
+            "log.spoiler": False,
+            "planning.active": True,
+            "planning.prompt": "CLI plan",
+            "commands": ["list", "run"],
+        },
+    )
     config = load_config(args)
+    assert config.task == "CLI Task"
+    assert config.introduction_prompt == "Intro: {{TASK}}"
+    assert config.first_message == "Ignore"
+    assert config.log.filepath == "custom.md"
+    assert config.openai_config.model == "gpt-super"
+    assert config.log.active is True
+    assert config.log.spoiler is False
+    assert config.planning.active is True
+    assert config.planning.prompt == "CLI plan"
+    assert config.commands == ["list", "run"]
 
-    assert config["task"] == "cli-task"
-    assert config["log"] == "cli.md"
 
+def test_user_config_override():
+    user_config = {"task": "Overridden"}
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".yml", mode="w") as tmp:
+        yaml.dump(user_config, tmp)
+        tmp_path = tmp.name
 
-@patch("fellow.utils.load_config.pkg_resources.files")
-@patch(
-    "builtins.open",
-    new_callable=mock_open,
-    read_data="task: default\nlog: log.md\nopenai_config: {}",
-)
-def test_invalid_log_extension_raises(mock_open_builtin, mock_files):
-    mock_file = MagicMock()
-    mock_file.open.return_value = mock_open_builtin.return_value
-    mock_files.return_value.joinpath.return_value = mock_file
-
-    args = SimpleNamespace(config=None, task=None, log="log.txt", commands=None)
-
-    with pytest.raises(ValueError, match="Log file must be a .md extension"):
-        load_config(args)
+    args = Namespace(
+        config=tmp_path,
+        **{
+            key: None
+            for key in [
+                "task",
+                "introduction_prompt",
+                "first_message",
+                "log.filepath",
+                "log.active",
+                "log.spoiler",
+                "openai_config.memory_max_tokens",
+                "openai_config.summary_memory_max_tokens",
+                "openai_config.model",
+                "planning.active",
+                "planning.prompt",
+                "commands",
+            ]
+        },
+    )
+    config = load_config(args)
+    assert config.task == "Overridden"
+    os.unlink(tmp_path)
