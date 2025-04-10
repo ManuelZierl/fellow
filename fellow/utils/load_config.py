@@ -1,4 +1,6 @@
 import importlib.resources as pkg_resources
+from argparse import Namespace
+from typing import List, Optional, TypedDict
 
 import yaml
 from pydantic.v1.utils import deep_update
@@ -6,7 +8,27 @@ from pydantic.v1.utils import deep_update
 import fellow
 
 
-def load_config(args):
+class OpenAIConfig(TypedDict, total=False):
+    memory_max_tokens: int
+    summary_memory_max_tokens: int
+    model: str  # todo: make it literal?
+
+
+class PlanningConfig(TypedDict, total=False):
+    active: bool
+    prompt: str
+
+
+class Config(TypedDict, total=False):
+    introduction_prompt: str
+    task: Optional[str]
+    log: Optional[str]
+    openai_config: OpenAIConfig
+    commands: List[str]
+    planning: PlanningConfig
+
+
+def load_config(args: Namespace) -> Config:
     with (
         pkg_resources.files(fellow).joinpath("default_fellow_config.yml").open("r") as f
     ):

@@ -31,6 +31,11 @@ def main() -> None:
     if config.get("planning", {}).get("active"):
         commands["make_plan"] = ALL_COMMANDS["make_plan"]
 
+    if config["task"] is None:
+        raise ValueError(
+            "Task is required. Please provide a task in the config file or via CLI."
+        )
+
     # Build prompt
     introduction_prompt = config["introduction_prompt"]
     introduction_prompt = introduction_prompt.replace("{{TASK}}", config["task"])
