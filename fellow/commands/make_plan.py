@@ -12,11 +12,11 @@ def make_plan(args: MakePlanInput, context: CommandContext) -> str:
     """
     Creates a plan for the AI to follow. The plan will be in every future message for guidance.
     """
-    context.ai_client.system_content.append(
+    context["ai_client"].system_content.append(
         {
             "role": "system",
             "content": args.plan,
-            "tokens": context.ai_client.count_tokens(
+            "tokens": context["ai_client"].count_tokens(
                 {"role": "system", "content": args.plan}
             ),
         }

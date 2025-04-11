@@ -1,6 +1,6 @@
 import os
 import tempfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
@@ -16,7 +16,7 @@ def sample_file():
     os.remove(f.name)
 
 
-def test_insert_line(sample_file):
+def test_edit_file(sample_file):
     args = EditFileInput(filepath=sample_file, new_text="Inserted Line")
     result = edit_file(args, MagicMock())
     assert result.startswith("[OK]")
@@ -41,3 +41,17 @@ def test_nonexistent_file():
     args = EditFileInput(filepath="/nonexistent/path.txt", new_text="test")
     result = edit_file(args, MagicMock())
     assert result.startswith("[ERROR] File not found")
+
+
+def test_edit_file_failed():
+    input_data = EditFileInput(filepath="dummy.txt", new_text="Some new content")
+
+    # Pretend the file exists
+    with patch("os.path.isfile", return_value=True):
+        # Patch open to raise an IOError
+        with patch("builtins.open", mock_open()) as mocked_open:
+            mocked_open.side_effect = IOError("disk full")
+
+            result = edit_file(input_data, MagicMock())
+
+    assert result.startswith("[ERROR] Could not edit file: disk full")

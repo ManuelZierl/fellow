@@ -17,7 +17,7 @@ def test_make_plan_appends_to_system_content():
     plan_text = "First, load data. Then preprocess it. Finally, train the model."
     input_data = MakePlanInput(plan=plan_text)
     fake_client = FakeOpenAIClient()
-    context = CommandContext(ai_client=fake_client)
+    context: CommandContext = {"ai_client": fake_client}
 
     # Act
     result = make_plan(input_data, context)

@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 from unittest.mock import MagicMock, patch
 
 import pytest
+from openai import NOT_GIVEN
 
 from fellow.clients.OpenAIClient import OpenAIClient
 
@@ -35,17 +36,67 @@ def test_messages(client, mock_openai_api_key):
     assert all("tokens" in msg for msg in result)
 
 
+def test_message_to_params(client, mock_openai_api_key):
+    client.memory = [
+        {"role": "system", "content": "You are a helpful assistant.", "tokens": 5},
+        {"role": "user", "content": "What's the weather?", "tokens": 5},
+        {
+            "role": "assistant",
+            "content": "I will call the `get_weather` function",
+            "tokens": 2,
+        },
+        {
+            "role": "assistant",
+            "function_call": {"name": "get_weather", "arguments": "now"},
+        },
+        {
+            "role": "function",
+            "content": "It's sunny.",
+            "tokens": 2,
+            "name": "get_weather",
+        },
+    ]
+
+    assert client.message_to_params() == [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What's the weather?"},
+        {"role": "assistant", "content": "I will call the `get_weather` function"},
+        {
+            "role": "assistant",
+            "function_call": {"name": "get_weather", "arguments": "now"},
+        },
+        {"role": "function", "name": "get_weather", "content": "It's sunny."},
+    ]
+
+
 @patch("openai.chat.completions.create")
 def test_chat(mock_create, client, mock_openai_api_key):
     mock_choice = MagicMock()
     mock_choice.message = MagicMock(content="Hello!", function_call=None)
     mock_create.return_value = MagicMock(choices=[mock_choice])
 
-    response = client.chat("Hi there")
-    assert response == ("Hello!", None, None)  # Updated to match the new expected tuple
+    functions = [
+        {"name": "func", "description": "func1 description", "parameters": {"arg": 1}}
+    ]
+
+    response = client.chat("Hi there", NOT_GIVEN, functions=functions)
+    assert response == ("Hello!", None, None)
     assert len(client.memory) == 2
     assert client.memory[-1]["content"] == "Hello!"
     assert "tokens" in client.memory[-1]
+    mock_create.assert_called_once()
+    assert mock_create.call_args[1]["functions"] == functions
+
+    mock_choice = MagicMock()
+    mock_function_call = MagicMock(arguments="{}")
+    mock_function_call.name = "get_code"
+    mock_choice.message = MagicMock(content=None, function_call=mock_function_call)
+    mock_create.return_value = MagicMock(choices=[mock_choice])
+    response = client.chat(
+        "", function_result={"name": "get_code", "output": "import os"}
+    )
+    assert response == (None, "get_code", "{}")
 
 
 @patch.object(OpenAIClient, "_summarize_memory")
@@ -100,6 +151,7 @@ def test_split_on_token_limit():
     first, second = OpenAIClient._split_on_token_limit(messages, 6)
     assert sum(m["tokens"] for m in second) <= 6
     assert len(first) + len(second) == len(messages)
+    assert OpenAIClient._split_on_token_limit(messages, 100) == ([], messages)
 
 
 def test__summarize_memory(client):
@@ -111,6 +163,10 @@ def test__summarize_memory(client):
         {
             "role": "assistant",
             "content": "Sure. It's a language for building software.",
+        },
+        {
+            "role": "assistant",
+            "function_call": {"name": "get_code", "arguments": "main.py"},
         },
     ]
 
@@ -137,7 +193,8 @@ def test__summarize_memory(client):
 User: What is Python?
 Assistant: Python is a programming language.
 User: Can you summarize that?
-Assistant: Sure. It's a language for building software."""
+Assistant: Sure. It's a language for building software.
+Assistant: [Function call] get_code(main.py)"""
         )
 
         # The result should match the mocked return
@@ -145,3 +202,49 @@ Assistant: Sure. It's a language for building software."""
             summary
             == "The user asked about Python. Assistant explained it's a programming language."
         )
+
+
+def test__maybe_summarize_memory(client):
+    # Prepare client
+    client.memory_max_tokens = 100
+    client.summary_memory_max_tokens = 100
+
+    # Provide mock summary
+    mock_summarize = MagicMock()
+    client._summarize_memory = mock_summarize
+    mock_summarize.return_value = "Summary A"
+
+    # Fill memory to exceed threshold
+    client.memory = [
+        {"role": "user", "content": "msg", "tokens": 60}
+    ] * 3  # 180 tokens total
+
+    # Patch count_tokens to return fixed value for simplicity
+    client.count_tokens = lambda msg: 10
+
+    # Trigger summarization
+    client._maybe_summarize_memory()
+
+    # Should summarize part of memory
+    assert len(client.memory) == 1
+    assert len(client.summary_memory) == 1
+    summary_msg = client.summary_memory[0]
+    assert summary_msg["role"] == "system"
+    assert "Summary of previous conversation: Summary A" in summary_msg["content"]
+    assert len(mock_summarize.call_args[0][0]) == 2
+
+    # Now test recursive summarization on summary_memory
+    mock_summarize.return_value = "Summary B"
+    # Force summary memory to exceed again
+    client.summary_memory = [
+        {"role": "system", "content": "summary", "tokens": 60}
+    ] * 3  # 180 tokens
+
+    client._maybe_summarize_memory()
+
+    assert len(client.summary_memory) == 2
+    assert (
+        "Summary of previous conversation: Summary B"
+        in client.summary_memory[1]["content"]
+    )
+    assert len(mock_summarize.call_args[0][0]) == 2

@@ -1,6 +1,6 @@
 import os
 import tempfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from fellow.commands.list_files import ListFilesInput, list_files
 
@@ -88,3 +88,15 @@ def test_depth_zero_invalid():
         args = ListFilesInput(directory=tmpdir, max_depth=0)
         result = list_files(args, MagicMock())
         assert "[ERROR] max_depth must be >= 1" in result
+
+
+def test_list_files_handles_oserror(tmp_path):
+    # Arrange: simulate a real directory
+    args = ListFilesInput(directory=str(tmp_path), max_depth=1)
+
+    # Patch os.listdir to raise an exception
+    with patch("os.listdir", side_effect=OSError("Boom!")):
+        result = list_files(args, MagicMock())
+
+    assert result.startswith("[ERROR] Could not list files:")
+    assert "Boom!" in result

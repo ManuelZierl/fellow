@@ -104,3 +104,19 @@ def test_file_not_found():
     result = list_definitions(args, MagicMock())
 
     assert "[ERROR] File not found" in result
+
+
+def test_read_failed(tmp_path):
+    code = """
+def foo():
+    return "Hello, World!"
+"""
+    file = tmp_path / "read_failed.py"
+    write_file(file, code)
+    # Simulate a read failure by removing permissions
+    file.chmod(0o000)
+
+    args = ListDefinitionsInput(filepath=str(file))
+    result = list_definitions(args, MagicMock())
+
+    assert "[ERROR] Failed to read or parse the file" in result

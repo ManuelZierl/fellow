@@ -1,6 +1,6 @@
 import os
 import tempfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from fellow.commands.run_python import RunPythonInput, run_python
 
@@ -56,3 +56,22 @@ def test_run_python_file_not_found():
     args = RunPythonInput(filepath="nonexistent_script.py")
     result = run_python(args, MagicMock())
     assert "[ERROR] File not found" in result or "[ERROR]" in result
+
+
+def test_run_pytest_handles_file_not_found_error():
+    args = RunPythonInput(filepath="nonexistent_test.py", args="")
+
+    with patch("subprocess.run", side_effect=FileNotFoundError):
+        result = run_python(args, MagicMock())
+
+    assert result == "[ERROR] File not found: nonexistent_test.py"
+
+
+def test_run_pytest_handles_generic_exception():
+    args = RunPythonInput(filepath="test_dummy.py", args="")
+
+    with patch("subprocess.run", side_effect=RuntimeError("Something weird happened")):
+        result = run_python(args, MagicMock())
+
+    assert result.startswith("[ERROR] Failed to run script:")
+    assert "Something weird happened" in result

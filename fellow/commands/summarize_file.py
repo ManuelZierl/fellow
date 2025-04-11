@@ -31,7 +31,7 @@ def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
 
         client = OpenAIClient(
             system_content="Summarize the following file content.",
-            model=context.ai_client.model,
+            model=context["ai_client"].model,
         )
         # Adjusted to handle the tuple returned by chat()
         summary, _, _ = client.chat(

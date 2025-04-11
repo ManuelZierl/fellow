@@ -42,7 +42,7 @@ def main() -> None:
         summary_memory_max_tokens=config.openai_config.summary_memory_max_tokens,
         model=config.openai_config.model,
     )
-    context = CommandContext(ai_client=openai_client)
+    context: CommandContext = {"ai_client": openai_client}
 
     # Prepare OpenAI functions
     functions_schema = [cmd.openai_schema() for cmd in commands.values()]

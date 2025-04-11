@@ -1,5 +1,5 @@
 import json
-from typing import Protocol, Type, TypeVar
+from typing import Protocol, Type, TypedDict, TypeVar
 
 from openai.types.chat.completion_create_params import Function
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -7,12 +7,8 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 from fellow.clients.OpenAIClient import OpenAIClient
 
 
-class CommandContext(
-    BaseModel
-):  # todo: Typed dict might be better becuase we do no validation
+class CommandContext(TypedDict):
     ai_client: OpenAIClient
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class CommandInput(BaseModel): ...
@@ -37,7 +33,7 @@ class Command:
             raise ValueError("[ERROR] Command handler is __doc__ is empty")
         return {
             "name": self.command_handler.__name__,
-            "description": self.command_handler.__doc__,
+            "description": self.command_handler.__doc__.strip(),
             "parameters": self.input_type.model_json_schema(),
         }
 
