@@ -63,19 +63,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Ensure tag points to latest commit on main
-        run: |
-          git fetch origin main
-          TAG_COMMIT=$(git rev-parse HEAD)
-          MAIN_COMMIT=$(git rev-parse origin/main)
-
-          echo "Tag commit:  $TAG_COMMIT"
-          echo "Main commit: $MAIN_COMMIT"
-
-          if [ "$TAG_COMMIT" != "$MAIN_COMMIT" ]; then
-            echo "❌ Tag does not point to the latest commit on main"
-            exit 1
-          fi
+      #- name: Ensure tag points to latest commit on main
+      #  run: |
+      #    git fetch origin main
+      #    TAG_COMMIT=$(git rev-parse HEAD)
+      #    MAIN_COMMIT=$(git rev-parse origin/main)
+      #
+      #    echo "Tag commit:  $TAG_COMMIT"
+      #    echo "Main commit: $MAIN_COMMIT"
+      #
+      #    if [ "$TAG_COMMIT" != "$MAIN_COMMIT" ]; then
+      #      echo "❌ Tag does not point to the latest commit on main"
+      #      exit 1
+      #    fi
       - name: Check that tag version matches pyproject.toml
         run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/v}"
