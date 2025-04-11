@@ -4,25 +4,33 @@
 # Fellow
 
 ## Project Description
-Fellow is a command-line interface (CLI) tool designed to act as an autonomous senior software engineering assistant. It interfaces with the OpenAI API to perform various structured tasks by reasoning step-by-step, executing commands, and maintaining a log of activities.
+**Fellow** is a command-line interface (CLI) tool that acts as an autonomous software engineering assistant. It uses the OpenAI API to perform various structured tasks by reasoning step-by-step, executing commands, and maintaining a log of its activities.
 
-## Installation Instructions
-To install Fellow, ensure you have Python installed on your system, then use pip to install:
+---
+
+## Installation
+Make sure you have Python installed on your system. Then install Fellow via [pip](https://pypi.org/project/fellow/):
 ```bash
 pip install fellow
 ```
 
 ## Usage
-Fellow operates on a configuration provided via a YAML file. An example of running the fellow command is:
+Since Fellow uses the OpenAI API you have to set your `OPENAI_API_KEY` in your environment variables. You can do this by running:
+```bash
+export OPENAI_API_KEY="your_openai_api_key"
+```
+
+Fellow is designed to run based on a configuration provided via a YAML file. A typical usage example:
 ```bash
 fellow --config task.yml
 ```
-You can specify tasks and configurations that Fellow will execute. The commands supported include file operations, code execution, and more. For example:
+
+In the YAML configuration, you can specify tasks that Fellow will carry out. Supported commands include file operations, code execution, and more. Example:
 ```yaml
 task: |
   write a readme file for this Python project
 ``` 
-for more configurations, refer to the [default_fellow_config.yml](fellow/default_fellow_config.yml) file in the repository.
+For more configuration options, see the [default_fellow_config.yml](fellow/default_fellow_config.yml) file in the repository.
 
 ## Contributing
 We welcome contributions! Please fork the repository and submit a pull request.
