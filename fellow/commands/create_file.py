@@ -26,7 +26,5 @@ def create_file(args: CreateFileInput, context: CommandContext) -> str:
 
         return f"[OK] Created file: {args.filepath}"
 
-    except FileExistsError:
-        return f"[INFO] File already exists: {args.filepath}"
     except Exception as e:
         return f"[ERROR] Could not create file: {e}"

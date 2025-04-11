@@ -1,6 +1,6 @@
 import os
 import tempfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -61,3 +61,16 @@ def test_file_not_found():
     args = ViewFileInput(filepath="nonexistent.txt")
     output = view_file(args, MagicMock())
     assert output.startswith("[ERROR] File not found")
+
+
+def test_view_file_handles_read_exception(tmp_path):
+    file_path = tmp_path / "faulty.txt"
+    file_path.write_text("Line 1\nLine 2\n")
+
+    args = ViewFileInput(filepath=str(file_path))
+
+    with patch("builtins.open", side_effect=OSError("Mocked read failure")):
+        result = view_file(args, MagicMock())
+
+    assert result.startswith("[ERROR] Could not read file:")
+    assert "Mocked read failure" in result

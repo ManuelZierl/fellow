@@ -1,3 +1,4 @@
+import os
 import tempfile
 from textwrap import dedent
 from unittest.mock import MagicMock
@@ -77,3 +78,44 @@ def test_invalid_element_format():
     path = write_temp_py(code)
     result = get_code(GetCodeInput(filepath=path, element="a.b.c"), MagicMock())
     assert "[ERROR] Invalid element format" in result
+
+
+def test_syntax_error():
+    code = """
+    def foo(
+        print("Hello, World!")
+    """
+    path = write_temp_py(code)
+    result = get_code(GetCodeInput(filepath=path, element="foo"), MagicMock())
+    assert "[ERROR] Could not parse file due to syntax error:" in result
+
+
+def test_read_failed():
+    code = """
+    def foo():
+        return "Hello, World!"
+    """
+
+    # Simulate a read failure
+    with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+        f.write(dedent(code))
+        f.close()
+        os.chmod(f.name, 0o000)  # Remove all permissions
+        result = get_code(GetCodeInput(filepath=f.name, element="foo"), MagicMock())
+        assert "[ERROR] Failed to read or parse the file:" in result
+
+
+def test_file_not_found():
+    result = get_code(
+        GetCodeInput(filepath="non_existent_file.py", element="foo"), MagicMock()
+    )
+    assert result == "[ERROR] File not found: non_existent_file.py"
+
+
+def test_not_a_python_file():
+    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
+        f.write("This is not a Python file.")
+        f.close()
+        result = get_code(GetCodeInput(filepath=f.name, element="foo"), MagicMock())
+        assert result.startswith("[ERROR] Not a Python file:")
+        os.remove(f.name)  # Clean up the temporary file

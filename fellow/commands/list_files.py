@@ -30,8 +30,9 @@ def list_files(args: ListFilesInput, context: CommandContext) -> str:
         output = []
 
         def walk(dir_path, depth):
-            if depth > args.max_depth:
-                return
+            assert (
+                depth <= args.max_depth
+            ), f"Internal error: walk called with depth={depth} > max={args.max_depth}"
 
             entries = sorted(os.listdir(dir_path))
             for entry in entries:

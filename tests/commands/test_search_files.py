@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -53,3 +53,26 @@ def test_directory_not_found(tmp_path):
 
     result = search_files(args, MagicMock())
     assert "[ERROR] Directory not found" in result
+
+
+def test_search_files_handles_file_read_exception(tmp_path):
+    # Create a file that would match the extension
+    faulty_file = tmp_path / "test.txt"
+    faulty_file.write_text("This line will not be read", encoding="utf-8")
+
+    args = SearchFilesInput(directory=str(tmp_path), search="will", extension=".txt")
+
+    # Patch open only when trying to read the faulty_file
+    original_open = open
+
+    def mock_open(path, *args, **kwargs):
+        if str(path) == str(faulty_file):
+            raise IOError("Mocked read error")
+        return original_open(path, *args, **kwargs)
+
+    with patch("builtins.open", side_effect=mock_open):
+        result = search_files(args, MagicMock())
+
+    assert result.startswith("[ERROR] Could not read")
+    assert "Mocked read error" in result
+    assert "test.txt" in result

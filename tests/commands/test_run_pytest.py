@@ -1,6 +1,6 @@
 import os
 import tempfile
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from fellow.commands.run_pytest import RunPytestInput, run_pytest
 
@@ -60,3 +60,22 @@ def test_invalid_test_path():
 
     assert "[ERROR]" in output
     assert "not found" in output or "No such file" in output
+
+
+def test_run_pytest_handles_file_not_found_error():
+    args = RunPytestInput(target="nonexistent_test.py", args="")
+
+    with patch("subprocess.run", side_effect=FileNotFoundError):
+        result = run_pytest(args, MagicMock())
+
+    assert result == "[ERROR] Test file or directory not found: nonexistent_test.py"
+
+
+def test_run_pytest_handles_generic_exception():
+    args = RunPytestInput(target="test_dummy.py", args="")
+
+    with patch("subprocess.run", side_effect=RuntimeError("Something weird happened")):
+        result = run_pytest(args, MagicMock())
+
+    assert result.startswith("[ERROR] Failed to run pytest:")
+    assert "Something weird happened" in result
