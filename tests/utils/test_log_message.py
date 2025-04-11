@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from fellow.commands.list_definitions import format_function
-from fellow.utils.log_message import log_message
+from fellow.utils.log_message import clear_log, log_message
 
 
 def test_format_function_with_doc_and_defaults():
@@ -42,3 +42,19 @@ Hello world
 
 """
     )
+
+
+def test_clear_log_file(tmp_path):
+    log_file: Path = tmp_path / "test_log.md"
+    config = MagicMock(
+        log=MagicMock(active=True, filepath=str(log_file), spoiler=False)
+    )
+
+    # Create a log file with some content
+    log_file.write_text("Some content", encoding="utf-8")
+
+    # Clear the log file
+    clear_log(config)
+
+    # Check if the file is empty
+    assert log_file.read_text(encoding="utf-8") == ""
