@@ -68,7 +68,6 @@ def test_search_files_handles_file_read_exception(tmp_path):
     def mock_open(path, *args, **kwargs):
         if str(path) == str(faulty_file):
             raise IOError("Mocked read error")
-        return original_open(path, *args, **kwargs)
 
     with patch("builtins.open", side_effect=mock_open):
         result = search_files(args, MagicMock())
