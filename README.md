@@ -1,7 +1,14 @@
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
 ![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
-# Fellow
+
+
+
+<p align="left">
+    <img src="img/logo.svg" alt="Girl in a jacket" width="40" height="40"  style="vertical-align: middle; margin-right: 8px;">
+  <span style="font-size: 2em; vertical-align: middle;"><strong>Fellow</strong></span>
+</p>
+
 
 ## Project Description
 **Fellow** is a command-line interface (CLI) tool that acts as an autonomous software engineering assistant. It uses the OpenAI API to perform various structured tasks by reasoning step-by-step, executing commands, and maintaining a log of its activities.
