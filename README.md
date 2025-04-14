@@ -3,16 +3,8 @@
 [![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
 
 
-<table border="0" style="border: none; border-collapse: collapse;">
-  <tr>
-    <td style="border: none; padding: 0 8px 0 0; vertical-align: middle;">
-      <img src="img/logo.svg" width="40" height="40" alt="Fellow Logo">
-    </td>
-    <td style="border: none; vertical-align: middle;">
-      <span style="font-size: 2em;"><strong>Fellow</strong></span>
-    </td>
-  </tr>
-</table>
+<img src="img/logo.svg" width="40" height="40" alt="Fellow Logo">
+<span style="font-size: 4em; color: #FFC107"><strong>ellow</strong></span>
 
 ## Project Description
 **Fellow** is a command-line interface (CLI) tool that acts as an autonomous software engineering assistant. It uses the OpenAI API to perform various structured tasks by reasoning step-by-step, executing commands, and maintaining a log of its activities.
