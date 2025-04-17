@@ -7,18 +7,19 @@ name = "fellow"
 version = "0.0.2"
 description = "Fellow CLI tool is a command line development assistant"
 readme = { file = "README.md", content-type = "text/markdown" }
+urls = { "Homepage" = "https://github.com/ManuelZierl/fellow", "Source" = "https://github.com/ManuelZierl/fellow", "Tracker" = "https://github.com/ManuelZierl/fellow/issues" }
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
-  { name = "Manuel Zierl", email = "manuel.zierl@web.de" }
+    { name = "Manuel Zierl", email = "manuel.zierl@web.de" }
 ]
 dependencies = [
-  "httpx>=0.28.1",
-  "openai>=1.69.0",
-  "tiktoken>=0.9.0",
-  "pexpect>=4.9.0",
-  "pydantic~=2.11.0",
-  "PyYAML~=6.0.2"
+    "httpx>=0.28.1",
+    "openai>=1.69.0",
+    "tiktoken>=0.9.0",
+    "pexpect>=4.9.0",
+    "pydantic~=2.11.0",
+    "PyYAML~=6.0.2"
 ]
 
 [project.scripts]
