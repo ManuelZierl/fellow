@@ -23,7 +23,7 @@ jobs:
       - name: Check if CHANGELOG.md was updated
         if: github.event_name == 'pull_request'
         run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          git fetch origin ${{ github.event.pull_request.base.ref }}
           BASE_BRANCH=${{ github.event.pull_request.base.ref }}
           echo "Comparing changes against base branch: $BASE_BRANCH"
 
