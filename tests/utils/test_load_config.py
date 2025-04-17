@@ -36,6 +36,7 @@ def test_loads_default_config(default_config):
                 "planning.active",
                 "planning.prompt",
                 "commands",
+                "steps_limit",
             ]
         },
     )

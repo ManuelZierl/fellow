@@ -41,3 +41,4 @@ planning:
   active: true
   prompt: |
     Before writing any code, break the task into subgoals using the `make_plan` command.
+steps_limit: null

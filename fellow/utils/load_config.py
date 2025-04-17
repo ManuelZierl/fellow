@@ -1,6 +1,6 @@
 import importlib.resources as pkg_resources
 from argparse import Namespace
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel, field_validator
@@ -40,6 +40,7 @@ class Config(BaseModel):
     openai_config: OpenAIConfig
     commands: List[str]
     planning: PlanningConfig
+    steps_limit: Optional[int]
 
 
 def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:
