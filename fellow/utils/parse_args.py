@@ -30,4 +30,5 @@ def parse_args() -> Namespace:
     )
     parser.add_argument("--planning.prompt", help="Define the prompt for planning")
     parser.add_argument("--commands", nargs="*", help="List of commands to be used")
+    parser.add_argument("--steps_limit", type=int, help="Limit the number of steps")
     return parser.parse_args()

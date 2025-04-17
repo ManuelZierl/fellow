@@ -51,6 +51,7 @@ def main() -> None:
     message = first_message
     function_result: Optional[FunctionResult] = None
 
+    steps = 0
     while True:
         # 1. Call OpenAI
         reasoning, func_name, func_args = openai_client.chat(
@@ -105,6 +106,16 @@ def main() -> None:
             # No function call, continue reasoning
             message = ""
             function_result = None
+
+        steps += 1
+        if config.steps_limit and steps >= config.steps_limit:
+            log_message(
+                config,
+                name="SYSTEM",
+                color=1,
+                content="[END] Maximum number of steps reached.",
+            )
+            break
 
 
 if __name__ == "__main__":
