@@ -20,6 +20,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check if CHANGELOG.md was updated
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+          BASE_BRANCH=${{ github.event.pull_request.base.ref }}
+          echo "Comparing changes against base branch: $BASE_BRANCH"
+
+          # Check if CHANGELOG.md was modified in the PR
+          git diff --name-only origin/$BASE_BRANCH...HEAD | grep -q "^CHANGELOG.md$" || {
+            echo "❌ CHANGELOG.md was not modified in this pull request. Please update it before merging."
+            exit 1
+          }
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
