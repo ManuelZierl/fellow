@@ -34,6 +34,9 @@ task: |
 ``` 
 For more configuration options, see the [default_fellow_config.yml](fellow/default_fellow_config.yml) file in the repository.
 
+## Changelog
+All notable changes to this project will be documented in this file: [CHANGELOG.md](CHANGELOG.md)
+
 ## Contributing
 We welcome contributions! Please fork the repository and submit a pull request.
 
