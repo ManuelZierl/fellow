@@ -18,8 +18,12 @@ def {function_name}(args: {class_name}, context: CommandContext) -> str:
 
 def init_command(command_name: str, target: str) -> Path:
     """
-    todo: doc
-    todo: test
+    Generates a new boilerplate Python file for a custom Fellow command.
+    The generated file contains a CommandInput class and a corresponding handler function
+    whose names are derived from `command_name`. For example, `say_hello` becomes:
+    - class: SayHelloInput
+    - function: say_hello
+    The command is written to `<target>/<command_name>.py`, and the directory is created if it doesn't exist.
     """
     target_dir = Path(target)
     function_name = command_name
