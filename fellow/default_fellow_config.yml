@@ -42,3 +42,5 @@ planning:
   prompt: |
     Before writing any code, break the task into subgoals using the `make_plan` command.
 steps_limit: null
+custom_commands_paths:
+  - ".fellow/commands"

@@ -1,9 +1,12 @@
 import json
-from typing import Dict, Optional
+from typing import Optional
+
+from pydantic import ValidationError
 
 from fellow.clients.OpenAIClient import FunctionResult, OpenAIClient
-from fellow.commands import ALL_COMMANDS
-from fellow.commands.command import Command, CommandContext
+from fellow.commands.command import CommandContext
+from fellow.utils.init_command import init_command
+from fellow.utils.load_commands import load_commands
 from fellow.utils.load_config import load_config
 from fellow.utils.log_message import clear_log, log_message
 from fellow.utils.parse_args import parse_args
@@ -13,15 +16,15 @@ def main() -> None:
     args = parse_args()
     config = load_config(args)
 
-    # Init commands
-    commands: Dict[str, Command] = {
-        name: command
-        for name, command in ALL_COMMANDS.items()
-        if name in config.commands
-    }
+    if args.command == "init-command":
+        init_command(args.name, config.custom_commands_paths[0])
+        return
 
-    if config.planning.active:
-        commands["make_plan"] = ALL_COMMANDS["make_plan"]
+    if config.task is None:
+        raise ValidationError("[ERROR] Task is not defined in the configuration.")
+
+    # Init commands
+    commands = load_commands(config)
 
     # Build prompt
     introduction_prompt = config.introduction_prompt

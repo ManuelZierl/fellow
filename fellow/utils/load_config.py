@@ -35,12 +35,13 @@ class LogConfig(BaseModel):
 class Config(BaseModel):
     introduction_prompt: str
     first_message: str
-    task: str
+    task: Optional[str]
     log: LogConfig
     openai_config: OpenAIConfig
     commands: List[str]
     planning: PlanningConfig
     steps_limit: Optional[int]
+    custom_commands_paths: List[str]
 
 
 def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:

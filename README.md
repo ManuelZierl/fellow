@@ -6,7 +6,16 @@
 # ![Fellow](img/logo.svg)
 
 ## Project Description
-**Fellow** is a command-line interface (CLI) tool that acts as an autonomous software engineering assistant. It uses the OpenAI API to perform various structured tasks by reasoning step-by-step, executing commands, and maintaining a log of its activities.
+**Fellow** is a command-line AI assistant built by developers, for developers.
+
+Unlike most AI tools that stop at suggesting code, **Fellow** goes a step further: it executes tasks on your behalf. It reasons step-by-step, chooses appropriate commands from a plugin system, and performs actions like editing files, generating content, or writing tests. All autonomously.
+
+The idea for Fellow started from a simple but powerful realization: *copy-pasting between ChatGPT and your editor gets in the way of real flow.* What if the AI could access your codebase directly? What if it could decide *what to look at* and *what to do*—without constant human prompting?
+
+That's what Fellow explores. It uses YAML configs to define tasks, keeps a memory of its reasoning, and can be extended with your own command plugins. Whether you're automating repetitive dev tasks or experimenting with agentic workflows, Fellow is a lightweight but powerful sandbox for building the tools you wish existed.
+
+It’s still early and evolving—but it already works. And if you're a developer who wants more *doing* and less *prompting*, Fellow might just be the tool you've been waiting for.
+
 
 ---
 
@@ -34,11 +43,40 @@ task: |
 ``` 
 For more configuration options, see the [default_fellow_config.yml](fellow/default_fellow_config.yml) file in the repository.
 
+## Customization
+
+### Custom Commands
+Fellow supports **custom commands**, allowing you to extend its capabilities with your own automation logic — all without modifying the core codebase.
+
+You can define your own commands by placing Python files in `.fellow/commands/`, and then referencing them in your config.
+
+You can also use:
+```bash
+fellow init-command my_custom_command
+```
+This will create a new Python file in `.fellow/commands/` with the necessary boilerplate code.
+
+Then, register your command in your config file:
+```yaml
+...
+commands:
+    - "my_custom_command"
+    - ...
+```
+
+With this method, you can also **override existing commands** by using the same name as a built-in one.
+
+---
+
 ## Changelog
 All notable changes to this project will be documented in this file: [CHANGELOG.md](CHANGELOG.md)
 
+---
+
 ## Contributing
 We welcome contributions! Please fork the repository and submit a pull request.
+
+---
 
 ## Licensing
 This project is licensed under the MIT License.
