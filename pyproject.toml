@@ -27,6 +27,7 @@ fellow = "fellow.main:main"
 
 [tool.setuptools.packages.find]
 exclude = ["tests*"]
+include = ["fellow", "fellow.*"]
 
 [tool.setuptools.package-data]
 fellow = ["default_fellow_config.yml"]

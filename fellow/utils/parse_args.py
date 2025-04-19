@@ -8,6 +8,14 @@ def str2bool(v):
 
 def parse_args() -> Namespace:
     parser = argparse.ArgumentParser(description="Fellow CLI Tool")
+
+    subparsers = parser.add_subparsers(dest="command")
+
+    init_parser = subparsers.add_parser(
+        "init-command", help="Create a new custom command"
+    )
+    init_parser.add_argument("name", help="The name of the new command to create")
+
     parser.add_argument("--config", help="Path to the optional yml config file")
     parser.add_argument(
         "--introduction_prompt", help="The prompt with which the AI will be initialized"
@@ -31,4 +39,7 @@ def parse_args() -> Namespace:
     parser.add_argument("--planning.prompt", help="Define the prompt for planning")
     parser.add_argument("--commands", nargs="*", help="List of commands to be used")
     parser.add_argument("--steps_limit", type=int, help="Limit the number of steps")
+    parser.add_argument(
+        "--custom_commands_paths", nargs="*", help="Paths to custom commands"
+    )
     return parser.parse_args()
