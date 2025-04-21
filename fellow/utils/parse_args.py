@@ -1,20 +1,44 @@
 import argparse
+import json
 from argparse import Namespace
+from typing import Any, Dict
 
 
-def str2bool(v):
+def str2bool(v: str) -> bool:
+    """
+    Convert a string to a boolean value.
+    """
     return str(v).lower() in ("yes", "true", "t", "1")
 
 
-def parse_args() -> Namespace:
-    parser = argparse.ArgumentParser(description="Fellow CLI Tool")
+def json_string_to_dict(json_string: str) -> Dict[str, Any]:
+    """
+    Convert a JSON string to a dictionary.
+    """
+    try:
+        return json.loads(json_string)
+    except json.JSONDecodeError:
+        raise ValueError("Invalid JSON string provided.")
 
+
+def parse_args() -> Namespace:
+    """
+    Parse command line arguments for the Fellow CLI tool.
+    """
+    parser = argparse.ArgumentParser(description="Fellow CLI Tool")
     subparsers = parser.add_subparsers(dest="command")
 
-    init_parser = subparsers.add_parser(
+    init_command_parser = subparsers.add_parser(
         "init-command", help="Create a new custom command"
     )
-    init_parser.add_argument("name", help="The name of the new command to create")
+    init_command_parser.add_argument(
+        "name", help="The name of the new command to create"
+    )
+
+    init_client_parser = subparsers.add_parser(
+        "init-client", help="Create a new custom client"
+    )
+    init_client_parser.add_argument("name", help="The name of the new client to create")
 
     parser.add_argument("--config", help="Path to the optional yml config file")
     parser.add_argument(
@@ -25,14 +49,13 @@ def parse_args() -> Namespace:
     parser.add_argument("--log.active", type=str2bool, help="Enable or disable logging")
     parser.add_argument("--log.spoiler", type=str2bool, help="Wrap logs in spoilers")
     parser.add_argument(
-        "--openai_config.memory_max_tokens", type=int, help="Max tokens for memory"
+        "--ai_client.client", help="AI provider (e.g. openai, gemini or custom client)"
     )
     parser.add_argument(
-        "--openai_config.summary_memory_max_tokens",
-        type=int,
-        help="Max tokens for summary memory",
+        "--ai_client.config",
+        type=json_string_to_dict,
+        help="Override AI config as JSON string",
     )
-    parser.add_argument("--openai_config.model", type=str, help="OpenAI model to use")
     parser.add_argument(
         "--planning.active", type=str2bool, help="Enable or disable planning"
     )
@@ -42,4 +65,8 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "--custom_commands_paths", nargs="*", help="Paths to custom commands"
     )
+    parser.add_argument(
+        "--custom_clients_paths", nargs="*", help="Paths to custom clients"
+    )
+
     return parser.parse_args()

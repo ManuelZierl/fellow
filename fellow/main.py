@@ -3,21 +3,28 @@ from typing import Optional
 
 from pydantic import ValidationError
 
-from fellow.clients.OpenAIClient import FunctionResult, OpenAIClient
+from fellow.clients import Client
+from fellow.clients.OpenAIClient import FunctionResult
 from fellow.commands.command import CommandContext
+from fellow.utils.init_client import init_client
 from fellow.utils.init_command import init_command
+from fellow.utils.load_client import load_client
 from fellow.utils.load_commands import load_commands
-from fellow.utils.load_config import load_config
+from fellow.utils.load_config import Config, load_config
 from fellow.utils.log_message import clear_log, log_message
 from fellow.utils.parse_args import parse_args
 
 
 def main() -> None:
     args = parse_args()
-    config = load_config(args)
+    config: Config = load_config(args)
 
     if args.command == "init-command":
         init_command(args.name, config.custom_commands_paths[0])
+        return
+
+    if args.command == "init-client":
+        init_client(args.name, config.custom_commands_paths[0])
         return
 
     if config.task is None:
@@ -39,13 +46,8 @@ def main() -> None:
     log_message(config, name="Instruction", color=0, content=first_message)
 
     # Init AI client
-    openai_client = OpenAIClient(
-        system_content=introduction_prompt,
-        memory_max_tokens=config.openai_config.memory_max_tokens,
-        summary_memory_max_tokens=config.openai_config.summary_memory_max_tokens,
-        model=config.openai_config.model,
-    )
-    context: CommandContext = {"ai_client": openai_client}
+    client: Client = load_client(system_content=introduction_prompt, config=config)
+    context: CommandContext = {"ai_client": client, "config": config}
 
     # Prepare OpenAI functions
     functions_schema = [cmd.openai_schema() for cmd in commands.values()]
@@ -57,8 +59,13 @@ def main() -> None:
     steps = 0
     while True:
         # 1. Call OpenAI
-        reasoning, func_name, func_args = openai_client.chat(
+        chat_result = client.chat(
             message=message, function_result=function_result, functions=functions_schema
+        )
+        reasoning, func_name, func_args = (
+            chat_result["message"],
+            chat_result["function_name"],
+            chat_result["function_args"],
         )
 
         # 2. Log assistant reasoning (if any)
@@ -81,7 +88,7 @@ def main() -> None:
         if reasoning and (
             reasoning.strip() == "END" or reasoning.strip().endswith("END")
         ):
-            openai_client.store_memory("memory.json")
+            client.store_memory("memory.json")
             break
 
         # 3. If a function is called, run it and prepare result

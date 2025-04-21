@@ -1,14 +1,16 @@
 import json
-from typing import Protocol, Type, TypedDict, TypeVar
+from typing import Dict, Protocol, Type, TypedDict, TypeVar
 
 from openai.types.chat.completion_create_params import Function
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ValidationError
 
-from fellow.clients.OpenAIClient import OpenAIClient
+from fellow.clients.Client import Client
+from fellow.utils.load_config import Config
 
 
 class CommandContext(TypedDict):
-    ai_client: OpenAIClient
+    ai_client: Client
+    config: Config
 
 
 class CommandInput(BaseModel): ...

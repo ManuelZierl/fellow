@@ -3,16 +3,10 @@ from argparse import Namespace
 from typing import Any, Dict, List, Optional
 
 import yaml
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from pydantic.v1.utils import deep_update
 
 import fellow
-
-
-class OpenAIConfig(BaseModel):
-    memory_max_tokens: int
-    summary_memory_max_tokens: int
-    model: str  # todo: make it literal?
 
 
 class PlanningConfig(BaseModel):
@@ -32,16 +26,24 @@ class LogConfig(BaseModel):
         return v
 
 
+class ClientConfig(BaseModel):
+    client: str
+    config: Optional[Dict[str, Any]] = {}
+
+
 class Config(BaseModel):
     introduction_prompt: str
     first_message: str
     task: Optional[str]
     log: LogConfig
-    openai_config: OpenAIConfig
+    ai_client: ClientConfig
     commands: List[str]
     planning: PlanningConfig
     steps_limit: Optional[int]
     custom_commands_paths: List[str]
+    custom_clients_paths: List[str]
+
+    model_config = ConfigDict(extra="forbid")
 
 
 def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:

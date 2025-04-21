@@ -1,16 +1,24 @@
 import json
+import os
 from typing import Dict, List, Literal, Optional, Tuple, TypedDict
 
 import openai
 import tiktoken
-from openai import NOT_GIVEN, NotGiven
+from openai import NOT_GIVEN
 from openai.types.chat import (
     ChatCompletionAssistantMessageParam,
     ChatCompletionMessageParam,
 )
 from openai.types.chat.chat_completion_assistant_message_param import FunctionCall
-from openai.types.chat.completion_create_params import Function
-from typing_extensions import Required
+from typing_extensions import Required, Self
+
+from fellow.clients.Client import (
+    ChatResult,
+    Client,
+    ClientConfig,
+    Function,
+    FunctionResult,
+)
 
 
 class OpenAIClientMessage(TypedDict, total=False):
@@ -21,41 +29,41 @@ class OpenAIClientMessage(TypedDict, total=False):
     function_call: FunctionCall
 
 
-class FunctionResult(TypedDict):
-    name: Required[str]
-    output: Required[str]
+class OpenAIClientConfig(ClientConfig):
+    """
+    Configuration for OpenAIClient.
+    """
+
+    system_content: str
+    memory_max_tokens: int
+    summary_memory_max_tokens: int
+    model: str
 
 
-class OpenAIClient:
-    def __init__(
-        self,
-        system_content: str,
-        memory_max_tokens: int = 15000,
-        summary_memory_max_tokens: int = 15000,
-        model: str = "gpt-4o",
-    ):
-        """
-        Initializes the OpenAIClient with system content prompt, token limits, and model configuration.
+class OpenAIClient(Client[OpenAIClientConfig]):
+    config_class = OpenAIClientConfig
 
-        :param system_content: Initial system message to guide the assistant's behavior.
-        :param memory_max_tokens: Max tokens allowed in message memory before summarization.
-        :param summary_memory_max_tokens: Max tokens allowed in summarized memory before re-summarizing.
-        :param model: OpenAI model name to use for completions.
-        """
-        self.memory_max_tokens = memory_max_tokens
-        self.summary_memory_max_tokens = summary_memory_max_tokens
-        self.model = model
+    def __init__(self, config: OpenAIClientConfig):
+        if os.environ.get("OPENAI_API_KEY") is None:
+            raise ValueError("[ERROR] OPENAI_API_KEY environment variable is not set.")
+        self.memory_max_tokens = config.memory_max_tokens
+        self.summary_memory_max_tokens = config.summary_memory_max_tokens
+        self.model = config.model
         self.system_content: List[OpenAIClientMessage] = [
             {
                 "role": "system",
-                "content": system_content,
-                "tokens": self.count_tokens(
-                    {"role": "system", "content": system_content}
+                "content": config.system_content,
+                "tokens": self._count_tokens(
+                    {"role": "system", "content": config.system_content}
                 ),
             }
         ]
         self.summary_memory: List[OpenAIClientMessage] = []
         self.memory: List[OpenAIClientMessage] = []
+
+    @classmethod
+    def create(cls, config: OpenAIClientConfig) -> Self:
+        return cls(config)
 
     def message_to_params(self) -> List[ChatCompletionMessageParam]:
         """
@@ -105,10 +113,10 @@ class OpenAIClient:
 
     def chat(
         self,
+        functions: List[Function],
         message: str = "",
         function_result: Optional[FunctionResult] = None,
-        functions: List[Function] | NotGiven = NOT_GIVEN,
-    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    ) -> ChatResult:
         """
         Sends a message or a function result to the model, can also handle function calls.
         Updates memory, and handles summarization if token limits are exceeded.
@@ -126,7 +134,9 @@ class OpenAIClient:
                 "role": "function",
                 "name": fn_name,
                 "content": fn_output,
-                "tokens": self.count_tokens({"role": "function", "content": fn_output}),
+                "tokens": self._count_tokens(
+                    {"role": "function", "content": fn_output}
+                ),
             }
             self.memory.append(new_msg)
         else:
@@ -134,7 +144,7 @@ class OpenAIClient:
                 new_msg = {
                     "role": "user",
                     "content": message,
-                    "tokens": self.count_tokens({"role": "user", "content": message}),
+                    "tokens": self._count_tokens({"role": "user", "content": message}),
                 }
                 self.memory.append(new_msg)
 
@@ -157,9 +167,17 @@ class OpenAIClient:
         self._maybe_summarize_memory()
 
         if msg.function_call:
-            return msg.content, msg.function_call.name, msg.function_call.arguments
+            return {
+                "message": msg.content,
+                "function_name": msg.function_call.name,
+                "function_args": msg.function_call.arguments,
+            }
         else:
-            return msg.content, None, None
+            return {
+                "message": msg.content,
+                "function_name": None,
+                "function_args": None,
+            }
 
     def store_memory(self, filename: str):
         """
@@ -170,7 +188,21 @@ class OpenAIClient:
         with open(filename, "w") as f:  # noinspection PyTypeChecker
             json.dump(self.messages(), f, indent=2)
 
-    def count_tokens(self, message: Dict) -> int:
+    def set_plan(self, plan: str) -> None:
+        """
+        Adds a system message to the memory with the specified plan.
+
+        :param plan: The plan to be set.
+        """
+        self.system_content.append(
+            {
+                "role": "system",
+                "content": plan,
+                "tokens": self._count_tokens({"role": "system", "content": plan}),
+            }
+        )
+
+    def _count_tokens(self, message: Dict) -> int:
         """
         Estimates the number of tokens a single message will consume when sent to the OpenAI API.
 
@@ -212,7 +244,7 @@ class OpenAIClient:
                 {
                     "role": "assistant",
                     "content": message,
-                    "tokens": self.count_tokens(
+                    "tokens": self._count_tokens(
                         {"role": "assistant", "content": message}
                     ),
                 }
@@ -228,7 +260,7 @@ class OpenAIClient:
                         "name": function_call["name"],
                         "arguments": arguments,
                     },
-                    "tokens": self.count_tokens(
+                    "tokens": self._count_tokens(
                         {
                             "role": "assistant",
                             "content": f"[Function call] {function_call['name']}({arguments})",
@@ -257,7 +289,7 @@ class OpenAIClient:
                 {
                     "role": "system",
                     "content": summary_content,
-                    "tokens": self.count_tokens(
+                    "tokens": self._count_tokens(
                         {"role": "system", "content": summary_content}
                     ),
                 }
@@ -276,7 +308,7 @@ class OpenAIClient:
                 {
                     "role": "system",
                     "content": summary_content,
-                    "tokens": self.count_tokens(
+                    "tokens": self._count_tokens(
                         {"role": "system", "content": summary_content}
                     ),
                 }
