@@ -4,14 +4,20 @@ from tempfile import NamedTemporaryFile
 from unittest.mock import MagicMock, patch
 
 import pytest
-from openai import NOT_GIVEN
 
-from fellow.clients.OpenAIClient import OpenAIClient
+from fellow.clients.OpenAIClient import OpenAIClient, OpenAIClientConfig
 
 
 @pytest.fixture
 def client():
-    return OpenAIClient(system_content="You are a helpful assistant.")
+    return OpenAIClient.create(
+        OpenAIClientConfig(
+            system_content="You are a helpful assistant.",
+            memory_max_tokens=1000,
+            summary_memory_max_tokens=1000,
+            model="gpt-3.5-turbo",
+        )
+    )
 
 
 @pytest.fixture
@@ -80,8 +86,14 @@ def test_chat(mock_create, client, mock_openai_api_key):
         {"name": "func", "description": "func1 description", "parameters": {"arg": 1}}
     ]
 
-    response = client.chat("Hi there", NOT_GIVEN, functions=functions)
-    assert response == ("Hello!", None, None)
+    response = client.chat(
+        functions=functions, message="Hi there", function_result=None
+    )
+    assert response == {
+        "message": "Hello!",
+        "function_name": None,
+        "function_args": None,
+    }
     assert len(client.memory) == 2
     assert client.memory[-1]["content"] == "Hello!"
     assert "tokens" in client.memory[-1]
@@ -96,7 +108,11 @@ def test_chat(mock_create, client, mock_openai_api_key):
     response = client.chat(
         "", function_result={"name": "get_code", "output": "import os"}
     )
-    assert response == (None, "get_code", "{}")
+    assert response == {
+        "message": None,
+        "function_name": "get_code",
+        "function_args": "{}",
+    }
 
 
 @patch.object(OpenAIClient, "_summarize_memory")
@@ -108,7 +124,7 @@ def test_memory_summarization_triggered(mock_summarize, client):
         {"role": "user", "content": f"msg{i}", "tokens": 300} for i in range(5)
     ]
     client.summary_memory = []
-    client.count_tokens = lambda _: 300
+    client._count_tokens = lambda _: 300
     client.memory_max_tokens = 1000
     client.summary_memory_max_tokens = 1000
 
@@ -220,7 +236,7 @@ def test__maybe_summarize_memory(client):
     ] * 3  # 180 tokens total
 
     # Patch count_tokens to return fixed value for simplicity
-    client.count_tokens = lambda msg: 10
+    client._count_tokens = lambda msg: 10
 
     # Trigger summarization
     client._maybe_summarize_memory()
@@ -248,3 +264,8 @@ def test__maybe_summarize_memory(client):
         in client.summary_memory[1]["content"]
     )
     assert len(mock_summarize.call_args[0][0]) == 2
+
+
+def test_set_plan():
+    # todo: ...
+    pass
