@@ -43,7 +43,7 @@ class Config(BaseModel):
     custom_commands_paths: List[str]
     custom_clients_paths: List[str]
 
-    model_config = ConfigDict(extra="forbid")
+    # todo: model_config = ConfigDict(extra="forbid")
 
 
 def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:
@@ -83,5 +83,4 @@ def load_config(args: Namespace) -> Config:
 
     cli_config = extract_cli_overrides(args)
     config_dict = deep_update(config_dict, cli_config)
-
     return Config.model_validate(config_dict)
