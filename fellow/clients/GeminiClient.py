@@ -101,10 +101,11 @@ class GeminiClient(Client[GeminiClientConfig]):
         parameters = command.input_type.model_json_schema()
         del parameters["title"]
         for param_name, param in parameters["properties"].items():
-            del param["title"]
-            any_of = param.get("anyOf")
+            if "title" in param:
+                del param["title"]
             if "default" in param:
                 del param["default"]
+            any_of = param.get("anyOf")
             if any_of:
                 if len(any_of) == 1:
                     param["type"] = any_of[0]["type"]
