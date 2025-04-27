@@ -1,11 +1,10 @@
 import importlib
 import json
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from fellow.clients.Client import ChatResult, FunctionResult
 from fellow.clients.GeminiClient import GeminiClient, GeminiClientConfig
 
 
