@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import Field
 
 from fellow.clients import Client
-from fellow.commands.command import CommandContext, CommandInput
+from fellow.commands.Command import CommandContext, CommandInput
 from fellow.utils.load_client import load_client
 
 

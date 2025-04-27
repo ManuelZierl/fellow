@@ -4,7 +4,7 @@ from types import ModuleType
 from typing import Dict, Optional, Tuple
 
 from fellow.commands import ALL_COMMANDS
-from fellow.commands.command import Command, CommandInput
+from fellow.commands.Command import Command, CommandInput
 from fellow.utils.load_config import Config
 from fellow.utils.load_python_module import load_python_module
 

@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Optional, Type, cast
 
-from fellow.clients import ALL_CLIENTS, Client
-from fellow.clients.Client import ClientConfig
+from fellow.clients import ALL_CLIENTS
+from fellow.clients.Client import Client, ClientConfig
 from fellow.utils.load_config import Config
 from fellow.utils.load_python_module import load_python_module
 

@@ -3,9 +3,9 @@ from typing import Optional
 
 from pydantic import ValidationError
 
-from fellow.clients import Client
+from fellow.clients.Client import Client
 from fellow.clients.OpenAIClient import FunctionResult
-from fellow.commands.command import CommandContext
+from fellow.commands.Command import CommandContext
 from fellow.utils.init_client import init_client
 from fellow.utils.init_command import init_command
 from fellow.utils.load_client import load_client
@@ -50,7 +50,7 @@ def main() -> None:
     context: CommandContext = {"ai_client": client, "config": config}
 
     # Prepare OpenAI functions
-    functions_schema = [cmd.openai_schema() for cmd in commands.values()]
+    functions_schema = [client.get_function_schema(cmd) for cmd in commands.values()]
 
     # === Start Loop ===
     message = first_message

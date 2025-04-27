@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from fellow.clients.OpenAIClient import OpenAIClient, OpenAIClientConfig
+from fellow.commands import Command, ViewFileInput, view_file
 
 
 @pytest.fixture
@@ -269,3 +270,43 @@ def test__maybe_summarize_memory(client):
 def test_set_plan():
     # todo: ...
     pass
+
+
+def test_command_get_function_schema(client):
+    command = Command(ViewFileInput, view_file)
+    assert client.get_function_schema(command) == {
+        "name": "view_file",
+        "description": "View the contents of a file, optionally between specific line numbers.",
+        "parameters": {
+            "properties": {
+                "filepath": {
+                    "description": "The path to the file to be viewed.",
+                    "title": "Filepath",
+                    "type": "string",
+                },
+                "from_line": {
+                    "anyOf": [{"type": "integer"}, {"type": "null"}],
+                    "default": None,
+                    "description": "Optional 1-based starting line number.",
+                    "title": "From Line",
+                },
+                "to_line": {
+                    "anyOf": [{"type": "integer"}, {"type": "null"}],
+                    "default": None,
+                    "description": "Optional 1-based ending line number (inclusive).",
+                    "title": "To Line",
+                },
+            },
+            "required": ["filepath"],
+            "title": "ViewFileInput",
+            "type": "object",
+        },
+    }
+
+    with pytest.raises(ValueError) as err:
+        client.get_function_schema(Command(ViewFileInput, lambda x, y: None))
+    assert str(err.value) == "[ERROR] Command handler is __doc__ is empty"
+
+    with pytest.raises(ValueError) as err:
+        client.get_function_schema(Command(ViewFileInput, "no-name"))
+    assert str(err.value) == "[ERROR] Command handler is not callable with __name__."

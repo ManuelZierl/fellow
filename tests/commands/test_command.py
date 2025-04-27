@@ -2,47 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from fellow.commands import Command, CommandInput, ViewFileInput, view_file
-from fellow.commands.command import CommandContext
-
-
-def test_command_openai_schema():
-    command = Command(ViewFileInput, view_file)
-    assert command.openai_schema() == {
-        "name": "view_file",
-        "description": "View the contents of a file, optionally between specific line numbers.",
-        "parameters": {
-            "properties": {
-                "filepath": {
-                    "description": "The path to the file to be viewed.",
-                    "title": "Filepath",
-                    "type": "string",
-                },
-                "from_line": {
-                    "anyOf": [{"type": "integer"}, {"type": "null"}],
-                    "default": None,
-                    "description": "Optional 1-based starting line number.",
-                    "title": "From Line",
-                },
-                "to_line": {
-                    "anyOf": [{"type": "integer"}, {"type": "null"}],
-                    "default": None,
-                    "description": "Optional 1-based ending line number (inclusive).",
-                    "title": "To Line",
-                },
-            },
-            "required": ["filepath"],
-            "title": "ViewFileInput",
-            "type": "object",
-        },
-    }
-
-    with pytest.raises(ValueError) as err:
-        Command(ViewFileInput, lambda x, y: None).openai_schema()
-    assert str(err.value) == "[ERROR] Command handler is __doc__ is empty"
-
-    with pytest.raises(ValueError) as err:
-        Command(ViewFileInput, "no-name").openai_schema()
-    assert str(err.value) == "[ERROR] Command handler is not callable with __name__."
+from fellow.commands.Command import CommandContext
 
 
 def test_command_run():

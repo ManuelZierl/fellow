@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, List, Literal, Optional, Tuple, TypedDict
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypedDict
 
 import openai
 import tiktoken
@@ -19,6 +19,9 @@ from fellow.clients.Client import (
     Function,
     FunctionResult,
 )
+
+if TYPE_CHECKING:
+    from fellow.commands.Command import Command
 
 
 class OpenAIClientMessage(TypedDict, total=False):
@@ -201,6 +204,17 @@ class OpenAIClient(Client[OpenAIClientConfig]):
                 "tokens": self._count_tokens({"role": "system", "content": plan}),
             }
         )
+
+    def get_function_schema(self, command: "Command") -> Function:
+        if not hasattr(command.command_handler, "__name__"):
+            raise ValueError("[ERROR] Command handler is not callable with __name__.")
+        if command.command_handler.__doc__ is None:
+            raise ValueError("[ERROR] Command handler is __doc__ is empty")
+        return {
+            "name": command.command_handler.__name__,
+            "description": command.command_handler.__doc__.strip(),
+            "parameters": command.input_type.model_json_schema(),
+        }
 
     def _count_tokens(self, message: Dict) -> int:
         """

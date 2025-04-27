@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 from fellow.clients.OpenAIClient import OpenAIClient
-from fellow.commands.command import CommandContext
+from fellow.commands.Command import CommandContext
 from fellow.commands.make_plan import MakePlanInput, make_plan
 
 

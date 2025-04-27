@@ -1,4 +1,5 @@
 from typing import (
+    TYPE_CHECKING,
     Dict,
     List,
     Optional,
@@ -11,6 +12,9 @@ from typing import (
 
 from openai import BaseModel
 from typing_extensions import Required, Self
+
+if TYPE_CHECKING:
+    from fellow.commands.Command import Command
 
 
 class ChatResult(TypedDict):
@@ -122,5 +126,13 @@ class Client(Protocol[T]):
         Sets the plan for the AI to follow in future interactions.
 
         :param plan: The plan to be set.
+        """
+        ...
+
+    def get_function_schema(self, command: "Command") -> Function:
+        """
+        Returns the function schema for a given command for this client.
+
+        :param command: The command for which to get the function schema.
         """
         ...

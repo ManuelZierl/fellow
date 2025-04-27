@@ -1,10 +1,11 @@
 import json
 import os
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional, Union
 
 # todo: todo: follow: https://github.com/googleapis/python-genai/issues/61
 from google import genai  # type: ignore
 from google.genai import types  # type: ignore
+from google.genai.types import Part  # type: ignore
 from typing_extensions import Self
 
 from fellow.clients.Client import (
@@ -14,6 +15,9 @@ from fellow.clients.Client import (
     Function,
     FunctionResult,
 )
+
+if TYPE_CHECKING:
+    from fellow.commands.Command import Command
 
 
 class GeminiClientConfig(ClientConfig):
@@ -45,20 +49,28 @@ class GeminiClient(Client[GeminiClientConfig]):
         config = types.GenerateContentConfig(tools=[tools])
 
         if function_result:
-            msg = function_result["output"]
+            msg: Union[Part, str] = Part.model_validate(
+                {
+                    "function_response": {
+                        "name": function_result["name"],
+                        "response": {"output": function_result["output"]},
+                    }
+                }
+            )
         else:
             msg = message
 
-        # response = self.chat_session.send_message(msg)
         response = self.client_chat.send_message(
             message=msg,
             config=config,
         )
-
-        function_name: Optional[str] = response.function_calls[0].name
         function_args: Optional[str] = None
-        if response.function_calls[0].args:
-            function_args = json.dumps(response.function_calls[0].args)
+        function_name: Optional[str] = None
+        if response.function_calls:
+            if response.function_calls[0].name:
+                function_name = response.function_calls[0].name
+            if response.function_calls[0].args:
+                function_args = json.dumps(response.function_calls[0].args)
 
         return ChatResult(
             message=response.text,
@@ -78,3 +90,39 @@ class GeminiClient(Client[GeminiClientConfig]):
         self.client_chat.send_message(
             message=plan,
         )
+
+    def get_function_schema(self, command: "Command") -> Function:
+        if not hasattr(command.command_handler, "__name__"):
+            raise ValueError("[ERROR] Command handler is not callable with __name__.")
+        if command.command_handler.__doc__ is None:
+            raise ValueError("[ERROR] Command handler is __doc__ is empty")
+        name = command.command_handler.__name__
+        description = command.command_handler.__doc__.strip()
+        parameters = command.input_type.model_json_schema()
+        del parameters["title"]
+        for param_name, param in parameters["properties"].items():
+            del param["title"]
+            any_of = param.get("anyOf")
+            if "default" in param:
+                del param["default"]
+            if any_of:
+                if len(any_of) == 1:
+                    param["type"] = any_of[0]["type"]
+                elif len(any_of) == 2:
+                    # Handle type: ["integer", "null"] → Gemini doesn't support it
+                    if any_of[0]["type"] == "null":
+                        param["type"] = any_of[1]["type"]
+                    elif any_of[1]["type"] == "null":
+                        param["type"] = any_of[0]["type"]
+                    else:
+                        param["anyOf"] = any_of
+                else:
+                    raise ValueError(
+                        f"Unsupported anyOf length: {len(any_of)} for parameter {param_name}, Gemini does not support it."
+                    )
+                del param["anyOf"]
+        return {
+            "name": name,
+            "description": description,
+            "parameters": parameters,
+        }
