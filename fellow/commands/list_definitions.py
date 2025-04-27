@@ -5,7 +5,7 @@ from typing import Optional, cast
 
 from pydantic import Field
 
-from fellow.commands.command import CommandContext, CommandInput
+from fellow.commands.Command import CommandContext, CommandInput
 
 
 class ListDefinitionsInput(CommandInput):

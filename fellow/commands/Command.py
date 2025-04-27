@@ -1,14 +1,15 @@
 import json
 from typing import Protocol, Type, TypedDict, TypeVar
 
-from openai.types.chat.completion_create_params import Function
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ValidationError
 
-from fellow.clients.OpenAIClient import OpenAIClient
+from fellow.clients.Client import Client
+from fellow.utils.load_config import Config
 
 
 class CommandContext(TypedDict):
-    ai_client: OpenAIClient
+    ai_client: Client
+    config: Config
 
 
 class CommandInput(BaseModel): ...
@@ -25,17 +26,6 @@ class Command:
     def __init__(self, input_type: Type[CommandInput], command_handler: CommandHandler):
         self.input_type = input_type
         self.command_handler = command_handler
-
-    def openai_schema(self) -> Function:
-        if not hasattr(self.command_handler, "__name__"):
-            raise ValueError("[ERROR] Command handler is not callable with __name__.")
-        if self.command_handler.__doc__ is None:
-            raise ValueError("[ERROR] Command handler is __doc__ is empty")
-        return {
-            "name": self.command_handler.__name__,
-            "description": self.command_handler.__doc__.strip(),
-            "parameters": self.input_type.model_json_schema(),
-        }
 
     def run(self, command_input_str: str, context: CommandContext) -> str:
         try:

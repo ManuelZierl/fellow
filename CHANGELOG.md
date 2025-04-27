@@ -11,8 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [added Changelog](https://github.com/ManuelZierl/fellow/issues/46)
 - [Make custom commands pluggable via .fellow/commands/ folder](https://github.com/ManuelZierl/fellow/issues/9)
 - [Configurable limit steps](https://github.com/ManuelZierl/fellow/issues/45)
+- [init-client command](https://github.com/ManuelZierl/fellow/issues/43)
+- [custom clients pluggable](https://github.com/ManuelZierl/fellow/issues/43)
+- [add Gemini client](https://github.com/ManuelZierl/fellow/issues/43)
 
 ### Changed
+- [client is an interface now](https://github.com/ManuelZierl/fellow/issues/43)
+
 
 ### Removed
 

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from fellow.commands.command import Command, CommandInput
+from fellow.commands.Command import Command, CommandInput
 from fellow.utils.load_commands import load_command_from_file, load_commands
 
 
@@ -13,7 +13,7 @@ def test_load_module_from_file(tmp_path: Path):
     # Arrange: create a valid Python file with a command object
     file_content = textwrap.dedent(
         """
-        from fellow.commands.command import Command, CommandContext, CommandInput
+        from fellow.commands.Command import Command, CommandContext, CommandInput
         from pydantic import Field
 
         class EchoInput(CommandInput):
@@ -48,7 +48,7 @@ def test_load_command_from_file_raises_on_name_mismatch(tmp_path: Path):
     # Arrange: file is named 'echo.py', but defines function 'greet'
     file_content = textwrap.dedent(
         """
-        from fellow.commands.command import CommandInput, CommandContext
+        from fellow.commands.Command import CommandInput, CommandContext
         from pydantic import Field
 
         class EchoInput(CommandInput):
@@ -71,7 +71,7 @@ def test_load_command_from_file_raises_on_name_mismatch(tmp_path: Path):
 def test_load_command_from_file_raises_on_wrong_signature(tmp_path: Path):
     file_content = textwrap.dedent(
         """
-        from fellow.commands.command import CommandInput, CommandContext
+        from fellow.commands.Command import CommandInput, CommandContext
         from pydantic import Field
 
         class EchoInput(CommandInput):
@@ -97,7 +97,7 @@ def test_load_commands_with_custom_command(tmp_path: Path):
 
     file_content = textwrap.dedent(
         """
-        from fellow.commands.command import CommandInput, CommandContext
+        from fellow.commands.Command import CommandInput, CommandContext
         from pydantic import Field
 
         class EchoInput(CommandInput):

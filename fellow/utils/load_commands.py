@@ -1,13 +1,12 @@
-import importlib.util
 import inspect
-import sys
 from pathlib import Path
 from types import ModuleType
 from typing import Dict, Optional, Tuple
 
 from fellow.commands import ALL_COMMANDS
-from fellow.commands.command import Command, CommandInput
+from fellow.commands.Command import Command, CommandInput
 from fellow.utils.load_config import Config
+from fellow.utils.load_python_module import load_python_module
 
 
 def load_commands(config: Config) -> Dict[str, Command]:
@@ -68,7 +67,7 @@ def load_command_from_file(file_path: Path) -> Tuple[str, Command]:
     - File must define a function with the same name as the file (e.g. echo.py → def echo)
     - Function must have 2 args and a docstring
     """
-    module = _load_python_module(file_path)
+    module = load_python_module(file_path)
 
     input_type = _find_command_input_class(module)
     expected_fn_name = file_path.stem
@@ -97,17 +96,6 @@ def load_command_from_file(file_path: Path) -> Tuple[str, Command]:
 
     command = Command(input_type, handler)
     return expected_fn_name, command
-
-
-def _load_python_module(file_path: Path) -> ModuleType:
-    module_name = f"fellow_custom_{file_path.stem}"
-    spec = importlib.util.spec_from_file_location(module_name, str(file_path))
-    if spec is None or spec.loader is None:
-        raise ImportError(f"Could not load spec for {file_path}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)  # type: ignore
-    return module
 
 
 def _find_command_input_class(module: ModuleType) -> Optional[type[CommandInput]]:

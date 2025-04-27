@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import Field
 
 from fellow.commands import CommandInput
-from fellow.commands.command import CommandContext
+from fellow.commands.Command import CommandContext
 
 
 class PipInstallInput(CommandInput):

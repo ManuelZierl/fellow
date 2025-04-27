@@ -30,7 +30,6 @@ def init_command(command_name: str, target: str) -> Path:
     class_name = (
         "".join(part.capitalize() for part in command_name.split("_")) + "Input"
     )
-    print(target_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
     file_path = target_dir / f"{command_name}.py"
 

@@ -32,9 +32,13 @@ def test_summary_output(tmp_path):
 
     mock_client = MagicMock()
     # Adjust to return a tuple as expected by chat()
-    mock_client.chat.return_value = ("Das ist eine Zusammenfassung.", None, None)
+    mock_client.chat.return_value = {
+        "message": "Das ist eine Zusammenfassung.",
+        "function_name": None,
+        "function_args": None,
+    }
 
-    summarize_module.OpenAIClient = lambda **kwargs: mock_client
+    summarize_module.load_client = lambda **kwargs: mock_client
 
     args = SummarizeFileInput(filepath=str(file_path))
     context = MagicMock(ai_client=MagicMock(model="gpt-4"))
@@ -66,14 +70,19 @@ def test_max_chars_truncates(tmp_path):
 
     mock_client = MagicMock()
     # Adjust to return a tuple as expected by chat()
-    mock_client.chat.return_value = ("Zusammenfassung für 100 Zeichen.", None, None)
+    mock_client.chat.return_value = {
+        "message": "Zusammenfassung für 100 Zeichen.",
+        "function_name": None,
+        "function_args": None,
+    }
 
-    summarize_module.OpenAIClient = lambda **kwargs: mock_client
+    summarize_module.load_client = lambda **kwargs: mock_client
 
     args = SummarizeFileInput(filepath=str(file_path), max_chars=100)
     context = MagicMock(ai_client=MagicMock(model="gpt-4"))
     result = summarize_file(args, context)
 
     assert "[OK] Summary:\nZusammenfassung für 100 Zeichen." == result
-    call_arg = mock_client.chat.call_args[0][0]
-    assert len(call_arg) < 200  # sollte etwa 100 + prompt sein
+    assert (
+        len(mock_client.chat.call_args.kwargs["message"]) < 200
+    )  # sollte etwa 100 + prompt sein
