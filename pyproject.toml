@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fellow"
-version = "0.0.2"
+version = "0.0.3"
 description = "Fellow CLI tool is a command line development assistant"
 readme = { file = "README.md", content-type = "text/markdown" }
 urls = { "Homepage" = "https://github.com/ManuelZierl/fellow", "Source" = "https://github.com/ManuelZierl/fellow", "Tracker" = "https://github.com/ManuelZierl/fellow/issues" }
