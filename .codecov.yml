@@ -1,0 +1,28 @@
+coverage:
+  precision: 2
+  round: down
+  range: 50..100
+
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 100.0
+        if_not_found: success
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 100.0
+        if_not_found: success
+        informational: true
+
+comment:
+  layout: "reach, diff, files"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "tests/"
+  - "**/__init__.py"
+  - "**/migrations/*"
