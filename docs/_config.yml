@@ -4,3 +4,6 @@ plugins:
 title: Fellow
 description: Fellow is a command-line AI assistant built by developers, for developers.
 show_downloads: false
+
+include:
+  - assets/css/custom.css
