@@ -18,7 +18,7 @@ It’s still early and evolving—but it already works. And if you're a develope
 
 ## Documentation
 
-Full documentation for **Fellow** is available at: [Documentation](https://manuelzierl.github.io/fellow)
+Full documentation for **Fellow** is available at: <a href="https://manuelzierl.github.io/fellow" target="_blank">Documentation</a>
 
 ---
 
