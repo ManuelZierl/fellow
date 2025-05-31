@@ -21,10 +21,12 @@ log:
   active: true
   spoiler: true
   filepath: fellow_log.md
-openai_config:
-  memory_max_tokens: 15000
-  summary_memory_max_tokens: 15000
-  model: "gpt-4o"
+ai_client:
+  client: openai
+  config:
+    memory_max_tokens: 15000
+    summary_memory_max_tokens: 15000
+    model: "gpt-4o"
 commands:
   - "create_file"
   - "view_file"
@@ -41,3 +43,8 @@ planning:
   active: true
   prompt: |
     Before writing any code, break the task into subgoals using the `make_plan` command.
+steps_limit: null
+custom_commands_paths:
+  - ".fellow/commands"
+custom_clients_paths:
+  - ".fellow/clients"

@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 from fellow.clients.OpenAIClient import OpenAIClient
-from fellow.commands.command import CommandContext
+from fellow.commands.Command import CommandContext
 from fellow.commands.make_plan import MakePlanInput, make_plan
 
 
@@ -9,7 +9,7 @@ from fellow.commands.make_plan import MakePlanInput, make_plan
 class FakeOpenAIClient(OpenAIClient):
     def __init__(self):
         self.system_content = []
-        self.count_tokens = MagicMock(return_value=42)
+        self._count_tokens = MagicMock(return_value=42)
 
 
 def test_make_plan_appends_to_system_content():
@@ -17,7 +17,7 @@ def test_make_plan_appends_to_system_content():
     plan_text = "First, load data. Then preprocess it. Finally, train the model."
     input_data = MakePlanInput(plan=plan_text)
     fake_client = FakeOpenAIClient()
-    context: CommandContext = {"ai_client": fake_client}
+    context = {"ai_client": fake_client, "config": MagicMock()}
 
     # Act
     result = make_plan(input_data, context)
@@ -29,6 +29,6 @@ def test_make_plan_appends_to_system_content():
     assert content_entry["role"] == "system"
     assert content_entry["content"] == plan_text
     assert content_entry["tokens"] == 42
-    fake_client.count_tokens.assert_called_once_with(
+    fake_client._count_tokens.assert_called_once_with(
         {"role": "system", "content": plan_text}
     )

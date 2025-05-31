@@ -1,6 +1,6 @@
 from typing import Dict
 
-from fellow.commands.command import Command, CommandHandler, CommandInput
+from fellow.commands.Command import Command, CommandHandler, CommandInput
 from fellow.commands.create_file import CreateFileInput, create_file
 from fellow.commands.delete_file import DeleteFileInput, delete_file
 from fellow.commands.edit_file import EditFileInput, edit_file

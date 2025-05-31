@@ -2,7 +2,7 @@ import subprocess
 
 from pydantic import Field
 
-from fellow.commands.command import CommandContext, CommandInput
+from fellow.commands.Command import CommandContext, CommandInput
 
 
 class RunPytestInput(CommandInput):

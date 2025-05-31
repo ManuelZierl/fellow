@@ -3,8 +3,9 @@ from typing import Optional
 
 from pydantic import Field
 
-from fellow.clients.OpenAIClient import OpenAIClient
-from fellow.commands.command import CommandContext, CommandInput
+from fellow.clients import Client
+from fellow.commands.Command import CommandContext, CommandInput
+from fellow.utils.load_client import load_client
 
 
 class SummarizeFileInput(CommandInput):
@@ -29,14 +30,15 @@ def summarize_file(args: SummarizeFileInput, context: CommandContext) -> str:
         if not content.strip():
             return "[INFO] File is empty or only contains whitespace."
 
-        client = OpenAIClient(
+        client: Client = load_client(
             system_content="Summarize the following file content.",
-            model=context["ai_client"].model,
+            config=context["config"],
         )
-        # Adjusted to handle the tuple returned by chat()
-        summary, _, _ = client.chat(
-            f"Please summarize the following file content:\n\n{content}"
-        )
+
+        summary = client.chat(
+            functions=[],
+            message=f"Please summarize the following file content:\n\n{content}",
+        )["message"]
         summary = summary.strip() if summary else "[INFO] No summary generated."
         return f"[OK] Summary:\n{summary}"
 

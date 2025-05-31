@@ -30,19 +30,20 @@ def test_loads_default_config(default_config):
                 "log.filepath",
                 "log.active",
                 "log.spoiler",
-                "openai_config.memory_max_tokens",
-                "openai_config.summary_memory_max_tokens",
-                "openai_config.model",
                 "planning.active",
                 "planning.prompt",
                 "commands",
+                "steps_limit",
             ]
         },
     )
     config = load_config(args)
     assert config.task == "a valid task"
     assert config.log.filepath.endswith(".md")
-    assert config.openai_config.model == default_config["openai_config"]["model"]
+    assert (
+        config.ai_client.config["model"]
+        == default_config["ai_client"]["config"]["model"]
+    )
 
 
 def test_cli_override():
@@ -53,7 +54,7 @@ def test_cli_override():
         first_message="Ignore",
         **{
             "log.filepath": "custom.md",
-            "openai_config.model": "gpt-super",
+            "ai_client.config": {"model": "gpt-super"},
             "log.active": True,
             "log.spoiler": False,
             "planning.active": True,
@@ -66,7 +67,7 @@ def test_cli_override():
     assert config.introduction_prompt == "Intro: {{TASK}}"
     assert config.first_message == "Ignore"
     assert config.log.filepath == "custom.md"
-    assert config.openai_config.model == "gpt-super"
+    assert config.ai_client.config["model"] == "gpt-super"
     assert config.log.active is True
     assert config.log.spoiler is False
     assert config.planning.active is True
@@ -91,9 +92,8 @@ def test_user_config_override():
                 "log.filepath",
                 "log.active",
                 "log.spoiler",
-                "openai_config.memory_max_tokens",
-                "openai_config.summary_memory_max_tokens",
-                "openai_config.model",
+                "ai_client.client",
+                "ai_client.config",
                 "planning.active",
                 "planning.prompt",
                 "commands",
