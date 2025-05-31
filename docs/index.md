@@ -1,7 +1,3 @@
-<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-<link rel="icon" type="image/png" href="img/favicon.png">
-<link rel="icon" type="image/x-icon" href="img/favicon.ico">
-
 # ![Fellow](img/logo.svg)
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
