@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # ![Fellow](img/logo.svg)
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
@@ -12,7 +16,6 @@
 
 Unlike most AI tools that stop at suggesting code, Fellow goes a step further:  
 It *executes* tasks on your behalf. It reasons step-by-step, chooses commands from a plugin system, and edits files, generates content, or writes tests — autonomously.
-
 ---
 
 ## Installation

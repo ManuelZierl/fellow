@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- [GitHub pages favicon](https://github.com/ManuelZierl/fellow/pull/70/files)
 
 ### Changed
 - [make Logo img global link](https://github.com/ManuelZierl/fellow/issues/68)
