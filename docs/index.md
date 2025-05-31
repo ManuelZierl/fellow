@@ -1,4 +1,4 @@
-# ![Fellow](../img/logo.svg)
+# ![Fellow](img/logo.svg)
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
 ![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
