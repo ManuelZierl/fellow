@@ -48,7 +48,3 @@ fellow init-command my_custom_command
 Place it in `.fellow/commands/` and register in your config.
 
 ---
-
-## 📄 [Changelog](../CHANGELOG.md) · [View on GitHub](https://github.com/ManuelZierl/fellow)
-
----

@@ -16,6 +16,9 @@ That's what Fellow explores. It uses YAML configs to define tasks, keeps a memor
 
 It’s still early and evolving—but it already works. And if you're a developer who wants more *doing* and less *prompting*, Fellow might just be the tool you've been waiting for.
 
+## Documentation
+
+Full documentation for **Fellow** is available at: [Documentation](https://manuelzierl.github.io/fellow)
 
 ---
 
