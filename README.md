@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
 
 
-# ![Fellow](img/logo.svg)
+# ![Fellow](https://raw.githubusercontent.com/ManuelZierl/fellow/main/docs/img/logo.svg)
 
 ## Project Description
 **Fellow** is a command-line AI assistant built by developers, for developers.
