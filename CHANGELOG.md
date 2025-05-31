@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [make Logo img global link](https://github.com/ManuelZierl/fellow/issues/68)
 - [Bump h11 from 0.14.0 to 0.16.0](https://github.com/ManuelZierl/fellow/pull/71)
 - [Bump setuptools from 78.1.0 to 78.1.1](https://github.com/ManuelZierl/fellow/pull/72)
-
+- [make Doc link _blank](https://github.com/ManuelZierl/fellow/issues/73)
 
 ### Removed
 
