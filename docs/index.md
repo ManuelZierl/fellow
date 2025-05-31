@@ -54,5 +54,3 @@ fellow init-command my_custom_command
 Place it in `.fellow/commands/` and register in your config.
 
 ---
-
-This is a test page to see if `custom-head.html` gets injected.
