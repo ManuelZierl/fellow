@@ -1,1 +1,6 @@
-theme: jekyll-theme-minimal
+remote-theme: pages-themes/merlot@v0.2.0
+plugins:
+  - jekyll-remote-theme
+title: Fellow
+description: Fellow is a command-line AI assistant built by developers, for developers.
+show_downloads: false
