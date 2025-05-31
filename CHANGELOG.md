@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [custom clients pluggable](https://github.com/ManuelZierl/fellow/issues/43)
 - [add Gemini client](https://github.com/ManuelZierl/fellow/issues/43)
 - [add codedov config](https://github.com/ManuelZierl/fellow/issues/58)
+- [add docs pages](https://github.com/ManuelZierl/fellow/issues/60)
 
 ### Changed
 - [client is an interface now](https://github.com/ManuelZierl/fellow/issues/43)
