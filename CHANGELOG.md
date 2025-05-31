@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [make Logo img global link](https://github.com/ManuelZierl/fellow/issues/68)
+- [Bump setuptools from 78.1.0 to 78.1.1](https://github.com/ManuelZierl/fellow/pull/72)
 
 ### Removed
 
