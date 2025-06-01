@@ -20,7 +20,7 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
 ## Table of Contents
 
 1. **[Overview](docs/overview/what-is-fellow.md)**
-   - [What is Fellow?](docs/overview/what-is-fellow.md)
+   - [What is Fellow?](/docs/overview/what-is-fellow/)
    - [Key Concepts](docs/overview/key-concepts.md)
 2. **[Usage](docs/usage/installation.md)**
    - [Installation](docs/usage/installation.md)
