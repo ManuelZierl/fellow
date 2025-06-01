@@ -1,8 +1,9 @@
 title: Fellow
 description: Fellow is a command-line AI assistant built by developers, for developers.
 remote_theme: just-the-docs/just-the-docs
-logo: "/img/logo.svg"
-favicon_ico: "/img/favicon.ico"
+logo: "/assets/img/logo.svg"
+favicon_ico: "/assets/img/favicon.ico"
+color_scheme: dark
 baseurl: "/fellow"
 search_enabled: true
 search.tokenizer_separator: /[\s/]+/
