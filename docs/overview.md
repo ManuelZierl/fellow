@@ -8,7 +8,4 @@ has_children: true
 
 This section introduces what Fellow is and how it works.
 
-- [What is Fellow?](what-is-fellow.md)
-- [Key Concepts](key-concepts.md)
-
 Use this section to understand the philosophy and architecture behind Fellow before diving into installation or configuration.

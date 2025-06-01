@@ -1,6 +1,7 @@
 ---
-layout: default
 title: Running Fellow
+nav_order: 2
+parent: Usage
 ---
 
 # Running Fellow
