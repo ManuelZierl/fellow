@@ -2,6 +2,7 @@
 layout: default
 title: Welcome
 nav_order: 0
+has_children: true
 ---
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
