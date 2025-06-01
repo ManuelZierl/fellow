@@ -1,7 +1,7 @@
 ---
 layout: default
 title: What is Fellow?
-permalink: /docs/overview/what-is-fellow/
+permalink: /overview/what-is-fellow/
 ---
 
 # What is Fellow?

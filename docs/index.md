@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Welcome
+nav_order: 0
 ---
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
