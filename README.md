@@ -48,26 +48,11 @@ For more configuration options, see the [default_fellow_config.yml](fellow/defau
 
 ## Customization
 
-### Custom Commands
-Fellow supports **custom commands**, allowing you to extend its capabilities with your own automation logic — all without modifying the core codebase.
+Fellow is built to be extensible. You can customize both:
 
-You can define your own commands by placing Python files in `.fellow/commands/`, and then referencing them in your config.
+- **Commands** – add your own automation logic or override existing ones. Learn more in the [Custom Commands documentation](https://manuelzierl.github.io/fellow/docs/commands/custom/)
 
-You can also use:
-```bash
-fellow init-command my_custom_command
-```
-This will create a new Python file in `.fellow/commands/` with the necessary boilerplate code.
-
-Then, register your command in your config file:
-```yaml
-...
-commands:
-    - "my_custom_command"
-    - ...
-```
-
-With this method, you can also **override existing commands** by using the same name as a built-in one.
+- **Clients** – integrate with different AI backends like build-in OpenAI or Gemini. Or create your own client. Learn more in the [Custom Clients documentation](https://manuelzierl.github.io/fellow/docs/clients/custom/)
 
 ---
 
