@@ -2,7 +2,6 @@
 layout: default
 title: Welcome
 nav_order: 0
-has_children: true
 ---
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
@@ -20,9 +19,9 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
 
 ## Table of Contents
 
-1. **[Overview](docs/overview/what-is-fellow.md)**
-   - [What is Fellow?](/docs/overview/what-is-fellow/)
-   - [Key Concepts](docs/overview/key-concepts.md)
+1. **[Overview](overview.md)**
+   - [What is Fellow?](overview/what-is-fellow.md)
+   - [Key Concepts](overview/key-concepts.md)
 2. **[Usage](docs/usage/installation.md)**
    - [Installation](docs/usage/installation.md)
    - [Running Fellow](docs/usage/running.md)
