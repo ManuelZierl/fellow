@@ -1,7 +1,7 @@
 ---
-layout: default
 title: What is Fellow?
-permalink: /overview/what-is-fellow/
+nav_order: 1
+parent: Overview
 ---
 
 # What is Fellow?

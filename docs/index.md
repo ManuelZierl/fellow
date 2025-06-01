@@ -10,8 +10,6 @@ nav_order: 0
 
 ---
 
-## Welcome to <img src="img/logo.svg" alt="drawing" width="100"/>
-
 **Fellow** is a command-line AI assistant built by developers, for developers.
 
 Unlike most AI tools that stop at suggesting code, Fellow goes a step further:  
