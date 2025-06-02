@@ -1,8 +1,8 @@
 ---
 layout: default
+title: Welcome
+nav_order: 0
 ---
-
-# ![Fellow](img/logo.svg)
 
 [![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
 ![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
@@ -10,44 +10,26 @@ layout: default
 
 ---
 
-## Welcome to Fellow
-
 **Fellow** is a command-line AI assistant built by developers, for developers.
 
 Unlike most AI tools that stop at suggesting code, Fellow goes a step further:  
 It *executes* tasks on your behalf. It reasons step-by-step, chooses commands from a plugin system, and edits files, generates content, or writes tests — autonomously.
----
-
-## Installation
-
-```bash
-pip install fellow
-```
 
 ---
 
-## Quick Start
+## Table of Contents
 
-```bash
-export OPENAI_API_KEY="your_openai_api_key"
-fellow --config task.yml
-```
-
-Example config file (`task.yml`):
-
-```yaml
-task: |
-  write a readme file for this Python project
-```
-
----
-
-## Extend with Custom Commands
-
-```bash
-fellow init-command my_custom_command
-```
-
-Place it in `.fellow/commands/` and register in your config.
-
----
+1. **[Overview](overview/index.md)**
+   - [What is Fellow?](overview/what-is-fellow.md)
+   - [Key Concepts](overview/key-concepts.md)
+2. **[Usage](usage/index.md)**
+   - [Installation](usage/installation.md)
+   - [Running Fellow](usage/running.md)
+3. **[Configuration](configuration/index.md)**
+4. **[Commands](commands/index.md)**
+   - [Built-in Commands](commands/builtin.md)
+   - [Custom Commands](commands/custom.md)
+5. **[Clients](clients/index.md)**
+   - [OpenAI Client](clients/openai.md)
+   - [Gemini Client](clients/gemini.md)
+   - [Custom Clients](clients/custom.md)
