@@ -62,7 +62,7 @@ See [Built-in Commands](/fellow/commands/builtin) for a full list of built-in co
 
 ### `planning`
 
-Optional planning mode. If active, Fellow will first call [`make_plan`](/fellow/commands/buildin#make_plan) command with the planning prompt.
+Optional planning mode. If active, Fellow will first call [`make_plan`](/fellow/commands/builtin#make_plan) command with the planning prompt.
 
 ### `steps_limit`
 

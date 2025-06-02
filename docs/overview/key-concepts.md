@@ -42,9 +42,9 @@ This enables autonomous workflows without needing to script each step.
 
 Commands are Python functions that the AI can call. Examples include:
 
-- [create_file](/fellow/commands/buildin#create_file)
-- [list_definitions](/fellow/commands/buildin#list_definitions)
-- [run_pytest](/fellow/commands/buildin#run_pytest)
+- [create_file](/fellow/commands/builtin#create_file)
+- [list_definitions](/fellow/commands/builtin#list_definitions)
+- [run_pytest](/fellow/commands/builtin#run_pytest)
 
 You can define your own custom commands or override existing ones. The AI sees these as callable tools and chooses when
 to use them.
