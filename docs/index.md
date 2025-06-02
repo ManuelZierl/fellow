@@ -19,33 +19,17 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
 
 ## Table of Contents
 
-1. **[Overview](overview/index)**
+1. **[Overview](overview/index.md)**
    - [What is Fellow?](overview/what-is-fellow.md)
    - [Key Concepts](overview/key-concepts.md)
-2. **[Usage](docs/usage/installation.md)**
-   - [Installation](docs/usage/installation.md)
-   - [Running Fellow](docs/usage/running.md)
-3. **[Configuration](docs/configuration/index.md)**
-4. **[Commands](docs/commands/index.md)**
-   - [Built-in Commands](docs/commands/builtin/index.md)
-     - [create_file](docs/commands/builtin/create_file.md)
-     - [view_file](docs/commands/builtin/view_file.md)
-     - [delete_file](docs/commands/builtin/delete_file.md)
-     - [edit_file](docs/commands/builtin/edit_file.md)
-     - [list_files](docs/commands/builtin/list_files.md)
-     - [run_python](docs/commands/builtin/run_python.md)
-     - [run_pytest](docs/commands/builtin/run_pytest.md)
-     - [list_definitions](docs/commands/builtin/list_definitions.md)
-     - [get_code](docs/commands/builtin/get_code.md)
-     - [make_plan](docs/commands/builtin/make_plan.md)
-     - [summarize_file](docs/commands/builtin/summarize_file.md)
-     - [pip_install](docs/commands/builtin/pip_install.md)
+2. **[Usage](usage/installation.md)**
+   - [Installation](usage/installation.md)
+   - [Running Fellow](usage/running.md)
+3. **[Configuration](configuration/index.md)**
+4. **[Commands](commands/index.md)**
+   - [Built-in Commands](commands/builtin.md)
    - [Custom Commands](docs/commands/custom/index.md)
-     - [Purpose and structure](docs/commands/custom/purpose.md)
-     - [How to create?](docs/commands/custom/create.md)
-     - [Overriding built-in commands](docs/commands/custom/override.md)
-     - [The `run` method and CommandContext](docs/commands/custom/run-method.md)
-5. **[Clients](docs/clients/index.md)**
-   - [OpenAI Client](docs/clients/openai.md)
-   - [Gemini Client](docs/clients/gemini.md)
-   - [Custom Clients](docs/clients/custom.md)
+5. **[Clients](clients/index.md)**
+   - [OpenAI Client](clients/openai.md)
+   - [Gemini Client](clients/gemini.md)
+   - [Custom Clients](clients/custom.md)

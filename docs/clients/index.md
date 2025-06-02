@@ -14,4 +14,4 @@ Fellow currently supports:
 
 You can also implement your own by creating a custom client class.
 
-Each client defines how to generate completions, call functions, and handle memory.
+Each client defines how to generate completions, call functions, and handle memory, making plans and how the function is schematized for function-calling.

@@ -48,6 +48,14 @@ class {{client_name}}Client(Client[{{client_name}}ClientConfig]):
         # todo:
         ...
 
+    def set_plan(self, plan: str) -> None:
+        # todo: 
+        ...
+
+    def get_function_schema(self, command: "Command") -> Function:
+        # todo: 
+        ...
+
 """
 
 
