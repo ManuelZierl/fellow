@@ -12,5 +12,6 @@ gh_edit_link: true
 gh_edit_link_text: "Edit on GitHub."
 gh_edit_repository: "https://github.com/ManuelZierl/fellow"
 gh_edit_branch: "main"
+gh_edit_source: docs
 include:
   - docs
