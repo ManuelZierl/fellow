@@ -47,4 +47,4 @@ Fellow automatically ends the loop when:
 ---
 
 Learn more about available options in the  
-[Configuration documentation](/fellow/configuration/index.md).
+[Configuration documentation](/fellow/configuration).

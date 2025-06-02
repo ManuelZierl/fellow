@@ -67,8 +67,8 @@ Windows Powershell:
 > $env:GEMINI_API_KEY = "your_key_here"
 
 If you're using a **custom client**, refer to its documentation to see which environment variables or credentials are required.
-Learn more in the [Client documentation](/fellow/clients/index.md).
+Learn more in the [Client documentation](/fellow/clients).
 
 ---
 
-Next step: [Running Fellow](docs/usage/running.md)
+Next step: [Running Fellow](/fellow/usage/running)
