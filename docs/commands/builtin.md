@@ -118,8 +118,8 @@ It is up to the specific client implementation to decide how the plan is stored,
 
 For details on how plans are handled, see:
 
-- [OpenAI Client](/fellow/docs/clients/openai/)
-- [Gemini Client](/fellow/docs/clients/gemini/)
+- [OpenAI Client](/fellow/clients/openai)
+- [Gemini Client](/fellow/clients/gemini)
 
 **Input fields:**
 - `plan` *(str)* – A multi-step plan to guide the assistant's reasoning

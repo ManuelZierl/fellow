@@ -27,7 +27,7 @@ This file contains all supported configuration fields with reasonable defaults. 
 
 ### `introduction_prompt`
 
-The system prompt shown to the AI. You can include `{{TASK}}` to dynamically insert your task text.
+The system prompt shown to the AI. You can include `{% raw %}{{TASK}}{% endraw %}` to dynamically insert your task text.
 
 ### `first_message`
 
@@ -50,19 +50,19 @@ Controls whether output is saved to a file and how it is formatted.
 Defines which AI backend is used (`openai`, `gemini`, or a custom client) and includes its config.
 
 For detailed per-client config, see:
-- [OpenAI Client](/fellow/clients/openai.md)
-- [Gemini Client](/fellow/clients/gemini.md)
-- [Custom Clients](/fellow/clients/custom.md)
+- [OpenAI Client](/fellow/clients/openai)
+- [Gemini Client](/fellow/clients/gemini)
+- [Custom Clients](/fellow/clients/custom)
 
 ### `commands`
 
 A list of commands the AI can use. These must match the function names registered or implemented.
 
-See [Built-in Commands](/fellow/commands/builtin/) for a full list of built-in commands, or [Custom Commands](/fellow/commands/custom/) for how to create your own.
+See [Built-in Commands](/fellow/commands/builtin) for a full list of built-in commands, or [Custom Commands](/fellow/commands/custom) for how to create your own.
 
 ### `planning`
 
-Optional planning mode. If active, Fellow will first call [`make_plan`](/fellow/commands/buildin/make_plan) command with the planning prompt.
+Optional planning mode. If active, Fellow will first call [`make_plan`](/fellow/commands/buildin#make_plan) command with the planning prompt.
 
 ### `steps_limit`
 

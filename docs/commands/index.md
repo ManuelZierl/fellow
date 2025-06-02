@@ -6,7 +6,8 @@ has_children: true
 
 # Commands
 
-In Fellow, commands are executable python functions that the AI agent can invoke. They are the primary mechanism through which the assistant interacts with the codebase, filesystem, or external tools.
+In Fellow, commands are executable python functions that the AI agent can invoke. They are the primary mechanism through
+which the assistant interacts with the codebase, filesystem, or external tools.
 
 Commands are not just functions — they are structured components with:
 
@@ -18,8 +19,8 @@ This design makes commands reusable, testable, and safely invocable by the agent
 
 There are two main types of commands in Fellow:
 
-- [Built-in Commands](/fellow/docs/commands/builtin/)
-- [Custom Commands](/fellow/docs/commands/custom/)
+- [Built-in Commands](/fellow/commands/builtin)
+- [Custom Commands](/fellow/commands/custom)
 
 ---
 
@@ -31,6 +32,7 @@ Each command is represented by a `Command` object that wraps:
 - a **callable function** (the handler) that implements the command logic
 
 Example:
+
 ```py
 class MyHandlerInput(CommandInput):
     name: str
@@ -42,6 +44,7 @@ def my_handler(args: MyHandlerInput, context: CommandContext) -> str:
 
 my_command = Command(MyInput, my_handler)
 ```
+
 ---
 
 ## CommandContext
@@ -52,6 +55,7 @@ Every command receives a `context` dictionary with two keys:
 - `config`: the parsed configuration object
 
 This allows commands to:
+
 - Access the full task context
 - Store logs or memory
 - Make further API calls if needed
@@ -79,5 +83,3 @@ Fellow wraps both input validation and execution in `try/except` blocks:
 - If the handler raises an exception, it is caught and passed back as output.
 
 This ensures that the assistant can continue reasoning and receive structured feedback even when a command fails.
-
----
