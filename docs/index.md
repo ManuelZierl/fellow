@@ -28,7 +28,7 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
 3. **[Configuration](configuration/index.md)**
 4. **[Commands](commands/index.md)**
    - [Built-in Commands](commands/builtin.md)
-   - [Custom Commands](docs/commands/custom/index.md)
+   - [Custom Commands](commands/custom.md)
 5. **[Clients](clients/index.md)**
    - [OpenAI Client](clients/openai.md)
    - [Gemini Client](clients/gemini.md)
