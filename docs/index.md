@@ -22,7 +22,7 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
 1. **[Overview](overview/index.md)**
    - [What is Fellow?](overview/what-is-fellow.md)
    - [Key Concepts](overview/key-concepts.md)
-2. **[Usage](usage/installation.md)**
+2. **[Usage](usage/index.md)**
    - [Installation](usage/installation.md)
    - [Running Fellow](usage/running.md)
 3. **[Configuration](configuration/index.md)**
