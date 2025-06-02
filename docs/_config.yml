@@ -7,6 +7,7 @@ color_scheme: dark
 baseurl: "/fellow"
 search_enabled: true
 search.tokenizer_separator: /[\s/]+/
+footer_content: "test"
 gh_edit_link: true
 gh_edit_link_text: "Edit on GitHub."
 gh_edit_repository: "https://github.com/ManuelZierl/fellow"
