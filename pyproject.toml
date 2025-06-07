@@ -31,4 +31,4 @@ exclude = ["tests*"]
 include = ["fellow", "fellow.*"]
 
 [tool.setuptools.package-data]
-fellow = ["default_fellow_config.yml"]
+fellow = ["default_fellow_config.yml", "py.typed"]

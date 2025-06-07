@@ -1,6 +1,10 @@
-[![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
+[![Version](https://img.shields.io/pypi/v/fellow?color=blue&logo=pypi)](https://pypi.org/project/fellow/)
 ![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![PyPI - Types](https://img.shields.io/pypi/types/fellow)
+![GitHub License](https://img.shields.io/github/license/ManuelZierl/fellow)
 
 
 # ![Fellow](https://raw.githubusercontent.com/ManuelZierl/fellow/main/docs/img/logo.svg)
