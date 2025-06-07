@@ -52,7 +52,7 @@ Fellow is built to be extensible. You can customize both:
 
 - **Commands** – add your own automation logic or override existing ones. Learn more in the [Custom Commands documentation](https://manuelzierl.github.io/fellow/commands/custom)
 
-- **Clients** – integrate with different AI backends like build-in OpenAI or Gemini. Or create your own client. Learn more in the [Custom Clients documentation](https://manuelzierl.github.io/fellow/clients/custom)
+- **Clients** – integrate with different AI backends like built-in OpenAI or Gemini. Or create your own client. Learn more in the [Custom Clients documentation](https://manuelzierl.github.io/fellow/clients/custom)
 
 ---
 
