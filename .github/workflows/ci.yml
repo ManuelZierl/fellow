@@ -51,7 +51,7 @@ jobs:
         run: isort --check-only --profile black .
 
       - name: Run mypy
-        run: mypy fellow
+        run: mypy --explicit-package-bases fellow
 
       - name: Run Tests
         run: |
