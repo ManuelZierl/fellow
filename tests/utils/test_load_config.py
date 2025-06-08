@@ -59,7 +59,7 @@ def test_cli_override():
             "log.spoiler": False,
             "planning.active": True,
             "planning.prompt": "CLI plan",
-            "commands": ["list", "run"],
+            "commands": {"list": {}, "run": {}},
         },
     )
     config = load_config(args)
@@ -72,7 +72,7 @@ def test_cli_override():
     assert config.log.spoiler is False
     assert config.planning.active is True
     assert config.planning.prompt == "CLI plan"
-    assert config.commands == ["list", "run"]
+    assert set(config.commands.keys()) == {"list", "run"}
 
 
 def test_user_config_override():

@@ -22,26 +22,24 @@ def test_load_module_from_file(tmp_path: Path):
         def echo(args: EchoInput, context: CommandContext) -> str:
             \"""Echo the input text.\"""
             return args.text
-
-        command = Command(EchoInput, echo) # todo: this should to be necessary
     """
     )
 
     file_path = tmp_path / "echo.py"
     file_path.write_text(file_content)
 
-    module_name, module_command = load_command_from_file(file_path)
+    module_name, command_input, command_handler = load_command_from_file(file_path)
 
     assert module_name == "echo"
-    assert isinstance(module_command.command_handler, FunctionType)
-    assert module_command.command_handler.__name__ == "echo"
-    assert module_command.command_handler.__doc__ == "Echo the input text."
-    assert module_command.input_type.__name__ == "EchoInput"
-    assert issubclass(module_command.input_type, CommandInput)
+    assert isinstance(command_handler, FunctionType)
+    assert command_handler.__name__ == "echo"
+    assert command_handler.__doc__ == "Echo the input text."
+    assert command_input.__name__ == "EchoInput"
+    assert issubclass(command_input, CommandInput)
 
-    assert (
-        module_command.run('{"text": "Hello, World!"}', MagicMock()) == "Hello, World!"
-    )
+    command = Command(command_input, command_handler, [])
+
+    assert command.run('{"text": "Hello, World!"}', MagicMock()) == "Hello, World!"
 
 
 def test_load_command_from_file_raises_on_name_mismatch(tmp_path: Path):
@@ -115,7 +113,10 @@ def test_load_commands_with_custom_command(tmp_path: Path):
     # Create fake config
     config = MagicMock()
     config.custom_commands_paths = [str(commands_dir)]
-    config.commands = ["echo", "view_file"]
+    config.commands = {
+        "echo": MagicMock(policies=[]),
+        "view_file": MagicMock(policies=[]),
+    }
     config.planning.active = True
 
     # Act

@@ -1,8 +1,6 @@
 import pytest
-from pydantic import ValidationError
 
-from fellow.commands import Command, CommandInput, ViewFileInput, view_file
-from fellow.commands.Command import CommandContext
+from fellow.commands.Command import Command, CommandContext, CommandInput
 
 
 def test_command_run():
@@ -13,7 +11,7 @@ def test_command_run():
     def mock_command_handler(args: CommandInputMock, context: CommandContext) -> str:
         return f"Received {args.a} and {args.b} context: {context['ai_client']}"
 
-    command = Command(CommandInputMock, mock_command_handler)
+    command = Command(CommandInputMock, mock_command_handler, [])
     context = {"ai_client": "context-mock"}  # Mocked context
 
     result = command.run('{"a": "abc", "b": 12}', context)
@@ -28,11 +26,14 @@ def test_command_run():
         raise ValueError("Mock error")
 
     # test with a command handler that raises an exception
-    command = Command(CommandInputMock, mock_command_handler_fails)
+    command = Command(CommandInputMock, mock_command_handler_fails, [])
     result = command.run('{"a": "abc", "b": 12}', context)
     assert result == "[ERROR] Command execution failed: Mock error"
 
-    command = Command(CommandInputMock, "no-name")
+    command = Command(CommandInputMock, lambda: "no-name", [])
     with pytest.raises(ValueError) as err:
-        command.run('{"a": "abc"}', context)
-    assert str(err.value) == "[ERROR] Command handler is not callable with __name__."
+        command.run('{"a": "abc", "b": 12}', context)
+    assert (
+        str(err.value)
+        == "[ERROR] Command handler cannot be anonymous function or lambda."
+    )

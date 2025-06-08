@@ -1,12 +1,21 @@
 import inspect
+import re
 from pathlib import Path
 from types import ModuleType
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Type, TypeVar, cast
+
+from pydantic import ValidationError
 
 from fellow.commands import ALL_COMMANDS
-from fellow.commands.Command import Command, CommandInput
+from fellow.commands.Command import Command, CommandHandler, CommandInput
+from fellow.policies import ALL_POLICIES
+from fellow.policies.Policy import Policy, PolicyConfig
 from fellow.utils.load_config import Config
 from fellow.utils.load_python_module import load_python_module
+
+T = TypeVar("T", bound=CommandInput)
+U = TypeVar("U")
+CommandTuple = Tuple[Type[T], CommandHandler[T]]
 
 
 def load_commands(config: Config) -> Dict[str, Command]:
@@ -15,8 +24,35 @@ def load_commands(config: Config) -> Dict[str, Command]:
     - Built-in commands from ALL_COMMANDS
     - Custom commands from .fellow/commands or paths defined in config
     Custom commands override built-in ones if name matches.
+    todo: doc needs policies added
+    todo: boilerplate can be reduced here ...
     """
-    commands_map: Dict[str, Command] = ALL_COMMANDS.copy()
+    custom_policies_map: Dict[str, Tuple[Type[Policy], Type[PolicyConfig]]] = (
+        ALL_POLICIES.copy()
+    )
+
+    for path_str in config.custom_policies_paths:
+        path = Path(path_str).resolve()
+        if not path.exists() or not path.is_dir():
+            print(f"[WARNING] Skipping {path_str}: not a valid directory.")
+            continue
+
+        for file in path.glob("*.py"):
+            try:
+                policy_name, policy_type, policy_config_type = load_policy_from_file(
+                    file
+                )
+            except Exception as e:
+                print(f"[ERROR] Failed to load {file}: {e}")
+                continue
+
+            # warn on override
+            if policy_name in custom_policies_map:
+                print(f"[INFO] Overriding built-in policy: {policy_name}")
+
+            custom_policies_map[policy_name] = (policy_type, policy_config_type)
+
+    custom_commands_map: Dict[str, CommandTuple] = ALL_COMMANDS.copy()
 
     for path_str in config.custom_commands_paths:
         path = Path(path_str).resolve()
@@ -26,52 +62,80 @@ def load_commands(config: Config) -> Dict[str, Command]:
 
         for file in path.glob("*.py"):
             try:
-                command_name, command = load_command_from_file(file)
+                command_name, command_input, command_handler = load_command_from_file(
+                    file
+                )
             except Exception as e:
                 print(f"[ERROR] Failed to load {file}: {e}")
                 continue
 
-            if not isinstance(command, Command):
-                print(
-                    f"[WARNING] Skipping {file.name}: `command` is not a valid Command instance."
-                )
-                continue
-
-            # Optional: warn on override
-            if command_name in commands_map:
+            # warn on override
+            if command_name in custom_commands_map:
                 print(f"[INFO] Overriding built-in command: {command_name}")
 
-            commands_map[command_name] = command
+            custom_commands_map[command_name] = (command_input, command_handler)
 
     # Filter only the ones listed in config.commands
     final_commands: Dict[str, Command] = {}
-    for name in config.commands:
-        if name in commands_map:
-            final_commands[name] = commands_map[name]
+    for command_name, command_config in config.commands.items():
+        policies = []
+        for p in command_config.policies:
+            policy_name = p.name
+            policy_config_dict = p.config
+            custom_policy_type, custom_policy_config_type = custom_policies_map[
+                policy_name
+            ]
+            try:
+                policy_config = custom_policy_config_type.model_validate(
+                    policy_config_dict
+                )
+            except ValidationError as e:
+                raise ValueError(
+                    f"Invalid configuration for policy '{policy_name}': {e}"
+                ) from e
+            policy = custom_policy_type(policy_config)
+            policies.append(policy)
+
+        if command_name in custom_commands_map:
+            command_input, command_handler = custom_commands_map[command_name]
+            final_commands[command_name] = Command(
+                input_type=command_input,
+                command_handler=command_handler,
+                policies=policies,
+            )
         else:
             raise ValueError(
-                f"Command '{name}' not found in built-in or custom commands."
+                f"Command '{command_name}' not found in built-in or custom commands."
             )
 
     # Optionally add planning command
-    if config.planning.active and "make_plan" in ALL_COMMANDS:
-        final_commands["make_plan"] = ALL_COMMANDS["make_plan"]
-
+    if (
+        config.planning.active
+        and "make_plan" in ALL_COMMANDS
+        and "make_plan" not in final_commands
+    ):
+        make_plan_input, make_plan_handler = ALL_COMMANDS["make_plan"]
+        final_commands["make_plan"] = Command(make_plan_input, make_plan_handler, [])
     return final_commands
 
 
-def load_command_from_file(file_path: Path) -> Tuple[str, Command]:
+def load_command_from_file(
+    file_path: Path,
+) -> Tuple[str, Type[CommandInput], CommandHandler[CommandInput]]:
     """
     Load a command from a file, inferring CommandInput and handler by convention:
     - File must define one subclass of CommandInput
     - File must define a function with the same name as the file (e.g. echo.py → def echo)
     - Function must have 2 args and a docstring
+    # todo: doc
     """
     module = load_python_module(file_path)
 
-    input_type = _find_command_input_class(module)
+    input_type = _find_class_in_module(module, CommandInput)
     expected_fn_name = file_path.stem
-    handler = getattr(module, expected_fn_name, None)
+    handler: CommandHandler[CommandInput] = cast(
+        CommandHandler[CommandInput], getattr(module, expected_fn_name, None)
+    )
 
     if input_type is None:
         raise ValueError(
@@ -93,17 +157,39 @@ def load_command_from_file(file_path: Path) -> Tuple[str, Command]:
         raise ValueError(
             f"[ERROR] Function '{expected_fn_name}' must have a docstring."
         )
-
-    command = Command(input_type, handler)
-    return expected_fn_name, command
+    return expected_fn_name, input_type, handler
 
 
-def _find_command_input_class(module: ModuleType) -> Optional[type[CommandInput]]:
+def load_policy_from_file(
+    file_path: Path,
+) -> Tuple[str, Type[Policy], Type[PolicyConfig]]:
+    """
+    todo: test,
+    todo: doc
+    """
+    module = load_python_module(file_path)
+
+    policy_confiy_type = _find_class_in_module(module, PolicyConfig)
+    if policy_confiy_type is None:
+        raise ValueError(
+            f"[ERROR] No subclass of PolicyConfig found in {file_path.name}"
+        )
+    policy_type = getattr(module, policy_confiy_type.__name__.rstrip("Config"), None)
+    if policy_type is None:
+        raise ValueError(
+            f"[ERROR] No class found matching PolicyConfig '{policy_confiy_type.__name__}' in {file_path.name}"
+        )
+
+    policy_name = re.sub(r"(?<!^)(?=[A-Z])", "_", policy_type.__name__).lower()
+    return (policy_name, policy_type, policy_confiy_type)
+
+
+def _find_class_in_module(module: ModuleType, class_type: Type[U]) -> Optional[Type[U]]:
     for obj in vars(module).values():
         if (
             inspect.isclass(obj)
-            and issubclass(obj, CommandInput)
-            and obj is not CommandInput
+            and issubclass(obj, class_type)
+            and obj is not class_type
         ):
             return obj
     return None
