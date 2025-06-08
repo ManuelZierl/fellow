@@ -36,7 +36,18 @@ class Command:
 
     def run(self, command_input_str: str, context: CommandContext) -> str:
         """
-        todo: doc
+        Executes the command with validated input and enforced policies.
+
+        Steps:
+        1. Parses and validates the input JSON string against the command's `input_type`.
+        2. Ensures the command handler is a named function (not a lambda).
+        3. Runs all attached policies; if any return a denial reason, the command is aborted.
+        4. If all policies pass, invokes the command handler.
+        5. Returns the handler's output or an error message if execution fails.
+
+        :param command_input_str: JSON string representing command input fields.
+        :param context: Runtime context for the command (e.g. environment, memory, etc.).
+        :return: Result of the command execution as a string, or an error message.
         """
         try:
             command_input = self.input_type(**json.loads(command_input_str))

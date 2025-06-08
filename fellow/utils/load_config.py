@@ -76,10 +76,20 @@ def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:
 
 def load_config(args: Namespace) -> Config:
     """
-    Load the configuration from the default config file and merge it with
-    any user-provided config file and CLI arguments.
-    todo: document command logic not overwritten
-        alternative: make a list out of commands ...
+    Loads and merges the full configuration for Fellow from multiple sources.
+
+    The final config is built in this order of precedence:
+    1. Default config file shipped with the package (`default_fellow_config.yml`)
+    2. Optional user-supplied config file (`--config` argument)
+    3. CLI overrides (flattened via `extract_cli_overrides()`)
+
+    Special handling:
+    - The `commands` section is excluded from deep merging and completely replaced
+      if specified via CLI arguments.
+
+    :param args: Parsed CLI arguments (typically from `argparse.Namespace`)
+    :return: A validated `Config` object.
+    :raises ValidationError: If the resulting configuration does not match the schema.
     """
     with (
         pkg_resources.files(fellow).joinpath("default_fellow_config.yml").open("r") as f

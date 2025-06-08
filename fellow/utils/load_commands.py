@@ -130,7 +130,9 @@ def load_command_from_file(
     - File must define one subclass of CommandInput
     - File must define a function with the same name as the file (e.g. echo.py → def echo)
     - Function must have 2 args and a docstring
-    # todo: doc
+
+    :param file_path: Path to the command file.
+    :return: A tuple containing the command name, input type, and handler function.
     """
     module = load_python_module(file_path)
 
@@ -167,8 +169,16 @@ def load_policy_from_file(
     file_path: Path,
 ) -> Tuple[str, Type[Policy], Type[PolicyConfig]]:
     """
-    todo: test,
-    todo: doc
+    Loads a policy and its corresponding config class from a Python file.
+
+    The file must define:
+    - A subclass of `PolicyConfig` (e.g., `MyPolicyConfig`)
+    - A `Policy` class with the same name as the config, minus the "Config" suffix (e.g., `MyPolicy`)
+
+    The policy name is inferred from the class name and converted to snake_case.
+
+    :param file_path: Path to the .py file containing the policy definition.
+    :return: A tuple of (policy_name, policy class, policy config class).
     """
     module = load_python_module(file_path)
 
@@ -184,7 +194,7 @@ def load_policy_from_file(
         )
 
     policy_name = re.sub(r"(?<!^)(?=[A-Z])", "_", policy_type.__name__).lower()
-    return (policy_name, policy_type, policy_confiy_type)
+    return policy_name, policy_type, policy_confiy_type
 
 
 def _find_class_in_module(module: ModuleType, class_type: Type[U]) -> Optional[Type[U]]:
