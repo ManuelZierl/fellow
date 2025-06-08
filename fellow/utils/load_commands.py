@@ -20,12 +20,15 @@ CommandTuple = Tuple[Type[T], CommandHandler[T]]
 
 def load_commands(config: Config) -> Dict[str, Command]:
     """
-    Loads all commands for Fellow:
-    - Built-in commands from ALL_COMMANDS
-    - Custom commands from .fellow/commands or paths defined in config
-    Custom commands override built-in ones if name matches.
-    todo: doc needs policies added
-    todo: boilerplate can be reduced here ...
+    Loads all commands for Fellow, including built-in and custom ones,
+    and attaches configured policies.
+
+    Custom commands and policies from configured paths override built-ins.
+    Commands not listed in the config are excluded. If planning is enabled,
+    a default planning command is added.
+
+    :param config: Configuration object containing paths and command definitions.
+    :return: A dictionary mapping command names to Command objects.
     """
     custom_policies_map: Dict[str, Tuple[Type[Policy], Type[PolicyConfig]]] = (
         ALL_POLICIES.copy()

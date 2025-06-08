@@ -1,12 +1,18 @@
+import tempfile
 import textwrap
 from pathlib import Path
-from types import FunctionType
+from types import FunctionType, SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
 
 from fellow.commands.Command import Command, CommandInput
-from fellow.utils.load_commands import load_command_from_file, load_commands
+from fellow.policies import PolicyConfig
+from fellow.utils.load_commands import (
+    load_command_from_file,
+    load_commands,
+    load_policy_from_file,
+)
 
 
 def test_load_module_from_file(tmp_path: Path):
@@ -136,3 +142,245 @@ def test_load_commands_with_custom_command(tmp_path: Path):
 
     result = echo_command.run('{"text": "Hello"}', MagicMock())
     assert result == "Hello"
+
+
+def test_load_policy_from_file_success(tmp_path: Path):
+    file_path = tmp_path / "test_policy.py"
+    file_path.write_text(
+        textwrap.dedent(
+            """
+        from pydantic import BaseModel
+        from fellow.policies.Policy import Policy, PolicyConfig
+
+        class MyPolicyConfig(PolicyConfig):
+            pass
+
+        class MyPolicy(Policy[MyPolicyConfig]):
+            def __init__(self, config):
+                self.config = config
+            def check(self, command_name, command_handler, args, context):
+                return True
+    """
+        )
+    )
+
+    policy_name, policy_type, policy_config_type = load_policy_from_file(file_path)
+
+    assert policy_name == "my_policy"
+    assert issubclass(policy_type, object)
+    assert issubclass(policy_config_type, PolicyConfig)
+
+
+def test_load_policy_missing_config_class(tmp_path: Path):
+    file_path = tmp_path / "bad_policy.py"
+    file_path.write_text(
+        textwrap.dedent(
+            """
+        class NotAPolicy:
+            pass
+    """
+        )
+    )
+
+    with pytest.raises(ValueError, match="No subclass of PolicyConfig found"):
+        load_policy_from_file(file_path)
+
+
+def test_load_policy_missing_policy_class(tmp_path: Path):
+    file_path = tmp_path / "incomplete_policy.py"
+    file_path.write_text(
+        textwrap.dedent(
+            """
+        from fellow.policies.Policy import PolicyConfig
+
+        class IncompleteConfig(PolicyConfig):
+            pass
+    """
+        )
+    )
+
+    with pytest.raises(
+        ValueError, match="No class found matching PolicyConfig 'IncompleteConfig'"
+    ):
+        load_policy_from_file(file_path)
+
+
+def test_load_commands_with_custom_policy(tmp_path):
+    # --- Arrange ---
+
+    # 1. Create a custom policy file
+    policies_dir = tmp_path / ".fellow" / "policies"
+    policies_dir.mkdir(parents=True)
+    policy_file = policies_dir / "block_all.py"
+    policy_file.write_text(
+        textwrap.dedent(
+            """
+        from fellow.policies.Policy import Policy, PolicyConfig
+
+        class BlockAllConfig(PolicyConfig):
+            reason: str
+
+        class BlockAll(Policy[BlockAllConfig]):
+            def __init__(self, config):
+                self.config = config
+            def check(self, command_name, command_handler, args, context):
+                return self.config.reason
+    """
+        )
+    )
+
+    # 2. Create a custom command file
+    commands_dir = tmp_path / ".fellow" / "commands"
+    commands_dir.mkdir(parents=True)
+    command_file = commands_dir / "noop.py"
+    command_file.write_text(
+        textwrap.dedent(
+            """
+        from fellow.commands.Command import CommandInput, CommandContext
+        from pydantic import Field
+
+        class NoopInput(CommandInput):
+            pass
+
+        def noop(args: NoopInput, context: CommandContext) -> str:
+            \"""
+            A no-operation command that does nothing and returns 'OK'.
+            \"""
+            return "OK"
+    """
+        )
+    )
+
+    # 3. Create a config with policy and command
+    config = SimpleNamespace(
+        custom_policies_paths=[str(policies_dir)],
+        custom_commands_paths=[str(commands_dir)],
+        planning=SimpleNamespace(active=False),
+        commands={
+            "noop": SimpleNamespace(
+                policies=[
+                    SimpleNamespace(
+                        name="block_all", config={"reason": "Access denied"}
+                    )
+                ]
+            )
+        },
+    )
+
+    # --- Act ---
+    commands = load_commands(config)
+
+    # --- Assert ---
+    assert "noop" in commands
+    cmd = commands["noop"]
+    assert len(cmd.policies) == 1
+    denial_reason = cmd.policies[0].check("noop", None, SimpleNamespace(), None)
+    assert denial_reason == "Access denied"
+
+
+def test_load_commands_edge_cases(tmp_path, capsys):
+    from types import SimpleNamespace
+
+    from fellow.utils.load_commands import load_commands
+
+    # --- Arrange ---
+    # 1. Add an invalid custom policy file that raises import error
+    bad_policies_dir = tmp_path / "bad_policies"
+    bad_policies_dir.mkdir()
+    (bad_policies_dir / "broken.py").write_text("this is not python")
+
+    # 2. Add a valid policy file (BlockAll), which will be overridden
+    good_policies_dir = tmp_path / "good_policies"
+    good_policies_dir.mkdir()
+    (good_policies_dir / "block_all.py").write_text(
+        textwrap.dedent(
+            """
+        from fellow.policies.Policy import Policy, PolicyConfig
+
+        class BlockAllConfig(PolicyConfig):
+            reason: str
+
+        class BlockAll(Policy[BlockAllConfig]):
+            def __init__(self, config):
+                self.config = config
+            def check(self, command_name, command_handler, args, context):
+                return self.config.reason
+    """
+        )
+    )
+
+    # 3. Add an overriding policy with the same name
+    override_policy_file = good_policies_dir / "block_all_override.py"
+    override_policy_file.write_text(
+        textwrap.dedent(
+            """
+        from fellow.policies.Policy import Policy, PolicyConfig
+
+        class BlockAllConfig(PolicyConfig):
+            reason: str
+
+        class BlockAll(Policy[BlockAllConfig]):
+            def __init__(self, config):
+                self.config = config
+            def check(self, command_name, command_handler, args, context):
+                return "overridden"
+    """
+        )
+    )
+
+    # 4. Add a overriding command with the same name
+    command_dir = tmp_path / "commands"
+    command_dir.mkdir()
+    (command_dir / "view_file.py").write_text(
+        textwrap.dedent(
+            """
+        from fellow.commands.Command import CommandInput, CommandContext
+        from pydantic import Field
+
+        class ViewFileInput(CommandInput):
+            text: str = Field(...)
+
+        def view_file(args: ViewFileInput, context: CommandContext):
+            \"""
+            Echo the input text.
+            \"""
+            return args.text
+    """
+        )
+    )
+
+    # 6. Add a policy with invalid config to trigger ValidationError
+    invalid_config = {"wrong_field": True}
+
+    config = SimpleNamespace(
+        custom_policies_paths=[str(bad_policies_dir), str(good_policies_dir)],
+        custom_commands_paths=[
+            str(command_dir),
+            str(tmp_path / "not_existing"),
+        ],  # non-existing
+        planning=SimpleNamespace(active=False),
+        commands={
+            "view_file": SimpleNamespace(
+                policies=[SimpleNamespace(name="block_all", config=invalid_config)]
+            ),
+            "missing_command": SimpleNamespace(
+                policies=[]
+            ),  # not in ALL_COMMANDS or loaded
+        },
+    )
+
+    # --- Act + Assert ---
+    with pytest.raises(ValueError) as e:
+        load_commands(config)
+
+    output = capsys.readouterr().out
+
+    # Warnings and errors
+    assert "[WARNING] Skipping" in output
+    assert "[ERROR] Failed to load" in output
+    assert "[INFO] Overriding built-in policy" in output
+    print(output)
+    assert "[INFO] Overriding built-in command" in output
+    assert "Invalid configuration for policy 'block_all'" in str(
+        e.value
+    ) or "Command 'missing_command' not found" in str(e.value)

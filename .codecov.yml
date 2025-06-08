@@ -26,3 +26,5 @@ ignore:
   - "tests/"
   - "**/__init__.py"
   - "**/migrations/*"
+  - "tmp/**"
+  - "/tmp/**"

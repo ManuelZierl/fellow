@@ -21,7 +21,7 @@ from fellow.clients.Client import (
 )
 
 if TYPE_CHECKING:
-    from fellow.commands.Command import Command
+    from fellow.commands.Command import Command  # pragma: no cover
 
 
 class OpenAIClientMessage(TypedDict, total=False):

@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Protocol, TypeVar, Union
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from fellow.commands import CommandHandler
-    from fellow.commands.Command import CommandContext, CommandInput
+    from fellow.commands import CommandHandler  # pragma: no cover
+    from fellow.commands.Command import CommandContext, CommandInput  # pragma: no cover
 
 
 class PolicyConfig(BaseModel):
