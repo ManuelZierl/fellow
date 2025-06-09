@@ -30,30 +30,30 @@ ai_client:
 commands:
   create_file: {}
   view_file: {}
-  edit_file:
-    policies:
-      - name: deny_if_field_in_blacklist
-        config:
-          fields: [ filepath ]
-          blacklist:
-            - ".env"
-            - "secrets.*"
-            - ".*\\.key"
-            - ".*\\.pem"
-            - ".*\\.crt"
-            - "**/config.yml"
-            - "**/config.yaml"
-            - "**/settings.py"
-            - "**/__pycache__/*"
-            - "**/.git/*"
+  edit_file: {}
   list_files: {}
-  run_python: {}
+  run_python:
+    policies:
+      - name: require_user_confirmation
   run_pytest: {}
   list_definitions: {}
   get_code: {}
   make_plan: {}
   summarize_file: {}
-  pip_install: {}
+  pip_install:
+    policies:
+      - name: require_user_confirmation
+  delete_file:
+    policies:
+      - name: require_user_confirmation
+default_policies:
+  - name: deny_if_field_in_blacklist
+    config:
+      fields: [ filepath ]
+      blacklist:
+        - "**/.git/*"
+        - "**/.fellow/*"
+        - "**/.venv/*"
 planning:
   active: true
   prompt: |

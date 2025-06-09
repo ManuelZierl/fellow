@@ -33,7 +33,7 @@ class ClientConfig(BaseModel):
 
 class PolicyConfig(BaseModel):
     name: str
-    config: Dict
+    config: Optional[Dict] = {}
 
 
 class CommandConfig(BaseModel):
@@ -47,6 +47,7 @@ class Config(BaseModel):
     log: LogConfig
     ai_client: ClientConfig
     commands: Dict[str, CommandConfig]
+    default_policies: List[PolicyConfig]
     planning: PlanningConfig
     steps_limit: Optional[int]
     custom_commands_paths: List[str]

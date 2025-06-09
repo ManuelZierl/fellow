@@ -1,4 +1,3 @@
-import tempfile
 import textwrap
 from pathlib import Path
 from types import FunctionType, SimpleNamespace
@@ -7,7 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from fellow.commands.Command import Command, CommandInput
-from fellow.policies import PolicyConfig
+from fellow.policies import PolicyConfig, RequireUserConfirmation
 from fellow.utils.load_commands import (
     load_command_from_file,
     load_commands,
@@ -265,6 +264,7 @@ def test_load_commands_with_custom_policy(tmp_path):
                 ]
             )
         },
+        default_policies=[],
     )
 
     # --- Act ---
@@ -367,6 +367,7 @@ def test_load_commands_edge_cases(tmp_path, capsys):
                 policies=[]
             ),  # not in ALL_COMMANDS or loaded
         },
+        default_policies=[],
     )
 
     # --- Act + Assert ---
@@ -384,3 +385,51 @@ def test_load_commands_edge_cases(tmp_path, capsys):
     assert "Invalid configuration for policy 'block_all'" in str(
         e.value
     ) or "Command 'missing_command' not found" in str(e.value)
+
+
+def test_load_command_with_default_policies(tmp_path: Path):
+    # Arrange: create a valid command file in custom command path
+    commands_dir = tmp_path / ".fellow" / "commands"
+    commands_dir.mkdir(parents=True)
+
+    file_content = textwrap.dedent(
+        """
+        from fellow.commands.Command import CommandInput, CommandContext
+        from pydantic import Field
+
+        class EchoInput(CommandInput):
+            text: str = Field(..., description="Text to echo")
+
+        def echo(args: EchoInput, context: CommandContext) -> str:
+            \"""Echo the input text.\"""
+            return args.text
+    """
+    )
+
+    command_file = commands_dir / "echo.py"
+    command_file.write_text(file_content)
+
+    # Create fake config
+    config = MagicMock()
+    config.custom_commands_paths = [str(commands_dir)]
+    config.commands = {
+        "echo": MagicMock(policies=[]),
+        "view_file": MagicMock(policies=[]),
+    }
+    config.default_policies = [
+        SimpleNamespace(
+            name="require_user_confirmation", config={"message": "Dont do that!"}
+        )
+    ]
+    config.planning.active = True
+
+    # Act
+    commands = load_commands(config)
+
+    # Assert
+    assert isinstance(commands["echo"].policies[0], RequireUserConfirmation)
+    assert commands["echo"].policies[0].config.message == "Dont do that!"
+    assert isinstance(commands["view_file"].policies[0], RequireUserConfirmation)
+    assert commands["view_file"].policies[0].config.message == "Dont do that!"
+    assert isinstance(commands["make_plan"].policies[0], RequireUserConfirmation)
+    assert commands["make_plan"].policies[0].config.message == "Dont do that!"

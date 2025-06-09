@@ -22,6 +22,7 @@ def test_loads_default_config(default_config):
     args = Namespace(
         config=None,
         task="a valid task",
+        default_policies=[],
         **{
             key: None
             for key in [
@@ -52,6 +53,7 @@ def test_cli_override():
         task="CLI Task",
         introduction_prompt="Intro: {{TASK}}",
         first_message="Ignore",
+        default_policies=[],
         **{
             "log.filepath": "custom.md",
             "ai_client.config": {"model": "gpt-super"},

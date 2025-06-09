@@ -45,6 +45,10 @@ def init_policy(policy_name: str, target: str) -> Path:
     - Class: DenyLargeFileConfig
     - Class: DenyLargeFile
     - File: deny_large_file.py
+
+    :param policy_name: The name of the policy, typically in snake_case.
+    :param target: The directory where the policy file should be created.
+    :return: The path to the created policy file.
     """
     target_dir = Path(target)
     target_dir.mkdir(parents=True, exist_ok=True)

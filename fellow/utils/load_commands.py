@@ -10,7 +10,7 @@ from fellow.commands import ALL_COMMANDS
 from fellow.commands.Command import Command, CommandHandler, CommandInput
 from fellow.policies import ALL_POLICIES
 from fellow.policies.Policy import Policy, PolicyConfig
-from fellow.utils.load_config import Config
+from fellow.utils.load_config import CommandConfig, Config
 from fellow.utils.load_python_module import load_python_module
 
 T = TypeVar("T", bound=CommandInput)
@@ -78,11 +78,21 @@ def load_commands(config: Config) -> Dict[str, Command]:
 
             custom_commands_map[command_name] = (command_input, command_handler)
 
-    # Filter only the ones listed in config.commands
     final_commands: Dict[str, Command] = {}
+
+    # Add make_plan command if planning is active
+    if (
+        config.planning.active
+        and "make_plan" in ALL_COMMANDS
+        and "make_plan" not in config.commands
+    ):
+        make_plan_input, make_plan_handler = ALL_COMMANDS["make_plan"]
+        config.commands["make_plan"] = CommandConfig()
+
+    # Filter only the ones listed in config.commands
     for command_name, command_config in config.commands.items():
         policies = []
-        for p in command_config.policies:
+        for p in command_config.policies + config.default_policies:
             policy_name = p.name
             policy_config_dict = p.config
             custom_policy_type, custom_policy_config_type = custom_policies_map[
@@ -110,15 +120,6 @@ def load_commands(config: Config) -> Dict[str, Command]:
             raise ValueError(
                 f"Command '{command_name}' not found in built-in or custom commands."
             )
-
-    # Optionally add planning command
-    if (
-        config.planning.active
-        and "make_plan" in ALL_COMMANDS
-        and "make_plan" not in final_commands
-    ):
-        make_plan_input, make_plan_handler = ALL_COMMANDS["make_plan"]
-        final_commands["make_plan"] = Command(make_plan_input, make_plan_handler, [])
     return final_commands
 
 
