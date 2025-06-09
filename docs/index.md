@@ -37,3 +37,6 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
    - [OpenAI Client](clients/openai.md)
    - [Gemini Client](clients/gemini.md)
    - [Custom Clients](clients/custom.md)
+6. **[Policies](policies/index.md)**
+   - [Built-in Policies](policies/builtin.md)
+   - [Custom Policies](policies/custom.md)

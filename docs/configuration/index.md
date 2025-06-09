@@ -5,11 +5,22 @@ nav_order: 3
 
 # Configuration
 
-Fellow is configured via a single YAML file passed with the `--config` flag:
+Fellow supports two complementary ways of setting configuration:
 
-    fellow --config task.yml
+1. **YAML File (recommended)**  
+   Pass a `.yml` config via the `--config` flag:
+   
+       fellow --config my_task.yml
 
-A minimal config can include just a `task`, but the full set of options gives you fine-grained control over how the assistant behaves, logs, and chooses commands.
+2. **Command-Line Flags**  
+   All options can also be set directly via CLI arguments. This is useful for scripting or temporary overrides.  
+   CLI args take precedence over YAML.
+
+Examples:
+
+```bash
+fellow --task "Write a README.md for this project" --log.active=true --steps_limit=5
+```
 
 ---
 
@@ -56,9 +67,40 @@ For detailed per-client config, see:
 
 ### `commands`
 
-A list of commands the AI can use. These must match the function names registered or implemented.
+Defines which commands the AI is allowed to use, and optionally applies **policies** to them.
 
-See [Built-in Commands](/fellow/commands/builtin) for a full list of built-in commands, or [Custom Commands](/fellow/commands/custom) for how to create your own.
+```yaml
+commands:
+  create_file: {}
+  view_file: {}
+  edit_file:
+    policies:
+      - name: deny_if_field_in_blacklist
+        config:
+          fields: [ filepath ]
+          blacklist:
+            - ".env"
+            - "secrets.*"
+  run_python: {}
+  list_files: {}
+  list_definitions: {}
+  get_code: {}
+  make_plan: {}
+  summarize_file: {}
+  pip_install: {}
+```
+
+Each key is the name of a registered command.  
+The value can be an empty dictionary `{}` (to allow the command without restriction), or it can include a `policies:` list to define checks that must pass before the command is executed.
+
+Policies help **enforce safety, access control, or project-specific constraints**.
+
+See also:
+
+- [Built-in Commands](/fellow/commands/builtin)
+- [Custom Commands](/fellow/commands/custom)
+- [Policy System](/fellow/policies)
+
 
 ### `planning`
 

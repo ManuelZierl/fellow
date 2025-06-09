@@ -8,6 +8,7 @@ from fellow.clients.OpenAIClient import FunctionResult
 from fellow.commands.Command import CommandContext
 from fellow.utils.init_client import init_client
 from fellow.utils.init_command import init_command
+from fellow.utils.init_policy import init_policy
 from fellow.utils.load_client import load_client
 from fellow.utils.load_commands import load_commands
 from fellow.utils.load_config import Config, load_config
@@ -25,6 +26,10 @@ def main() -> None:
 
     if args.command == "init-client":
         init_client(args.name, config.custom_commands_paths[0])
+        return
+
+    if args.command == "init-policy":
+        init_policy(args.name, config.custom_policies_paths[0])
         return
 
     if config.task is None:
