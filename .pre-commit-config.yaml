@@ -20,6 +20,10 @@ repos:
           - pydantic==2.11.0
           - PyYAML==6.0.2
           - types-PyYAML==6.0.12.20250402
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff-check
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
