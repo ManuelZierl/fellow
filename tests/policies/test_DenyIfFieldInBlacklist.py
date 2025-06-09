@@ -30,7 +30,9 @@ def policy():
 def test_deny_if_field_in_blacklist_check(policy, filename, expected):
     with tempfile.TemporaryDirectory() as tmpdir:
         command = Command(CreateFileInput, create_file, [policy])
-    result = command.run(json.dumps({"filepath": os.path.join(tmpdir, filename)}), None)
+        result = command.run(
+            json.dumps({"filepath": os.path.join(tmpdir, filename)}), None
+        )
     assert expected in result
 
 

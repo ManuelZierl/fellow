@@ -306,7 +306,7 @@ def test_command_get_function_schema(client):
 
     with pytest.raises(ValueError) as err:
         client.get_function_schema(Command(ViewFileInput, lambda x, y: None, []))
-    assert str(err.value) == "[ERROR] Command handler is __doc__ is empty"
+    assert str(err.value) == "[ERROR] Command handler docstring is empty"
 
     with pytest.raises(ValueError) as err:
         client.get_function_schema(Command(ViewFileInput, "no-name", []))

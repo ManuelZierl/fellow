@@ -182,19 +182,19 @@ def load_policy_from_file(
     """
     module = load_python_module(file_path)
 
-    policy_confiy_type = _find_class_in_module(module, PolicyConfig)
-    if policy_confiy_type is None:
+    policy_config_type = _find_class_in_module(module, PolicyConfig)
+    if policy_config_type is None:
         raise ValueError(
             f"[ERROR] No subclass of PolicyConfig found in {file_path.name}"
         )
-    policy_type = getattr(module, policy_confiy_type.__name__.rstrip("Config"), None)
+    policy_type = getattr(module, policy_config_type.__name__.rstrip("Config"), None)
     if policy_type is None:
         raise ValueError(
-            f"[ERROR] No class found matching PolicyConfig '{policy_confiy_type.__name__}' in {file_path.name}"
+            f"[ERROR] No class found matching PolicyConfig '{policy_config_type.__name__}' in {file_path.name}"
         )
 
     policy_name = re.sub(r"(?<!^)(?=[A-Z])", "_", policy_type.__name__).lower()
-    return policy_name, policy_type, policy_confiy_type
+    return policy_name, policy_type, policy_config_type
 
 
 def _find_class_in_module(module: ModuleType, class_type: Type[U]) -> Optional[Type[U]]:

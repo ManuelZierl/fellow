@@ -15,8 +15,8 @@ def load_client(system_content: str, config: Config) -> Client:
     (e.g., 'myclient.py' defining a 'MyClient' class).
     Falls back to built-in clients if not found in custom paths.
 
-    :param: system_content (str): The base prompt to pass into the client config.
-    :param: config (Config): The loaded configuration object.
+    :param system_content: The base prompt to pass into the client config.
+    :param config: The loaded configuration object.
 
     :returns: An initialized client instance.
     """
