@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [add typo checker to pre-commit](https://github.com/ManuelZierl/fellow/issues/78)
 - [Implement Stackable Command-Level Authorization Policies](https://github.com/ManuelZierl/fellow/issues/76)
 - [restructure command configuration](https://github.com/ManuelZierl/fellow/issues/76)
+- [Add ruff linter](https://github.com/ManuelZierl/fellow/pull/85)
 
 ### Changed
 - [make Logo img global link](https://github.com/ManuelZierl/fellow/issues/68)
