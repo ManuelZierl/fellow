@@ -2,8 +2,6 @@ import os
 import tempfile
 from unittest.mock import MagicMock
 
-import pytest
-
 from fellow.commands.create_file import CreateFileInput, create_file
 
 

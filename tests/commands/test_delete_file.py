@@ -2,8 +2,6 @@ import os
 import tempfile
 from unittest.mock import MagicMock
 
-import pytest
-
 from fellow.commands.delete_file import DeleteFileInput, delete_file
 
 

@@ -1,7 +1,5 @@
 import json
 
-import pytest
-
 from fellow.utils.format_message import format_message  # adjust path if needed
 
 

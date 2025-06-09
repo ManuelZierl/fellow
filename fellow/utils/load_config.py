@@ -3,7 +3,7 @@ from argparse import Namespace
 from typing import Any, Dict, List, Optional
 
 import yaml
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, field_validator
 from pydantic.v1.utils import deep_update
 
 import fellow

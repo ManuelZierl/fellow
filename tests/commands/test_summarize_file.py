@@ -1,8 +1,6 @@
 import importlib
 from unittest.mock import MagicMock
 
-import pytest
-
 # dynamischer Import, um Patch-Probleme zu umgehen
 summarize_module = importlib.import_module("fellow.commands.summarize_file")
 SummarizeFileInput = summarize_module.SummarizeFileInput
