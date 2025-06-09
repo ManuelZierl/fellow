@@ -40,6 +40,11 @@ def parse_args() -> Namespace:
     )
     init_client_parser.add_argument("name", help="The name of the new client to create")
 
+    init_policy_parser = subparsers.add_parser(
+        "init-policy", help="Create a new custom policy"
+    )
+    init_policy_parser.add_argument("name", help="The name of the new policy to create")
+
     parser.add_argument("--config", help="Path to the optional yml config file")
     parser.add_argument(
         "--introduction_prompt", help="The prompt with which the AI will be initialized"

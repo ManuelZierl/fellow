@@ -8,6 +8,18 @@ from fellow.utils.load_python_module import load_python_module
 
 
 def load_client(system_content: str, config: Config) -> Client:
+    """
+    Loads and initializes the AI client specified in the config.
+
+    First checks custom client paths for a matching Python file
+    (e.g., 'myclient.py' defining a 'MyClient' class).
+    Falls back to built-in clients if not found in custom paths.
+
+    :param system_content: The base prompt to pass into the client config.
+    :param config: The loaded configuration object.
+
+    :returns: An initialized client instance.
+    """
     client_name = config.ai_client.client
     for path_str in config.custom_clients_paths:
         path = Path(path_str).resolve()

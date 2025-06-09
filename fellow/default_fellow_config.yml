@@ -28,17 +28,32 @@ ai_client:
     summary_memory_max_tokens: 15000
     model: "gpt-4o"
 commands:
-  - "create_file"
-  - "view_file"
-  - "edit_file"
-  - "list_files"
-  - "run_python"
-  - "run_pytest"
-  - "list_definitions"
-  - "get_code"
-  - "make_plan"
-  - "summarize_file"
-  - "pip_install"
+  create_file: {}
+  view_file: {}
+  edit_file: {}
+  list_files: {}
+  run_python:
+    policies:
+      - name: require_user_confirmation
+  run_pytest: {}
+  list_definitions: {}
+  get_code: {}
+  make_plan: {}
+  summarize_file: {}
+  pip_install:
+    policies:
+      - name: require_user_confirmation
+  delete_file:
+    policies:
+      - name: require_user_confirmation
+default_policies:
+  - name: deny_if_field_in_blacklist
+    config:
+      fields: [ filepath ]
+      blacklist:
+        - "**/.git/*"
+        - "**/.fellow/*"
+        - "**/.venv/*"
 planning:
   active: true
   prompt: |
@@ -48,3 +63,5 @@ custom_commands_paths:
   - ".fellow/commands"
 custom_clients_paths:
   - ".fellow/clients"
+custom_policies_paths:
+  - ".fellow/policies"

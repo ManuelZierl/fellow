@@ -14,7 +14,7 @@ from openai import BaseModel
 from typing_extensions import Required, Self
 
 if TYPE_CHECKING:
-    from fellow.commands.Command import Command
+    from fellow.commands.Command import Command  # pragma: no cover
 
 
 class ChatResult(TypedDict):

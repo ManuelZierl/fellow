@@ -17,7 +17,7 @@ from fellow.clients.Client import (
 )
 
 if TYPE_CHECKING:
-    from fellow.commands.Command import Command
+    from fellow.commands.Command import Command  # pragma: no cover
 
 
 class GeminiClientConfig(ClientConfig):
@@ -95,7 +95,7 @@ class GeminiClient(Client[GeminiClientConfig]):
         if not hasattr(command.command_handler, "__name__"):
             raise ValueError("[ERROR] Command handler is not callable with __name__.")
         if command.command_handler.__doc__ is None:
-            raise ValueError("[ERROR] Command handler is __doc__ is empty")
+            raise ValueError("[ERROR] Command handler docstring is empty")
         name = command.command_handler.__name__
         description = command.command_handler.__doc__.strip()
         parameters = command.input_type.model_json_schema()
