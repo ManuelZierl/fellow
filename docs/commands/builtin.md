@@ -10,6 +10,23 @@ Fellow includes a variety of built-in commands that can be used out of the box. 
 
 Below is a complete reference of all available built-in commands.
 
+## Table of Contents
+
+- [`create_file`](#create_file)
+- [`view_file`](#view_file)
+- [`delete_file`](#delete_file)
+- [`edit_file`](#edit_file)
+- [`list_files`](#list_files)
+- [`run_python`](#run_python)
+- [`run_pytest`](#run_pytest)
+- [`list_definitions`](#list_definitions)
+- [`get_code`](#get_code)
+- [`make_plan`](#make_plan)
+- [`pip_install`](#pip_install)
+- [`search_files`](#search_files)
+- [`summarize_file`](#summarize_file)
+
+
 ---
 
 ## `create_file`
