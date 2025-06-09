@@ -1,9 +1,13 @@
-[![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
+[![Version](https://img.shields.io/pypi/v/fellow?color=blue&logo=pypi)](https://pypi.org/project/fellow/)
 ![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![PyPI - Types](https://img.shields.io/pypi/types/fellow)
+![GitHub License](https://img.shields.io/github/license/ManuelZierl/fellow)
 
 
-# ![Fellow](img/logo.svg)
+# ![Fellow](https://raw.githubusercontent.com/ManuelZierl/fellow/main/docs/img/logo.svg)
 
 ## Project Description
 **Fellow** is a command-line AI assistant built by developers, for developers.
@@ -48,26 +52,11 @@ For more configuration options, see the [default_fellow_config.yml](fellow/defau
 
 ## Customization
 
-### Custom Commands
-Fellow supports **custom commands**, allowing you to extend its capabilities with your own automation logic — all without modifying the core codebase.
+Fellow is built to be extensible. You can customize both:
 
-You can define your own commands by placing Python files in `.fellow/commands/`, and then referencing them in your config.
+- **Commands** – add your own automation logic or override existing ones. Learn more in the [Custom Commands documentation](https://manuelzierl.github.io/fellow/commands/custom)
 
-You can also use:
-```bash
-fellow init-command my_custom_command
-```
-This will create a new Python file in `.fellow/commands/` with the necessary boilerplate code.
-
-Then, register your command in your config file:
-```yaml
-...
-commands:
-    - "my_custom_command"
-    - ...
-```
-
-With this method, you can also **override existing commands** by using the same name as a built-in one.
+- **Clients** – integrate with different AI backends like built-in OpenAI or Gemini. Or create your own client. Learn more in the [Custom Clients documentation](https://manuelzierl.github.io/fellow/clients/custom)
 
 ---
 

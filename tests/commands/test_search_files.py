@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from fellow.commands.search_files import SearchFilesInput, search_files
 
 
@@ -61,9 +59,6 @@ def test_search_files_handles_file_read_exception(tmp_path):
     faulty_file.write_text("This line will not be read", encoding="utf-8")
 
     args = SearchFilesInput(directory=str(tmp_path), search="will", extension=".txt")
-
-    # Patch open only when trying to read the faulty_file
-    original_open = open
 
     def mock_open(path, *args, **kwargs):
         if str(path) == str(faulty_file):

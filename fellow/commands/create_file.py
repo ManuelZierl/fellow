@@ -21,7 +21,7 @@ def create_file(args: CreateFileInput, context: CommandContext) -> str:
         os.makedirs(os.path.dirname(args.filepath) or ".", exist_ok=True)
 
         # Create the file
-        with open(args.filepath, "x", encoding="utf-8") as f:
+        with open(args.filepath, "x", encoding="utf-8") as _:
             pass
 
         return f"[OK] Created file: {args.filepath}"

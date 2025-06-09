@@ -9,7 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+
 ### Changed
+
+
+### Removed
+
+---
+
+## [0.0.4] - 2025-06-09
+
+### Added
+- [GitHub pages favicon](https://github.com/ManuelZierl/fellow/pull/70/files)
+- [Detailed Docs](https://github.com/ManuelZierl/fellow/issues/62)
+- [add typo checker to pre-commit](https://github.com/ManuelZierl/fellow/issues/78)
+- [Implement Stackable Command-Level Authorization Policies](https://github.com/ManuelZierl/fellow/issues/76)
+- [restructure command configuration](https://github.com/ManuelZierl/fellow/issues/76)
+- [Add ruff linter](https://github.com/ManuelZierl/fellow/pull/85)
+
+### Changed
+- [make Logo img global link](https://github.com/ManuelZierl/fellow/issues/68)
+- [Bump h11 from 0.14.0 to 0.16.0](https://github.com/ManuelZierl/fellow/pull/71)
+- [Bump setuptools from 78.1.0 to 78.1.1](https://github.com/ManuelZierl/fellow/pull/72)
+- [Enhance CI configuration and documentation with mypy](https://github.com/ManuelZierl/fellow/issues/80)
+- [Additional badges](https://github.com/ManuelZierl/fellow/issues/80)
 
 ### Removed
 

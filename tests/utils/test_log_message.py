@@ -2,8 +2,6 @@ import ast
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
-
 from fellow.commands.list_definitions import format_function
 from fellow.utils.log_message import clear_log, log_message
 

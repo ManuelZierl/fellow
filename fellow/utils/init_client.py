@@ -14,20 +14,20 @@ from fellow.clients.Client import (
 )
 
 
-class {{client_name}}ClientConfig(ClientConfig):
+class {client_name}ClientConfig(ClientConfig):
     system_content: str
     # todo:
 
 
-class {{client_name}}Client(Client[{{client_name}}ClientConfig]):
+class {client_name}Client(Client[{client_name}ClientConfig]):
     config_class = {{client_name}}ClientConfig
 
-    def __init__(self, config: {{client_name}}ClientConfig):
+    def __init__(self, config: {client_name}ClientConfig):
         # todo:
         ...
 
     @classmethod
-    def create(cls, config: {{client_name}}ClientConfig) -> Self:
+    def create(cls, config: {client_name}ClientConfig) -> Self:
         return cls(config)
 
     def chat(
@@ -48,13 +48,31 @@ class {{client_name}}Client(Client[{{client_name}}ClientConfig]):
         # todo:
         ...
 
+    def set_plan(self, plan: str) -> None:
+        # todo: 
+        ...
+
+    def get_function_schema(self, command: "Command") -> Function:
+        # todo: 
+        ...
+
 """
 
 
 def init_client(client_name: str, target: str) -> Path:
     """
-    todo: doc
-    todo: test
+    Generates a boilerplate Python file for a custom AI client.
+
+    The client class and its config are named based on `client_name` and written to `<target>/<ClientName>Client.py`.
+
+    For example, `local` becomes:
+    - class: LocalClientConfig
+    - class: LocalClient
+    - file: LocalClient.py
+
+    :param client_name: Name of the client (e.g., "local").
+    :param target: Directory where the client file should be created.
+    :return: Path to the newly created client file.
     """
     target_dir = Path(target)
     client_name = client_name.lower().capitalize()

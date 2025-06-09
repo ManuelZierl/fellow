@@ -160,7 +160,7 @@ def test_get_function_schema_missing_doc(config, mock_genai_client):
     dummy_command = MagicMock()
     dummy_command.command_handler = mock_handler
 
-    with pytest.raises(ValueError, match="Command handler is __doc__ is empty"):
+    with pytest.raises(ValueError, match="Command handler docstring is empty"):
         client.get_function_schema(dummy_command)
 
 

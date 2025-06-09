@@ -6,7 +6,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from fellow.clients.OpenAIClient import OpenAIClient, OpenAIClientConfig
-from fellow.commands import Command, ViewFileInput, view_file
+from fellow.commands import ViewFileInput, view_file
+from fellow.commands.Command import Command
 
 
 @pytest.fixture
@@ -273,7 +274,7 @@ def test_set_plan():
 
 
 def test_command_get_function_schema(client):
-    command = Command(ViewFileInput, view_file)
+    command = Command(ViewFileInput, view_file, [])
     assert client.get_function_schema(command) == {
         "name": "view_file",
         "description": "View the contents of a file, optionally between specific line numbers.",
@@ -304,9 +305,9 @@ def test_command_get_function_schema(client):
     }
 
     with pytest.raises(ValueError) as err:
-        client.get_function_schema(Command(ViewFileInput, lambda x, y: None))
-    assert str(err.value) == "[ERROR] Command handler is __doc__ is empty"
+        client.get_function_schema(Command(ViewFileInput, lambda x, y: None, []))
+    assert str(err.value) == "[ERROR] Command handler docstring is empty"
 
     with pytest.raises(ValueError) as err:
-        client.get_function_schema(Command(ViewFileInput, "no-name"))
+        client.get_function_schema(Command(ViewFileInput, "no-name", []))
     assert str(err.value) == "[ERROR] Command handler is not callable with __name__."

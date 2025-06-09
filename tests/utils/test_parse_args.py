@@ -46,7 +46,7 @@ def test_ai_client_config_parsing_from_cli(monkeypatch):
         + ["--ai_client.config", '{"model": "gpt-4", "memory_max_tokens": 1234}'],
     )
     args = parse_args()
-    assert type(getattr(args, "ai_client.config")) == dict
+    assert isinstance(getattr(args, "ai_client.config"), dict)
     assert getattr(args, "ai_client.config") == {
         "model": "gpt-4",
         "memory_max_tokens": 1234,

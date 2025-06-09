@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fellow"
-version = "0.0.3"
+version = "0.0.4"
 description = "Fellow CLI tool is a command line development assistant"
 readme = { file = "README.md", content-type = "text/markdown" }
 urls = { "Homepage" = "https://github.com/ManuelZierl/fellow", "Source" = "https://github.com/ManuelZierl/fellow", "Tracker" = "https://github.com/ManuelZierl/fellow/issues" }
@@ -31,4 +31,4 @@ exclude = ["tests*"]
 include = ["fellow", "fellow.*"]
 
 [tool.setuptools.package-data]
-fellow = ["default_fellow_config.yml"]
+fellow = ["default_fellow_config.yml", "py.typed"]

@@ -1,8 +1,6 @@
 import importlib
 from unittest.mock import MagicMock
 
-import pytest
-
 # dynamischer Import, um Patch-Probleme zu umgehen
 summarize_module = importlib.import_module("fellow.commands.summarize_file")
 SummarizeFileInput = summarize_module.SummarizeFileInput
@@ -28,12 +26,12 @@ def test_empty_file(tmp_path):
 
 def test_summary_output(tmp_path):
     file_path = tmp_path / "example.txt"
-    file_path.write_text("Dies ist ein Testinhalt.")
+    file_path.write_text("This is a test")
 
     mock_client = MagicMock()
     # Adjust to return a tuple as expected by chat()
     mock_client.chat.return_value = {
-        "message": "Das ist eine Zusammenfassung.",
+        "message": "This is a summary.",
         "function_name": None,
         "function_args": None,
     }
@@ -44,7 +42,7 @@ def test_summary_output(tmp_path):
     context = MagicMock(ai_client=MagicMock(model="gpt-4"))
     result = summarize_file(args, context)
 
-    assert result == "[OK] Summary:\nDas ist eine Zusammenfassung."
+    assert result == "[OK] Summary:\nThis is a summary."
     mock_client.chat.assert_called_once()
 
 
@@ -59,7 +57,7 @@ def test_file_read_error(tmp_path):
     try:
         result = summarize_file(args, context)
     finally:
-        file_path.chmod(0o644)  # Berechtigung wiederherstellen, sonst cleanup failt
+        file_path.chmod(0o644)  # Authorization restore for cleanup
 
     assert "[ERROR] Could not read or summarize file" in result
 

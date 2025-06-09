@@ -1,12 +1,18 @@
-# ![Fellow](img/logo.svg)
-
-[![Version](https://img.shields.io/pypi/v/fellow.svg)](https://pypi.org/project/fellow/)
-![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
-
+---
+layout: default
+title: Welcome
+nav_order: 0
 ---
 
-## Welcome to Fellow
+[![Version](https://img.shields.io/pypi/v/fellow?color=blue&logo=pypi)](https://pypi.org/project/fellow/)
+![CI](https://github.com/ManuelZierl/fellow/actions/workflows/ci.yml/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/ManuelZierl/fellow/branch/main/graph/badge.svg)](https://codecov.io/gh/ManuelZierl/fellow)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![PyPI - Types](https://img.shields.io/pypi/types/fellow)
+![GitHub License](https://img.shields.io/github/license/ManuelZierl/fellow)
+
+---
 
 **Fellow** is a command-line AI assistant built by developers, for developers.
 
@@ -15,36 +21,22 @@ It *executes* tasks on your behalf. It reasons step-by-step, chooses commands fr
 
 ---
 
-## Installation
+## Table of Contents
 
-```bash
-pip install fellow
-```
-
----
-
-## Quick Start
-
-```bash
-export OPENAI_API_KEY="your_openai_api_key"
-fellow --config task.yml
-```
-
-Example config file (`task.yml`):
-
-```yaml
-task: |
-  write a readme file for this Python project
-```
-
----
-
-## Extend with Custom Commands
-
-```bash
-fellow init-command my_custom_command
-```
-
-Place it in `.fellow/commands/` and register in your config.
-
----
+1. **[Overview](overview/index.md)**
+   - [What is Fellow?](overview/what-is-fellow.md)
+   - [Key Concepts](overview/key-concepts.md)
+2. **[Usage](usage/index.md)**
+   - [Installation](usage/installation.md)
+   - [Running Fellow](usage/running.md)
+3. **[Configuration](configuration/index.md)**
+4. **[Commands](commands/index.md)**
+   - [Built-in Commands](commands/builtin.md)
+   - [Custom Commands](commands/custom.md)
+5. **[Clients](clients/index.md)**
+   - [OpenAI Client](clients/openai.md)
+   - [Gemini Client](clients/gemini.md)
+   - [Custom Clients](clients/custom.md)
+6. **[Policies](policies/index.md)**
+   - [Built-in Policies](policies/builtin.md)
+   - [Custom Policies](policies/custom.md)
