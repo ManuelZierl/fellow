@@ -33,6 +33,7 @@ jobs:
             exit 1
           }
 
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -44,6 +45,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
+
       - name: Run Black check
         run: black --check .
 
@@ -53,10 +55,14 @@ jobs:
       - name: Run mypy
         run: mypy -p fellow
 
+      - name: Run ruff check
+        run: ruff check
+
       - name: Run Tests
         run: |
           coverage run -m pytest
           coverage report
+
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

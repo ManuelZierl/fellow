@@ -1,8 +1,6 @@
 import subprocess
 from unittest.mock import patch
 
-import pytest
-
 from fellow.commands.pip_install import PipInstallInput, pip_install
 
 

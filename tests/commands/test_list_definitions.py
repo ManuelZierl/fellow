@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from fellow.commands.list_definitions import ListDefinitionsInput, list_definitions
 
 
