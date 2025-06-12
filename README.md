@@ -7,7 +7,7 @@
 ![GitHub License](https://img.shields.io/github/license/ManuelZierl/fellow)
 
 
-# ![Fellow](https://raw.githubusercontent.com/ManuelZierl/fellow/main/docs/img/logo.svg)
+# ![Fellow](https://raw.githubusercontent.com/ManuelZierl/fellow/main/docs/assets/img/logo.svg)
 
 ## Project Description
 **Fellow** is a command-line AI assistant built by developers, for developers.
