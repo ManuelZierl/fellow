@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Protocol, TypeVar, Union
 
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from fellow.commands import CommandHandler  # pragma: no cover
     from fellow.commands.Command import CommandContext, CommandInput  # pragma: no cover
 
@@ -13,7 +13,7 @@ class PolicyConfig(BaseModel):
     and define their fields explicitly.
     """
 
-    ...
+    ...  # pragma: no cover
 
 
 T = TypeVar("T", bound=PolicyConfig, covariant=True)
@@ -26,7 +26,7 @@ class Policy(Protocol[T]):
     If it returns a string, it is treated as a denial reason.
     """
 
-    def __init__(self, config: T): ...
+    def __init__(self, config: T): ...  # pragma: no cover
 
     def check(
         self,
@@ -34,4 +34,4 @@ class Policy(Protocol[T]):
         command_handler: "CommandHandler",
         args: "CommandInput",
         context: "CommandContext",
-    ) -> Union[bool, str]: ...
+    ) -> Union[bool, str]: ...  # pragma: no cover

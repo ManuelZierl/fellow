@@ -1,7 +1,7 @@
 import argparse
 import json
+import uuid
 from argparse import Namespace
-from typing import Any, Dict
 
 from fellow import __version__
 
@@ -11,16 +11,6 @@ def str2bool(v: str) -> bool:
     Convert a string to a boolean value.
     """
     return str(v).lower() in ("yes", "true", "t", "1")
-
-
-def json_string_to_dict(json_string: str) -> Dict[str, Any]:
-    """
-    Convert a JSON string to a dictionary.
-    """
-    try:
-        return json.loads(json_string)
-    except json.JSONDecodeError:
-        raise ValueError("Invalid JSON string provided.")
 
 
 def parse_args() -> Namespace:
@@ -68,6 +58,7 @@ def parse_args() -> Namespace:
         "--introduction_prompt", help="The prompt with which the AI will be initialized"
     )
     parser.add_argument("--task", help="The task fellow should perform")
+    parser.add_argument("--task_id", help="The task ID (UUID4 format)", type=uuid.UUID)
     parser.add_argument("--log.filepath", help="Log file path")
     parser.add_argument("--log.active", type=str2bool, help="Enable or disable logging")
     parser.add_argument("--log.spoiler", type=str2bool, help="Wrap logs in spoilers")
@@ -76,7 +67,7 @@ def parse_args() -> Namespace:
     )
     parser.add_argument(
         "--ai_client.config",
-        type=json_string_to_dict,
+        type=json.loads,
         help="Override AI config as JSON string",
     )
     parser.add_argument(

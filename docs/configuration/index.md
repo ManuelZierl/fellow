@@ -48,6 +48,13 @@ The first message sent to the AI after the system prompt — usually an invitati
 
 The main instruction Fellow will execute. Should be plain text or multiline YAML string.
 
+### `task_id`
+
+A unique identifier (UUID) for this specific run of Fellow.
+
+**Recommendation:** Normally, you should not set this manually. Let Fellow assign it automatically unless you have a specific need.
+
+
 ### `log`
 
 Controls whether output is saved to a file and how it is formatted.
@@ -55,6 +62,20 @@ Controls whether output is saved to a file and how it is formatted.
 - `log.active`: Enable/disable logging
 - `log.spoiler`: Whether to wrap logs in collapsible blocks (for Markdown)
 - `log.filepath`: Where logs are written (e.g. `fellow_log.md`)
+
+### `memory`
+
+Controls whether the memory state of the run is persisted after completion.
+
+- `memory.log`: Enable/disable writing the memory to disk
+- `memory.filepath`: Path to the memory file (must end with `.json`), e.g. `.fellow/runs/{{task_id}}/memory.json`
+
+### `metadata`
+
+Controls whether metadata about the run (e.g. task details, environment) is stored.
+
+- `metadata.log`: Enable/disable metadata output
+- `metadata.filepath`: Path to the metadata file (must end with `.json`), e.g. `.fellow/runs/{{task_id}}/metadata.json`
 
 ### `ai_client`
 

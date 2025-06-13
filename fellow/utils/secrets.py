@@ -3,10 +3,9 @@ import warnings
 from pathlib import Path
 
 
-def ensure_fellow_gitignore(target: str) -> None:
-    secrets_path = Path(target)
-    gitignore_path = secrets_path.parent / ".gitignore"
-    entry = secrets_path.name
+def ensure_fellow_gitignore(path: Path) -> None:
+    gitignore_path = path.parent / ".gitignore"
+    entry = path.name
 
     # Ensure the .fellow directory exists
     gitignore_path.parent.mkdir(parents=True, exist_ok=True)
@@ -22,9 +21,8 @@ def ensure_fellow_gitignore(target: str) -> None:
             f.write(f"{entry}\n")
 
 
-def load_secrets(target: str) -> None:
+def load_secrets(path: Path) -> None:
     """Load secrets from a file into os.environ without overwriting existing keys."""
-    path = Path(target)
     if not path.exists():
         return
 
@@ -41,10 +39,9 @@ def load_secrets(target: str) -> None:
                 os.environ[key] = value
 
 
-def add_secret(value: str, key: str, target: str) -> None:
+def add_secret(value: str, key: str, path: Path) -> None:
     """Add or update a secret in-place, preserving comments and formatting."""
-    ensure_fellow_gitignore(target)
-    path = Path(target)
+    ensure_fellow_gitignore(path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     lines = []
@@ -67,9 +64,8 @@ def add_secret(value: str, key: str, target: str) -> None:
         f.writelines(lines)
 
 
-def remove_secret(key: str, target: str) -> None:
+def remove_secret(key: str, path: Path) -> None:
     """Remove a secret by exact key match, preserving comments and formatting."""
-    path = Path(target)
     if not path.exists():
         return
 
@@ -85,8 +81,7 @@ def remove_secret(key: str, target: str) -> None:
         f.writelines(lines)
 
 
-def clear_secrets(target: str) -> None:
+def clear_secrets(path: Path) -> None:
     """Delete all secrets from the file (comments and formatting are lost)."""
-    path = Path(target)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("")

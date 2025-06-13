@@ -6,9 +6,12 @@ from pydantic import Field
 
 from fellow.policies.Policy import Policy, PolicyConfig
 
-if TYPE_CHECKING:
-    from fellow.commands.Command import CommandContext, CommandHandler, CommandInput
-
+if TYPE_CHECKING:  # pragma: no cover
+    from fellow.commands.Command import (
+        CommandContext,
+        CommandHandler,
+        CommandInput,
+    )  # pragma: no cover
 
 class {config_class_name}(PolicyConfig):
     # TODO: Define your configuration fields here
@@ -38,7 +41,7 @@ class {policy_class_name}(Policy[{config_class_name}]):
 """
 
 
-def init_policy(policy_name: str, target: str) -> Path:
+def init_policy(policy_name: str, path: Path) -> Path:
     """
     Generates a boilerplate file for a custom policy.
     For example, `deny_large_file` creates:
@@ -50,14 +53,13 @@ def init_policy(policy_name: str, target: str) -> Path:
     :param target: The directory where the policy file should be created.
     :return: The path to the created policy file.
     """
-    target_dir = Path(target)
-    target_dir.mkdir(parents=True, exist_ok=True)
+    path.mkdir(parents=True, exist_ok=True)
 
     parts = policy_name.split("_")
     class_base = "".join(part.capitalize() for part in parts)
     policy_class_name = class_base
     config_class_name = f"{class_base}Config"
-    file_path = target_dir / f"{policy_name}.py"
+    file_path = path / f"{policy_name}.py"
 
     if file_path.exists():
         raise FileExistsError(f"Policy file already exists: {file_path}")

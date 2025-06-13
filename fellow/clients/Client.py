@@ -13,7 +13,7 @@ from typing import (
 from openai import BaseModel
 from typing_extensions import Required, Self
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from fellow.commands.Command import Command  # pragma: no cover
 
 
@@ -93,7 +93,7 @@ class Client(Protocol[T]):
 
         :return: A configured AI client instance.
         """
-        ...
+        ...  # pragma: no cover
 
     def chat(
         self,
@@ -111,7 +111,7 @@ class Client(Protocol[T]):
 
         :return: ChatResult containing the assistant's response, function name, and arguments.
         """
-        ...
+        ...  # pragma: no cover
 
     def store_memory(self, filename: str) -> None:
         """
@@ -119,7 +119,7 @@ class Client(Protocol[T]):
 
         :param filename: The name of the file to store memory.
         """
-        ...
+        ...  # pragma: no cover
 
     def set_plan(self, plan: str) -> None:
         """
@@ -127,7 +127,7 @@ class Client(Protocol[T]):
 
         :param plan: The plan to be set.
         """
-        ...
+        ...  # pragma: no cover
 
     def get_function_schema(self, command: "Command") -> Function:
         """
@@ -135,4 +135,4 @@ class Client(Protocol[T]):
 
         :param command: The command for which to get the function schema.
         """
-        ...
+        ...  # pragma: no cover
