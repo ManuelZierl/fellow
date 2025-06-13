@@ -4,7 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from fellow.utils.secrets import add_secret, clear_secrets, load_secrets, remove_secret
+from fellow.utils.secrets import (
+    add_secret,
+    clear_secrets,
+    ensure_fellow_gitignore,
+    load_secrets,
+    remove_secret,
+)
 
 
 @pytest.fixture
@@ -113,3 +119,51 @@ def test_add_secret_creates_file_and_gitignore(tmp_path):
 
     finally:
         os.chdir(original_cwd)
+
+
+def test_ensure_fellow_gitignore_creates_file(tmp_path):
+    # Simulate `.fellow/.secrets` path
+    secrets_path = tmp_path / ".fellow" / ".secrets"
+    secrets_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Run the function (creates .gitignore)
+    ensure_fellow_gitignore(str(secrets_path))
+
+    gitignore_path = secrets_path.parent / ".gitignore"
+    assert gitignore_path.exists()
+
+    contents = gitignore_path.read_text()
+    assert ".secrets" in contents
+
+
+def test_ensure_fellow_gitignore_appends_if_missing(tmp_path):
+    # Setup .gitignore with another entry
+    fellow_dir = tmp_path / ".fellow"
+    fellow_dir.mkdir(parents=True, exist_ok=True)
+    gitignore_path = fellow_dir / ".gitignore"
+    gitignore_path.write_text("other-entry\n")
+
+    secrets_path = fellow_dir / ".secrets"
+
+    ensure_fellow_gitignore(str(secrets_path))
+
+    contents = gitignore_path.read_text()
+    assert ".secrets" in contents
+    assert "other-entry" in contents
+
+
+def test_ensure_fellow_gitignore_skips_if_already_present(tmp_path):
+    fellow_dir = tmp_path / ".fellow"
+    fellow_dir.mkdir(parents=True, exist_ok=True)
+    gitignore_path = fellow_dir / ".gitignore"
+    gitignore_path.write_text(".secrets\n")
+
+    secrets_path = fellow_dir / ".secrets"
+
+    # Record file state before
+    before = gitignore_path.read_text()
+
+    ensure_fellow_gitignore(str(secrets_path))
+
+    after = gitignore_path.read_text()
+    assert after == before  # No duplication or change
