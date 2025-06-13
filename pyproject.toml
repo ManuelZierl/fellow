@@ -23,6 +23,28 @@ dependencies = [
     "google-genai>=1.11.0",
     "tomli>=2.2.1",
 ]
+classifiers = [
+    # License
+    "License :: OSI Approved :: MIT License",
+    # Python versions
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    # Typing
+    "Typing :: Typed",
+    # Development status
+    "Development Status :: 4 - Beta",
+    # Intended use
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Environment :: Console",
+    # Topics
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+    # OS
+    "Operating System :: OS Independent",
+]
 
 [project.scripts]
 fellow = "fellow.main:main"
