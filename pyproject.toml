@@ -41,7 +41,7 @@ classifiers = [
     # Topics
     "Topic :: Software Development :: Build Tools",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Software Development :: User Interfaces",
+    "Topic :: Software Development :: Libraries",
     # OS
     "Operating System :: OS Independent",
 ]
