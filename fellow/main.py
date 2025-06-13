@@ -14,6 +14,7 @@ from fellow.utils.load_commands import load_commands
 from fellow.utils.load_config import Config, load_config
 from fellow.utils.log_message import clear_log, log_message
 from fellow.utils.parse_args import parse_args
+from fellow.utils.secrets import add_secret, remove_secret, clear_secrets, load_secrets
 
 
 def main() -> None:
@@ -32,8 +33,22 @@ def main() -> None:
         init_policy(args.name, config.custom_policies_paths[0])
         return
 
+    if args.command == "add-secret":
+        add_secret(args.value, args.key, config.secrets_path)
+        return
+
+    if args.command == "remove-secret":
+        remove_secret(args.key, config.secrets_path)
+        return
+
+    if args.command == "clear-secrets":
+        clear_secrets(config.secrets_path)
+        return
+
     if config.task is None:
         raise ValidationError("[ERROR] Task is not defined in the configuration.")
+
+    load_secrets(config.secrets_path)
 
     # Init commands
     commands = load_commands(config)

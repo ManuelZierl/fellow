@@ -65,3 +65,4 @@ custom_clients_paths:
   - ".fellow/clients"
 custom_policies_paths:
   - ".fellow/policies"
+secrets_path: ".fellow/.secrets"
