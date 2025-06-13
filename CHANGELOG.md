@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [Add Fellow secrets helper commands](https://github.com/ManuelZierl/fellow/issues/83)
 - [add --version command](https://github.com/ManuelZierl/fellow/pull/92)
+- [fixed typed badge by adding classifiers](https://github.com/ManuelZierl/fellow/issues)
 
 ### Changed
 
