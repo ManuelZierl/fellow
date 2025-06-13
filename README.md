@@ -10,15 +10,14 @@
 # ![Fellow](https://raw.githubusercontent.com/ManuelZierl/fellow/main/docs/assets/img/logo.svg)
 
 ## Project Description
+
 **Fellow** is a command-line AI assistant built by developers, for developers.
 
-Unlike most AI tools that stop at suggesting code, **Fellow** goes a step further: it executes tasks on your behalf. It reasons step-by-step, chooses appropriate commands from a plugin system, and performs actions like editing files, generating content, or writing tests. All autonomously.
+Unlike most AI tools that just suggest code, **Fellow** goes further: it *executes* tasks for you. It reasons step-by-step, picks commands from a plugin system, and performs actions like editing files, generating content, or writing tests — all autonomously.
 
-The idea for Fellow started from a simple but powerful realization: *copy-pasting between ChatGPT and your editor gets in the way of real flow.* What if the AI could access your codebase directly? What if it could decide *what to look at* and *what to do*—without constant human prompting?
+Fellow was born from a simple insight: *copy-pasting between ChatGPT and your editor breaks flow.* What if the AI could access your codebase directly and decide what to do?
 
-That's what Fellow explores. It uses YAML configs to define tasks, keeps a memory of its reasoning, and can be extended with your own command plugins. Whether you're automating repetitive dev tasks or experimenting with agentic workflows, Fellow is a lightweight but powerful sandbox for building the tools you wish existed.
-
-It’s still early and evolving—but it already works. And if you're a developer who wants more *doing* and less *prompting*, Fellow might just be the tool you've been waiting for.
+It’s a lightweight but powerful sandbox for building the tools you wish existed — and it's still evolving. If you're a developer who wants more *doing* and less *prompting*, Fellow might just be the tool you’ve been waiting for.
 
 ## Documentation
 
@@ -32,31 +31,32 @@ Make sure you have Python installed on your system. Then install Fellow via [pip
 pip install fellow
 ```
 
-## Usage
-Since Fellow uses the OpenAI API you have to set your `OPENAI_API_KEY` in your environment variables. You can do this by running:
+## Quick Start
+
+Fellow can use the OpenAI API, so you need to provide your API key. The easiest way is:
+
 ```bash
-export OPENAI_API_KEY="your_openai_api_key"
+fellow add-secret OPENAI_API_KEY your_openai_api_key
 ```
 
-Fellow is designed to run based on a configuration provided via a YAML file. A typical usage example:
+Then you're ready to go. For example, to ask Fellow to write a README file:
+
 ```bash
-fellow --config task.yml
+fellow --task "write a readme file for this Python project"
 ```
 
-In the YAML configuration, you can specify tasks that Fellow will carry out. Supported commands include file operations, code execution, and more. Example:
-```yaml
-task: |
-  write a readme file for this Python project
-``` 
-For more configuration options, see the [default_fellow_config.yml](fellow/default_fellow_config.yml) file in the repository.
+---
+
 
 ## Customization
 
-Fellow is built to be extensible. You can customize both:
+Fellow is built to be extensible. You can customize:
 
 - **Commands** – add your own automation logic or override existing ones. Learn more in the [Custom Commands documentation](https://manuelzierl.github.io/fellow/commands/custom)
 
 - **Clients** – integrate with different AI backends like built-in OpenAI or Gemini. Or create your own client. Learn more in the [Custom Clients documentation](https://manuelzierl.github.io/fellow/clients/custom)
+
+- **Policies** – control Fellow’s behavior in specific situations to ensure safe and predictable AI use. [Custom Policies documentation](https://manuelzierl.github.io/fellow/policies/custom)
 
 ---
 
