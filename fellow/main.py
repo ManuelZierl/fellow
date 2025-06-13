@@ -14,7 +14,7 @@ from fellow.utils.load_commands import load_commands
 from fellow.utils.load_config import Config, load_config
 from fellow.utils.log_message import clear_log, log_message
 from fellow.utils.parse_args import parse_args
-from fellow.utils.secrets import add_secret, remove_secret, clear_secrets, load_secrets
+from fellow.utils.secrets import add_secret, clear_secrets, load_secrets, remove_secret
 
 
 def main() -> None:
