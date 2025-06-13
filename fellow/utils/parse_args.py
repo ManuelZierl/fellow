@@ -50,11 +50,12 @@ def parse_args() -> Namespace:
     secrets_parser.add_argument("key", help="Secret key")
     secrets_parser.add_argument("value", help="Secret value")
 
-    remove_parser = subparsers.add_parser("remove-secret", help="Remove a secret by key")
+    remove_parser = subparsers.add_parser(
+        "remove-secret", help="Remove a secret by key"
+    )
     remove_parser.add_argument("key", help="Secret key to remove")
 
     subparsers.add_parser("clear-secrets", help="Remove all secrets")
-
 
     # FELLOW CONFIG ARGS
     parser.add_argument("--config", help="Path to the optional yml config file")
@@ -77,8 +78,11 @@ def parse_args() -> Namespace:
         "--planning.active", type=str2bool, help="Enable or disable planning"
     )
     parser.add_argument("--planning.prompt", help="Define the prompt for planning")
-    # todo: commands is not just a list ...
-    parser.add_argument("--commands", nargs="*", help="List of commands to be used")
+    parser.add_argument(
+        "--commands",
+        type=json.loads,
+        help="JSON object mapping command names to their configurations",
+    )
     parser.add_argument("--steps_limit", type=int, help="Limit the number of steps")
     parser.add_argument(
         "--custom_commands_paths", nargs="*", help="Paths to custom commands"
@@ -86,7 +90,9 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "--custom_clients_paths", nargs="*", help="Paths to custom clients"
     )
-    parser.add_argument("--custom_policies_paths", nargs="*", help="Paths to custom policies")
+    parser.add_argument(
+        "--custom_policies_paths", nargs="*", help="Paths to custom policies"
+    )
     parser.add_argument("--secrets_path", help="Path to the secrets file")
 
     return parser.parse_args()

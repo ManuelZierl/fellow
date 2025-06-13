@@ -1,6 +1,6 @@
 import os
-from pathlib import Path
 import warnings
+from pathlib import Path
 
 
 def load_secrets(target: str) -> None:
@@ -48,8 +48,8 @@ def add_secret(value: str, key: str, target: str) -> None:
 
 
 def remove_secret(key: str, target: str) -> None:
-    path = Path(target)
     """Remove a secret by exact key match, preserving comments and formatting."""
+    path = Path(target)
     if not path.exists():
         return
 
