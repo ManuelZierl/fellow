@@ -15,6 +15,7 @@ def ensure_fellow_gitignore(target: str) -> None:
         with gitignore_path.open("r+", encoding="utf-8") as f:
             lines = f.read().splitlines()
             if entry not in lines:
+                f.seek(0, os.SEEK_END)
                 f.write(f"\n{entry}\n")
     else:
         with gitignore_path.open("w", encoding="utf-8") as f:
