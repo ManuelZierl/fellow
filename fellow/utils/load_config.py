@@ -53,6 +53,7 @@ class Config(BaseModel):
     custom_commands_paths: List[str]
     custom_clients_paths: List[str]
     custom_policies_paths: List[str]
+    secrets_path: str
 
 
 def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:

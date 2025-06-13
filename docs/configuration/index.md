@@ -101,6 +101,23 @@ See also:
 - [Custom Commands](/fellow/commands/custom)
 - [Policy System](/fellow/policies)
 
+### `default_policies`
+
+A list of policies that should be applied to **all commands by default**.
+
+This is useful if you want to enforce global behavior rules (e.g. safety checks, input validation, logging) without having to repeat the same policy configuration for each command individually.
+
+Each entry is a `PolicyConfig` object with the following structure:
+
+```yaml
+default_policies:
+  - name: YourPolicyName
+    config:
+      some_key: some_value
+```
+
+These policies are applied *in addition to* any command-specific policies. Learn more about how policies work in the [policies documentation](/fellow/policies).
+
 
 ### `planning`
 
@@ -116,8 +133,7 @@ List of directories to search for custom commands.
 
 It is recommended to set this to: `.fellow/commands`
 
-This allows you to keep custom command implementations organized and version-controlled in your project root. Commands placed here can be registered in your config and used just like built-in ones.
-
+This allows you to keep custom command implementations organized and version-controlled in your project root. Commands placed here can be registered in your config and used just like built-in ones. Learn more about [custom commands](/fellow/commands/custom).
 
 ### `custom_clients_paths`
 
@@ -126,7 +142,29 @@ List of directories to search for custom client implementations.
 It is recommended to set this to: `.fellow/clients`
 
 This allows you to define and organize custom AI clients (e.g. for local models or alternative APIs) within your project directory.  
-Clients in this folder can be referenced in your config using their module name.
+Clients in this folder can be referenced in your config using their module name. Learn more about [custom clients](/fellow/clients/custom).
+
+### `custom_policies_paths`
+
+List of directories to search for custom policy implementations.
+
+It is recommended to set this to: `.fellow/policies`
+
+This allows you to define your own policies to control and restrict Fellow’s behavior in specific situations — for example, to limit the number of files a command can modify, or to prevent certain commands from being used on weekends.
+
+Policies in this folder can be registered in your config by name and used like built-in ones. Learn more about [custom policies](/fellow/policies/custom).
+
+### `secrets_path`
+
+Path to the file where Fellow stores and loads secrets (like API keys).
+
+Default: `.fellow/.secrets`
+
+This file is used by the `fellow add-secret` command to persist credentials. At runtime, all entries from this file are automatically loaded as environment variables.
+
+You can change this path if you want to use a centralized or shared secrets file, or if your project requires a different structure.
+
+> 💡 Tip: The `.secrets` file should not be committed to version control. By default, Fellow ensures it is ignored by creating a `.gitignore` file in the `.fellow/` directory.
 
 ---
 
