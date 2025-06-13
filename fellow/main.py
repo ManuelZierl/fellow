@@ -56,9 +56,9 @@ def main() -> None:
             str(config.memory.filepath).replace("{{task_id}}", config.task_id.hex)
         )
 
-    if config.memory.filepath is not None:
-        config.memory.filepath = config.memory.filepath.replace(
-            str(config.memory.filepath).replace("{{task_id}}", config.task_id.hex)
+    if config.metadata.filepath is not None:
+        config.metadata.filepath = config.metadata.filepath.replace(
+            str(config.metadata.filepath).replace("{{task_id}}", config.task_id.hex)
         )
 
     # Load secrets
