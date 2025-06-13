@@ -3,6 +3,8 @@ import json
 from argparse import Namespace
 from typing import Any, Dict
 
+from fellow import __version__
+
 
 def str2bool(v: str) -> bool:
     """
@@ -26,6 +28,9 @@ def parse_args() -> Namespace:
     Parse command line arguments for the Fellow CLI tool.
     """
     parser = argparse.ArgumentParser(description="Fellow CLI Tool")
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
     subparsers = parser.add_subparsers(dest="command")
 
     # SUBCOMMANDS
