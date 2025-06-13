@@ -1,13 +1,15 @@
 import importlib.resources as pkg_resources
 import os
+import re
 import tempfile
 from argparse import Namespace
+from pathlib import Path
 
 import pytest
 import yaml
 
 import fellow
-from fellow.utils.load_config import load_config
+from fellow.utils.load_config import Config, load_config
 
 
 @pytest.fixture
@@ -105,3 +107,36 @@ def test_user_config_override():
     config = load_config(args)
     assert config.task == "Overridden"
     os.unlink(tmp_path)
+
+
+def test_config_fields_are_documented():
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    doc_path = repo_root / "docs" / "configuration" / "index.md"
+    assert doc_path.exists(), "Documentation file not found"
+
+    # 1. Extract field names from the Config model
+    config_fields = set(Config.model_fields.keys())
+
+    # 2. Extract documented fields from markdown headers like: ### `field_name`
+    content = doc_path.read_text(encoding="utf-8")
+    documented_fields = {
+        match.group(1)
+        for match in re.finditer(r"^###\s+`([a-zA-Z0-9_]+)`", content, re.MULTILINE)
+    }
+
+    # 3. Compare sets
+    undocumented = config_fields - documented_fields
+    extra = documented_fields - config_fields
+
+    error = ""
+    if undocumented:
+        error += "\nUndocumented fields:\n" + "\n".join(
+            f"- {f}" for f in sorted(undocumented)
+        )
+    if extra:
+        error += "\nDocumented but not in Config:\n" + "\n".join(
+            f"- {f}" for f in sorted(extra)
+        )
+
+    if error:
+        raise AssertionError(error)

@@ -3,6 +3,24 @@ import warnings
 from pathlib import Path
 
 
+def ensure_fellow_gitignore(target: str) -> None:
+    secrets_path = Path(target)
+    gitignore_path = secrets_path.parent / ".gitignore"
+    entry = secrets_path.name
+
+    # Ensure the .fellow directory exists
+    gitignore_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if gitignore_path.exists():
+        with gitignore_path.open("r+", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+            if entry not in lines:
+                f.write(f"\n{entry}\n")
+    else:
+        with gitignore_path.open("w", encoding="utf-8") as f:
+            f.write(f"{entry}\n")
+
+
 def load_secrets(target: str) -> None:
     """Load secrets from a file into os.environ without overwriting existing keys."""
     path = Path(target)
@@ -24,6 +42,7 @@ def load_secrets(target: str) -> None:
 
 def add_secret(value: str, key: str, target: str) -> None:
     """Add or update a secret in-place, preserving comments and formatting."""
+    ensure_fellow_gitignore(target)
     path = Path(target)
     path.parent.mkdir(parents=True, exist_ok=True)
 

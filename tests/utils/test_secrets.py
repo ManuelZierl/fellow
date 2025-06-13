@@ -85,3 +85,31 @@ def test_remove_secret_path_not_found(secrets_file_tmpdir):
     non_existent_path = secrets_file_tmpdir.parent / "non_existent_secrets"
     remove_secret("NON_EXISTENT_KEY", str(non_existent_path))
     assert not non_existent_path.exists()
+
+
+def test_add_secret_creates_file_and_gitignore(tmp_path):
+    # Setup: simulate a project root
+    project_root = tmp_path
+    fellow_dir = project_root / ".fellow"
+    secrets_path = fellow_dir / ".secrets"
+    gitignore_path = fellow_dir / ".gitignore"
+
+    # Change to the temporary directory for test isolation
+    original_cwd = os.getcwd()
+    os.chdir(project_root)
+
+    try:
+        # 1. Add a secret
+        add_secret("my-value", "MY_KEY", str(secrets_path))
+
+        # 2. Assert secret is stored correctly
+        contents = secrets_path.read_text(encoding="utf-8")
+        assert "MY_KEY=my-value\n" in contents
+
+        # 3. Assert .gitignore is created
+        assert gitignore_path.exists()
+        gitignore_contents = gitignore_path.read_text(encoding="utf-8")
+        assert ".secrets" in gitignore_contents
+
+    finally:
+        os.chdir(original_cwd)

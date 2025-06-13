@@ -20,8 +20,9 @@ Make sure you have the following installed:
 
 You can check your Python version with:
 
-    python --version
-
+```bash
+python --version
+```
 If you have multiple versions of Python installed, you may need to use `python3` and `pip3` instead.
 
 ---
@@ -30,7 +31,9 @@ If you have multiple versions of Python installed, you may need to use `python3`
 
 To install Fellow globally:
 
-    pip install fellow
+```bash
+pip install fellow
+```
 
 You can now run the `fellow` command from your terminal.
 
@@ -39,8 +42,9 @@ You can now run the `fellow` command from your terminal.
 ## Verify Installation
 
 After installation, verify that Fellow is available:
-
-    fellow --help
+```bash
+fellow --help
+```
 
 You should see a list of available flags and commands.
 
@@ -48,25 +52,38 @@ You should see a list of available flags and commands.
 
 ## Set Your API Key
 
-Fellow requires an AI backend to function. Depending on which client you use, you’ll need to set the appropriate API key as an environment variable.
+Fellow requires an AI backend to function. The recommended way to provide credentials is via:
+
+```bash
+fellow add-secret <KEY> <VALUE>
+```
 
 For example:
-### OpenAI:
-Unix/Linux/macOS:
-> export OPENAI_API_KEY=your_key_here
 
-Windows Powershell:
-> $env:OPENAI_API_KEY = "your_key_here"
+- **OpenAI:**
+    ```bash
+    fellow add-secret OPENAI_API_KEY your_openai_api_key
+    ```
 
+- **Gemini:**
+  ```bash
+  fellow add-secret GEMINI_API_KEY your_gemini_api_key
+  ```
 
-### Gemini:  
-Unix/Linux/macOS:
-> export GEMINI_API_KEY=your_key_here
+This stores the secret in a local plaintext file (default: `.fellow/.secrets`) and makes it available as an environment variable whenever Fellow runs.
 
-Windows Powershell:
-> $env:GEMINI_API_KEY = "your_key_here"
+> You can also use standard environment variables (`export KEY=...` or `$env:KEY=...`), but `fellow add-secret` is the recommended approach for convenience and portability.
 
-If you're using a **custom client**, refer to its documentation to see which environment variables or credentials are required.
+If needed, you can open the `.fellow/.secrets` file directly to inspect or manually edit your secrets.
+
+The default path can be changed by setting `secrets_path` in your `config.yml`:
+
+```yaml
+secrets_path: ".fellow/.secrets"
+```
+
+If you're using a **custom client**, check its documentation to see which keys are required.
+
 Learn more in the [Client documentation](/fellow/clients).
 
 ---
