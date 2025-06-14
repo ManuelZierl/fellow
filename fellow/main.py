@@ -1,5 +1,6 @@
 import json
 import uuid
+from pathlib import Path
 from typing import Optional
 
 from pydantic import ValidationError
@@ -27,7 +28,7 @@ def main() -> None:
         "init-command": lambda: init_command(
             args.name, config.custom_commands_paths[0]
         ),
-        "init-client": lambda: init_client(args.name, config.custom_commands_paths[0]),
+        "init-client": lambda: init_client(args.name, config.custom_clients_paths[0]),
         "init-policy": lambda: init_policy(args.name, config.custom_policies_paths[0]),
         "add-secret": lambda: add_secret(args.value, args.key, config.secrets_path),
         "remove-secret": lambda: remove_secret(args.key, config.secrets_path),
@@ -47,17 +48,17 @@ def main() -> None:
 
     # Replace placeholders in paths
     if config.log.filepath is not None:
-        config.log.filepath = config.log.filepath.replace(
+        config.log.filepath = Path(
             str(config.log.filepath).replace("{{task_id}}", config.task_id.hex)
         )
 
     if config.memory.filepath is not None:
-        config.memory.filepath = config.memory.filepath.replace(
+        config.memory.filepath = Path(
             str(config.memory.filepath).replace("{{task_id}}", config.task_id.hex)
         )
 
     if config.metadata.filepath is not None:
-        config.metadata.filepath = config.metadata.filepath.replace(
+        config.metadata.filepath = Path(
             str(config.metadata.filepath).replace("{{task_id}}", config.task_id.hex)
         )
 
