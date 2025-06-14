@@ -16,7 +16,7 @@ def {function_name}(args: {class_name}, context: CommandContext) -> str:
 '''
 
 
-def init_command(command_name: str, target: str) -> Path:
+def init_command(command_name: str, path: Path) -> Path:
     """
     Generates a new boilerplate Python file for a custom Fellow command.
     The generated file contains a CommandInput class and a corresponding handler function
@@ -25,13 +25,12 @@ def init_command(command_name: str, target: str) -> Path:
     - function: say_hello
     The command is written to `<target>/<command_name>.py`, and the directory is created if it doesn't exist.
     """
-    target_dir = Path(target)
     function_name = command_name
     class_name = (
         "".join(part.capitalize() for part in command_name.split("_")) + "Input"
     )
-    target_dir.mkdir(parents=True, exist_ok=True)
-    file_path = target_dir / f"{command_name}.py"
+    path.mkdir(parents=True, exist_ok=True)
+    file_path = path / f"{command_name}.py"
 
     if file_path.exists():
         raise FileExistsError(f"Command file already exists: {file_path}")

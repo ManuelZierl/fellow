@@ -59,7 +59,7 @@ class {client_name}Client(Client[{client_name}ClientConfig]):
 """
 
 
-def init_client(client_name: str, target: str) -> Path:
+def init_client(client_name: str, path: Path) -> Path:
     """
     Generates a boilerplate Python file for a custom AI client.
 
@@ -71,13 +71,12 @@ def init_client(client_name: str, target: str) -> Path:
     - file: LocalClient.py
 
     :param client_name: Name of the client (e.g., "local").
-    :param target: Directory where the client file should be created.
+    :param path: Directory where the client file should be created.
     :return: Path to the newly created client file.
     """
-    target_dir = Path(target)
     client_name = client_name.lower().capitalize()
-    target_dir.mkdir(parents=True, exist_ok=True)
-    file_path = target_dir / f"{client_name}Client.py"
+    path.mkdir(parents=True, exist_ok=True)
+    file_path = path / f"{client_name}Client.py"
 
     if file_path.exists():
         raise FileExistsError(f"Client file already exists: {file_path}")

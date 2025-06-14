@@ -1,9 +1,11 @@
 import importlib.resources as pkg_resources
 from argparse import Namespace
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+from uuid import UUID
 
 import yaml
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, model_validator
 from pydantic.v1.utils import deep_update
 
 import fellow
@@ -17,13 +19,44 @@ class PlanningConfig(BaseModel):
 class LogConfig(BaseModel):
     active: bool
     spoiler: bool
-    filepath: str
+    filepath: Optional[Path]
 
-    @field_validator("filepath")
-    def must_be_markdown(cls, v: str) -> str:
-        if not v.endswith(".md"):
-            raise ValueError("Log file must be a .md extension")
-        return v
+    @model_validator(mode="after")
+    def validate_config(self) -> "LogConfig":
+        if self.active:
+            if not self.filepath:
+                raise ValueError("Log is active but no filepath provided")
+            if not self.filepath.suffix == ".md":
+                raise ValueError("Log filepath must end with .md")
+        return self
+
+
+class MemoryConfig(BaseModel):
+    log: bool
+    filepath: Optional[Path]
+
+    @model_validator(mode="after")
+    def validate_config(self) -> "MemoryConfig":
+        if self.log:
+            if not self.filepath:
+                raise ValueError("Memory log is active but no filepath provided")
+            if not self.filepath.suffix == ".json":
+                raise ValueError("Memory filepath must end with '.json'")
+        return self
+
+
+class MetadataConfig(BaseModel):
+    log: bool
+    filepath: Optional[Path]
+
+    @model_validator(mode="after")
+    def validate_config(self) -> "MetadataConfig":
+        if self.log:
+            if not self.filepath:
+                raise ValueError("Metadata log is active but no filepath provided")
+            if not self.filepath.suffix == ".json":
+                raise ValueError("Metadata filepath must end with '.json'")
+        return self
 
 
 class ClientConfig(BaseModel):
@@ -44,16 +77,19 @@ class Config(BaseModel):
     introduction_prompt: str
     first_message: str
     task: Optional[str]
+    task_id: Optional[UUID]
     log: LogConfig
+    memory: MemoryConfig
+    metadata: MetadataConfig
     ai_client: ClientConfig
     commands: Dict[str, CommandConfig]
     default_policies: List[PolicyConfig]
     planning: PlanningConfig
     steps_limit: Optional[int]
-    custom_commands_paths: List[str]
-    custom_clients_paths: List[str]
-    custom_policies_paths: List[str]
-    secrets_path: str
+    custom_commands_paths: List[Path]
+    custom_clients_paths: List[Path]
+    custom_policies_paths: List[Path]
+    secrets_path: Path
 
 
 def extract_cli_overrides(args: Namespace) -> Dict[str, Any]:

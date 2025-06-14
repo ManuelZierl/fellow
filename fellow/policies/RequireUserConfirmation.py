@@ -4,8 +4,12 @@ from pydantic import Field
 
 from fellow.policies.Policy import Policy, PolicyConfig
 
-if TYPE_CHECKING:
-    from fellow.commands.Command import CommandContext, CommandHandler, CommandInput
+if TYPE_CHECKING:  # pragma: no cover
+    from fellow.commands.Command import (  # pragma: no cover
+        CommandContext,
+        CommandHandler,
+        CommandInput,
+    )
 
 
 class RequireUserConfirmationConfig(PolicyConfig):

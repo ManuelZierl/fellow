@@ -6,7 +6,7 @@ from pydantic import Field
 
 from fellow.policies.Policy import Policy, PolicyConfig
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from fellow.commands.Command import (  # pragma: no cover
         CommandContext,
         CommandHandler,

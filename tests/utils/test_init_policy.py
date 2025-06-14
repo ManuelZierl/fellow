@@ -11,7 +11,7 @@ def test_init_policy_creates_expected_file(tmp_path: Path):
     target_dir = tmp_path / "policies"
 
     # Act
-    result_path = init_policy(policy_name, str(target_dir))
+    result_path = init_policy(policy_name, target_dir)
 
     # Assert: File created
     assert result_path.exists()
@@ -26,4 +26,4 @@ def test_init_policy_creates_expected_file(tmp_path: Path):
 
     # Assert: Duplicate file raises error
     with pytest.raises(FileExistsError):
-        init_policy(policy_name, str(target_dir))
+        init_policy(policy_name, target_dir)

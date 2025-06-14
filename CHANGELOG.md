@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [Add Fellow secrets helper commands](https://github.com/ManuelZierl/fellow/issues/83)
 - [add --version command](https://github.com/ManuelZierl/fellow/pull/92)
+- [introduce task_id for every run](https://github.com/ManuelZierl/fellow/issues/32)
+- [configure logging for memory and metadata](https://github.com/ManuelZierl/fellow/issues/32)
+- [restructure logging directory](https://github.com/ManuelZierl/fellow/issues/32)
 - [fixed typed badge by adding classifiers](https://github.com/ManuelZierl/fellow/issues/87)
 
 ### Changed
-
+- [use Path instead of str for paths in config](https://github.com/ManuelZierl/fellow/issues/32)
 
 ### Removed
 
