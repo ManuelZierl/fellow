@@ -78,6 +78,7 @@ def main() -> None:
 
     # store metadata
     if config.metadata.log and config.metadata.filepath:
+        config.metadata.filepath.parent.mkdir(parents=True, exist_ok=True)
         with open(config.metadata.filepath, "w") as f:
             f.write(config.model_dump_json(indent=2))
 
