@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - develop
-      - 89-e2e-testing-via-docker-for-fellow-cli # todo: only for testing, remove later
     tags:
       - 'v*'
   pull_request:
@@ -100,6 +99,11 @@ jobs:
           python -m venv e2e_env
           source e2e_env/bin/activate || .\e2e_env\Scripts\activate
           pip install dist/fellow-*.whl
+      
+      - name: Install dev dependencies
+        run: |
+          source e2e_env/bin/activate || .\e2e_env\Scripts\activate
+          pip install -r requirements-dev.txt
 
       - name: Run E2E tests
         run: |
