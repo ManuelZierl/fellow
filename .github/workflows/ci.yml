@@ -73,10 +73,16 @@ jobs:
       - name: Upgrade pip and build tools
         run: |
           python -m pip install --upgrade pip build
-      - name: Inject version into _version.py
+      - name: Inject version into _version.py Ubuntu/Mac
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           VERSION=$(grep '^version =' pyproject.toml | cut -d '"' -f2)
           echo "__version__ = \"$VERSION\"" > fellow/_version.py
+      - name: Inject version into _version.py Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          $VERSION = (Get-Content pyproject.toml | Select-String -Pattern '^version =').ToString().Split('"')[1]
+          Set-Content -Path fellow\_version.py -Value "__version__ = `"$VERSION`""
       - name: Build wheel
         run: |
           python -m build --wheel --outdir dist
