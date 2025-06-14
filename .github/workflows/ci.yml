@@ -98,7 +98,8 @@ jobs:
         run: |
           python -m venv e2e_env
           .\e2e_env\Scripts\activate
-          pip install dist\fellow-*.whl
+          $whl = Get-ChildItem -Path dist\fellow-*.whl | Select-Object -First 1
+          pip install $whl
           pip install -r requirements-dev.txt
       - name: Run E2E tests (Ubuntu/Mac)
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
