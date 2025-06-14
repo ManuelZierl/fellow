@@ -21,7 +21,6 @@ dependencies = [
     "pydantic~=2.11.0",
     "PyYAML~=6.0.2",
     "google-genai>=1.11.0",
-    "tomli>=2.2.1",
 ]
 classifiers = [
     # License
