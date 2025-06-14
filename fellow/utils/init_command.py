@@ -41,4 +41,5 @@ def init_command(command_name: str, path: Path) -> Path:
     )
 
     file_path.write_text(content)
+    print("[OK] Command file created:", file_path)
     return file_path
