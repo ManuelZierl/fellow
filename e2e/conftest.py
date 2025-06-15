@@ -18,6 +18,7 @@ CURRENT_FIXTURE_DEFAULT_CONTENT = (
 @pytest.fixture(autouse=True, scope="session")
 def mock_openai_server():
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
+    os.environ["OPENAI_API_KEY"] = "test_key"
 
     proc = subprocess.Popen(
         ["python", "e2e/mock_openai_server/server.py"],
