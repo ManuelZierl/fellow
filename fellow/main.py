@@ -46,6 +46,8 @@ def main() -> None:
     if config.task_id is None:
         config.task_id = uuid.uuid4()
 
+    print("Starting task with id:", config.task_id)
+
     # Replace placeholders in paths
     if config.log.filepath is not None:
         config.log.filepath = Path(

@@ -63,6 +63,8 @@ def add_secret(value: str, key: str, path: Path) -> None:
     with path.open("w", encoding="utf-8") as f:
         f.writelines(lines)
 
+    print(f"[OK] Secret added: {key}")
+
 
 def remove_secret(key: str, path: Path) -> None:
     """Remove a secret by exact key match, preserving comments and formatting."""
@@ -80,8 +82,11 @@ def remove_secret(key: str, path: Path) -> None:
     with path.open("w", encoding="utf-8") as f:
         f.writelines(lines)
 
+    print("[OK] Secret removed:", key)
+
 
 def clear_secrets(path: Path) -> None:
     """Delete all secrets from the file (comments and formatting are lost)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("")
+    print("[OK] All secrets cleared.")

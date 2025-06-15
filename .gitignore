@@ -1,5 +1,3 @@
-
-# Add a .gitignore file to exclude virtual environments, pycache, etc.
 __pycache__/
 .venv/
 *.pyc
@@ -17,4 +15,5 @@ venv.bak/
 dist/
 build/
 .coverage
+fellow/_version.py
 

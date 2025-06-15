@@ -20,6 +20,7 @@ repos:
           - pydantic==2.11.0
           - PyYAML==6.0.2
           - types-PyYAML==6.0.12.20250402
+          - types-requests==2.32.4.20250611
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.13
     hooks:

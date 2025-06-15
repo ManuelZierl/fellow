@@ -15,11 +15,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Check if CHANGELOG.md was updated
         if: github.event_name == 'pull_request'
         run: |
@@ -32,46 +30,92 @@ jobs:
             echo "❌ CHANGELOG.md was not modified in this pull request. Please update it before merging."
             exit 1
           }
-
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-
-
       - name: Run Black check
         run: black --check .
-
       - name: Run isort check
         run: isort --check-only --profile black .
-
       - name: Run mypy
         run: mypy -p fellow
-
       - name: Run ruff check
         run: ruff check
-
       - name: Run Tests
         run: |
           coverage run -m pytest
           coverage report
-
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           files: ./coverage.xml
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
+  e2e-test:
+    name: E2E Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Upgrade pip and build tools
+        run: |
+          python -m pip install --upgrade pip build
+      - name: Inject version into _version.py Ubuntu/Mac
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: |
+          VERSION=$(grep '^version =' pyproject.toml | cut -d '"' -f2)
+          echo "__version__ = \"$VERSION\"" > fellow/_version.py
+      - name: Inject version into _version.py Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          $VERSION = (Get-Content pyproject.toml | Select-String -Pattern '^version =').ToString().Split('"')[1]
+          Set-Content -Path fellow\_version.py -Value "__version__ = `"$VERSION`""
+      - name: Build wheel
+        run: |
+          python -m build --wheel --outdir dist
+      - name: Install built wheel in clean venv (Ubuntu/Mac)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: |
+          python -m venv e2e_env
+          source e2e_env/bin/activate
+          pip install dist/fellow-*.whl
+          pip install -r requirements-dev.txt
+      - name: Install Dependencies and built wheel (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          python -m venv e2e_env
+          .\e2e_env\Scripts\activate
+          $whl = Get-ChildItem -Path dist\fellow-*.whl | Select-Object -First 1
+          pip install $whl
+          pip install -r requirements-dev.txt
+      - name: Run E2E tests (Ubuntu/Mac)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: |
+          source e2e_env/bin/activate
+          pytest e2e/
+      - name: Run E2E tests (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          .\e2e_env\Scripts\activate
+          pytest e2e/
+
   publish:
-    needs: test
+    needs:
+      - test
+      - e2e-test
     runs-on: ubuntu-latest
 
     # Only run on tag push
@@ -115,7 +159,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install build twine
-
+      - name: Inject version into _version.py
+        run: |
+          VERSION=$(grep '^version =' pyproject.toml | cut -d '"' -f2)
+          echo "__version__ = \"$VERSION\"" > fellow/_version.py
       - name: Build package
         run: python -m build
       - name: Publish to PyPI

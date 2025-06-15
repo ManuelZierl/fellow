@@ -70,4 +70,5 @@ def init_policy(policy_name: str, path: Path) -> Path:
     )
 
     file_path.write_text(content)
+    print("[OK] Policy file created:", file_path)
     return file_path
