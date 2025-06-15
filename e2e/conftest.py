@@ -44,10 +44,10 @@ def _ensure_fixture_file_exists(path: Path):
         path.write_text(CURRENT_FIXTURE_DEFAULT_CONTENT)
 
 
-def _copy_fixture(path: Path):
-    if not path.exists():
-        raise FileNotFoundError(f"Fixture not found: {path}")
-    shutil.copyfile(path, FIXTURE_PATH)
+def _copy_fixture(from_path: Path, to_path: Path):
+    if not from_path.exists():
+        raise FileNotFoundError(f"Fixture not found: {from_path}")
+    shutil.copyfile(from_path, to_path)
 
 
 @pytest.fixture()
@@ -59,7 +59,7 @@ def use_fixture():
             path = Path(path)
         path = (REPO_ROOT / path).resolve()
         _ensure_fixture_file_exists(fixture_path_absolute)
-        _copy_fixture(path)
+        _copy_fixture(path, fixture_path_absolute)
 
     yield _use_fixture
     fixture_path_absolute.write_text(CURRENT_FIXTURE_DEFAULT_CONTENT)
