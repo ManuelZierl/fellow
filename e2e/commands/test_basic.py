@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 from e2e.utils import run_command
@@ -78,4 +79,4 @@ def test_fellow_help():
 
 def test_fellow_version():
     result = run_command("fellow --version")
-    assert result.startswith("fellow v") or "__version__" in result.lower()
+    assert re.match(r"fellow \d+\.\d+\.\d+", result)
