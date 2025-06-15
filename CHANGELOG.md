@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [use Path instead of str for paths in config](https://github.com/ManuelZierl/fellow/issues/32)
+- [Replace Codecov badge with Shield.io badge for improved visibility](https://github.com/ManuelZierl/fellow/issues/104)
 
 ### Removed
 
