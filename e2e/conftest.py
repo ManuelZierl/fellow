@@ -21,7 +21,7 @@ def mock_openai_server():
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
     os.environ["OPENAI_API_KEY"] = "test_key"
 
-    server_path = Path(__file__).parent / "mock_openai_server" / "server.py"
+    server_path = REPO_ROOT / "e2e" / "mock_openai_server" / "server.py"
 
     proc = subprocess.Popen(
         ["python", str(server_path)],
@@ -66,14 +66,12 @@ def _copy_fixture(from_path: Path, to_path: Path):
 
 @pytest.fixture()
 def use_fixture():
-    fixture_path_absolute = (REPO_ROOT / FIXTURE_PATH).resolve()
-
     def _use_fixture(path: Union[str, Path]):
         if isinstance(path, str):
             path = Path(path)
         path = (REPO_ROOT / path).resolve()
-        _ensure_fixture_file_exists(fixture_path_absolute)
-        _copy_fixture(path, fixture_path_absolute)
+        _ensure_fixture_file_exists(FIXTURE_PATH)
+        _copy_fixture(path, FIXTURE_PATH)
 
     yield _use_fixture
-    fixture_path_absolute.write_text(CURRENT_FIXTURE_DEFAULT_CONTENT)
+    FIXTURE_PATH.write_text(CURRENT_FIXTURE_DEFAULT_CONTENT)

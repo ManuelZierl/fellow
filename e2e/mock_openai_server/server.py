@@ -2,7 +2,9 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-FIXTURE_PATH = Path("e2e/fixtures/current_fixture.json")
+FIXTURE_PATH = (
+    Path(__file__).parent.parent.parent / "e2e" / "fixtures" / "current_fixture.json"
+)
 
 
 class MockOpenAIHandler(BaseHTTPRequestHandler):
