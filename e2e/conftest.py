@@ -30,7 +30,7 @@ def mock_openai_server():
     )
 
     # Wait briefly for the server to start
-    time.sleep(1)
+    time.sleep(5)
 
     yield proc
 
