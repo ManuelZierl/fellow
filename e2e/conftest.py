@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Union
@@ -15,7 +16,7 @@ CURRENT_FIXTURE_DEFAULT_CONTENT = (
 )
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture()
 def mock_openai_server():
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
     os.environ["OPENAI_API_KEY"] = "test_key"
@@ -29,7 +30,7 @@ def mock_openai_server():
     # Wait briefly for the server to start
     time.sleep(1)
 
-    yield  # Test session runs here
+    yield proc
 
     # Teardown
     proc.terminate()
@@ -37,6 +38,16 @@ def mock_openai_server():
         proc.wait(timeout=5)
     except subprocess.TimeoutExpired:
         proc.kill()
+
+    # Print stderr output for debugging if anything went wrong
+    if proc.stderr:
+        try:
+            err_output = proc.stderr.read().decode().strip()
+            if err_output:
+                print("\n[MockOpenAI Server STDERR]", file=sys.stderr)
+                print(err_output, file=sys.stderr)
+        except Exception as e:
+            print(f"[MockOpenAI Server] Failed to read stderr: {e}", file=sys.stderr)
 
 
 def _ensure_fixture_file_exists(path: Path):
