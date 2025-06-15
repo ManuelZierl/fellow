@@ -1,10 +1,9 @@
-import json
 import os
 import re
 from pathlib import Path
 from uuid import UUID
 
-from e2e.utils import run_command
+from e2e.utils import json_to_command_line_string, run_command
 
 
 def test_simple_hello_world_task(use_fixture, mock_openai_server, tmp_path):
@@ -22,7 +21,7 @@ def test_simple_hello_world_task(use_fixture, mock_openai_server, tmp_path):
         ]
     }
     result = run_command(
-        f"fellow --task \"Write a hello world python script\" --commands '{json.dumps(commands)}'"
+        f'fellow --task "Write a hello world python script" --commands {json_to_command_line_string(commands)}'
     )
     task_id = UUID(
         re.search(r"Starting task with id: ([0-9a-fA-F-]{36})", result).group(1)
