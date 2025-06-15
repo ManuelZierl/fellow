@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Union
 
 import pytest
+import requests
 
 from e2e.mock_openai_server.server import FIXTURE_PATH
 
@@ -29,9 +30,21 @@ def mock_openai_server():
         stderr=subprocess.PIPE,
     )
 
-    # Wait briefly for the server to start
-    time.sleep(30)
+    # Wait for server to become ready
+    timeout = 15
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            r = requests.get("http://localhost:8000/ping")
+            if r.status_code == 200:
+                break
+        except requests.ConnectionError:
+            pass
+        time.sleep(1)
+    else:
+        raise RuntimeError("Mock OpenAI server failed to start within timeout")
 
+    # Run the Test
     yield proc
 
     # Teardown
