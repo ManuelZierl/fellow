@@ -21,8 +21,10 @@ def mock_openai_server():
     os.environ["OPENAI_BASE_URL"] = "http://localhost:8000/v1"
     os.environ["OPENAI_API_KEY"] = "test_key"
 
+    server_path = Path(__file__).parent.parent / "mock_openai_server" / "server.py"
+
     proc = subprocess.Popen(
-        ["python", "e2e/mock_openai_server/server.py"],
+        ["python", str(server_path)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
