@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [restructure logging directory](https://github.com/ManuelZierl/fellow/issues/32)
 - [fixed typed badge by adding classifiers](https://github.com/ManuelZierl/fellow/issues/87)
 - [E2E Testing](https://github.com/ManuelZierl/fellow/issues/89)
+- [Add caching for pip dependencies in CI workflow](https://github.com/ManuelZierl/fellow/issues/97)
 
 ### Changed
 - [use Path instead of str for paths in config](https://github.com/ManuelZierl/fellow/issues/32)
