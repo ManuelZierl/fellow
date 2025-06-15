@@ -35,12 +35,15 @@ class MockOpenAIHandler(BaseHTTPRequestHandler):
                 return
 
             response = responses[MockOpenAIHandler.response_index]
+            response_body = json.dumps(response).encode()
             MockOpenAIHandler.response_index += 1
 
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(response_body)))
             self.end_headers()
-            self.wfile.write(json.dumps(response).encode())
+            self.wfile.write(response_body)
+            self.wfile.flush()
         else:
             self.send_response(404)
             self.end_headers()
