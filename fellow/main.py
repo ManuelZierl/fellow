@@ -1,4 +1,6 @@
 import json
+import uuid
+from pathlib import Path
 from typing import Optional
 
 from pydantic import ValidationError
@@ -14,44 +16,83 @@ from fellow.utils.load_commands import load_commands
 from fellow.utils.load_config import Config, load_config
 from fellow.utils.log_message import clear_log, log_message
 from fellow.utils.parse_args import parse_args
+from fellow.utils.secrets import add_secret, clear_secrets, load_secrets, remove_secret
 
 
 def main() -> None:
     args = parse_args()
     config: Config = load_config(args)
 
-    if args.command == "init-command":
-        init_command(args.name, config.custom_commands_paths[0])
+    # Handle special commands
+    dispatch_map = {
+        "init-command": lambda: init_command(
+            args.name, config.custom_commands_paths[0]
+        ),
+        "init-client": lambda: init_client(args.name, config.custom_clients_paths[0]),
+        "init-policy": lambda: init_policy(args.name, config.custom_policies_paths[0]),
+        "add-secret": lambda: add_secret(args.value, args.key, config.secrets_path),
+        "remove-secret": lambda: remove_secret(args.key, config.secrets_path),
+        "clear-secrets": lambda: clear_secrets(config.secrets_path),
+    }
+    if args.command in dispatch_map:
+        dispatch_map[args.command]()
         return
 
-    if args.command == "init-client":
-        init_client(args.name, config.custom_commands_paths[0])
-        return
-
-    if args.command == "init-policy":
-        init_policy(args.name, config.custom_policies_paths[0])
-        return
-
+    # Task must be defined now!
     if config.task is None:
         raise ValidationError("[ERROR] Task is not defined in the configuration.")
+
+    # Generate a new task ID if not provided
+    if config.task_id is None:
+        config.task_id = uuid.uuid4()
+
+    print("Starting task with id:", config.task_id)
+
+    # Replace placeholders in paths
+    if config.log.filepath is not None:
+        config.log.filepath = Path(
+            str(config.log.filepath).replace("{{task_id}}", config.task_id.hex)
+        )
+
+    if config.memory.filepath is not None:
+        config.memory.filepath = Path(
+            str(config.memory.filepath).replace("{{task_id}}", config.task_id.hex)
+        )
+
+    if config.metadata.filepath is not None:
+        config.metadata.filepath = Path(
+            str(config.metadata.filepath).replace("{{task_id}}", config.task_id.hex)
+        )
+
+    # Load secrets
+    load_secrets(config.secrets_path)
 
     # Init commands
     commands = load_commands(config)
 
     # Build prompt
-    introduction_prompt = config.introduction_prompt
-    introduction_prompt = introduction_prompt.replace("{{TASK}}", config.task)
+    config.introduction_prompt = config.introduction_prompt.replace(
+        "{{TASK}}", config.task
+    )
     first_message = (
         config.planning.prompt if config.planning.active else config.first_message
     )
 
+    # store metadata
+    if config.metadata.log and config.metadata.filepath:
+        config.metadata.filepath.parent.mkdir(parents=True, exist_ok=True)
+        with open(config.metadata.filepath, "w") as f:
+            f.write(config.model_dump_json(indent=2))
+
     # Logging
     clear_log(config)
-    log_message(config, name="Instruction", color=0, content=introduction_prompt)
+    log_message(config, name="Instruction", color=0, content=config.introduction_prompt)
     log_message(config, name="Instruction", color=0, content=first_message)
 
     # Init AI client
-    client: Client = load_client(system_content=introduction_prompt, config=config)
+    client: Client = load_client(
+        system_content=config.introduction_prompt, config=config
+    )
     context: CommandContext = {"ai_client": client, "config": config}
 
     # Prepare OpenAI functions
@@ -78,7 +119,7 @@ def main() -> None:
             print("AI:", reasoning.strip())
             log_message(config, name="AI", color=1, content=reasoning)
 
-        if config.log.active and func_name and func_args:
+        if func_name and func_args:
             print("AI:", func_name, func_args)
             log_message(
                 config,
@@ -93,7 +134,8 @@ def main() -> None:
         if reasoning and (
             reasoning.strip() == "END" or reasoning.strip().endswith("END")
         ):
-            client.store_memory("memory.json")
+            if config.memory.log:
+                client.store_memory(str(config.memory.filepath))
             break
 
         # 3. If a function is called, run it and prepare result

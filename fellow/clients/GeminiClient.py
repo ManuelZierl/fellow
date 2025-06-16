@@ -16,7 +16,7 @@ from fellow.clients.Client import (
     FunctionResult,
 )
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from fellow.commands.Command import Command  # pragma: no cover
 
 

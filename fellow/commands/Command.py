@@ -20,7 +20,7 @@ T = TypeVar("T", bound=CommandInput, contravariant=True)
 
 
 class CommandHandler(Protocol[T]):
-    def __call__(self, args: T, context: CommandContext) -> str: ...
+    def __call__(self, args: T, context: CommandContext) -> str: ...  # pragma: no cover
 
 
 class Command:

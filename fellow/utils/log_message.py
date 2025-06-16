@@ -7,7 +7,7 @@ from fellow.utils.load_config import Config
 def log_message(
     config: Config, name: str, color: int, content: str, language: Optional[str] = None
 ) -> None:
-    if config.log.active:
+    if config.log.active and config.log.filepath:
         with open(config.log.filepath, "a", encoding="utf-8") as f:
             f.write(
                 format_message(
@@ -21,6 +21,6 @@ def log_message(
 
 
 def clear_log(config: Config) -> None:
-    if config.log.active:
+    if config.log.active and config.log.filepath:
         with open(config.log.filepath, "w", encoding="utf-8") as f:
             f.write("")

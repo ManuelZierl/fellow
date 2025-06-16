@@ -11,7 +11,7 @@ def test_init_command_creates_expected_file(tmp_path: Path):
     target_dir = tmp_path / "commands"
 
     # Act
-    result_path = init_command(command_name, str(target_dir))
+    result_path = init_command(command_name, target_dir)
 
     # Assert: File created
     assert result_path.exists()
@@ -25,4 +25,4 @@ def test_init_command_creates_expected_file(tmp_path: Path):
 
     # Assert: Raises on duplicate creation
     with pytest.raises(FileExistsError):
-        init_command(command_name, str(target_dir))
+        init_command(command_name, target_dir)

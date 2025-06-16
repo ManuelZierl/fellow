@@ -1,13 +1,21 @@
 import importlib.resources as pkg_resources
 import os
+import re
 import tempfile
 from argparse import Namespace
+from pathlib import Path
 
 import pytest
 import yaml
 
 import fellow
-from fellow.utils.load_config import load_config
+from fellow.utils.load_config import (
+    Config,
+    LogConfig,
+    MemoryConfig,
+    MetadataConfig,
+    load_config,
+)
 
 
 @pytest.fixture
@@ -40,7 +48,7 @@ def test_loads_default_config(default_config):
     )
     config = load_config(args)
     assert config.task == "a valid task"
-    assert config.log.filepath.endswith(".md")
+    assert config.log.filepath.suffix == ".md"
     assert (
         config.ai_client.config["model"]
         == default_config["ai_client"]["config"]["model"]
@@ -68,7 +76,7 @@ def test_cli_override():
     assert config.task == "CLI Task"
     assert config.introduction_prompt == "Intro: {{TASK}}"
     assert config.first_message == "Ignore"
-    assert config.log.filepath == "custom.md"
+    assert str(config.log.filepath) == "custom.md"
     assert config.ai_client.config["model"] == "gpt-super"
     assert config.log.active is True
     assert config.log.spoiler is False
@@ -105,3 +113,88 @@ def test_user_config_override():
     config = load_config(args)
     assert config.task == "Overridden"
     os.unlink(tmp_path)
+
+
+def test_config_fields_are_documented():
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    doc_path = repo_root / "docs" / "configuration" / "index.md"
+    assert doc_path.exists(), "Documentation file not found"
+
+    # 1. Extract field names from the Config model
+    config_fields = set(Config.model_fields.keys())
+
+    # 2. Extract documented fields from markdown headers like: ### `field_name`
+    content = doc_path.read_text(encoding="utf-8")
+    documented_fields = {
+        match.group(1)
+        for match in re.finditer(r"^###\s+`([a-zA-Z0-9_]+)`", content, re.MULTILINE)
+    }
+
+    # 3. Compare sets
+    undocumented = config_fields - documented_fields
+    extra = documented_fields - config_fields
+
+    error = ""
+    if undocumented:
+        error += "\nUndocumented fields:\n" + "\n".join(
+            f"- {f}" for f in sorted(undocumented)
+        )
+    if extra:
+        error += "\nDocumented but not in Config:\n" + "\n".join(
+            f"- {f}" for f in sorted(extra)
+        )
+
+    if error:
+        raise AssertionError(error)
+
+
+def test_log_config_validation():
+    LogConfig(
+        filepath=Path("log.md"), active=False, spoiler=False
+    )  # Should not raise an error
+
+    with pytest.raises(ValueError) as e:
+        LogConfig(filepath=None, active=True, spoiler=False)  # No filepath provided
+    assert "Log is active but no filepath provided" in str(e.value)
+
+    with pytest.raises(ValueError) as e:
+        LogConfig(
+            filepath=Path("log.txt"), active=True, spoiler=False  # Invalid extension
+        )
+    assert "Log filepath must end with .md" in str(e.value)
+
+
+def test_memory_config_validation():
+    MemoryConfig(
+        log=False,
+        filepath=Path("memory.json"),
+    )  # Should not raise an error
+
+    with pytest.raises(ValueError) as e:
+        MemoryConfig(
+            log=True,
+            filepath=None,  # No filepath provided
+        )
+    assert "Memory log is active but no filepath provided" in str(e.value)
+
+    with pytest.raises(ValueError) as e:
+        MemoryConfig(log=True, filepath=Path("memory.yml"))  # Wrong extension
+    assert "Memory filepath must end with '.json'" in str(e.value)
+
+
+def test_metadata_config_validation():
+    MetadataConfig(
+        log=False,
+        filepath=Path("memory.json"),
+    )  # Should not raise an error
+
+    with pytest.raises(ValueError) as e:
+        MetadataConfig(
+            log=True,
+            filepath=None,  # No filepath provided
+        )
+    assert "Metadata log is active but no filepath provided" in str(e.value)
+
+    with pytest.raises(ValueError) as e:
+        MetadataConfig(log=True, filepath=Path("memory.yml"))  # Wrong extension
+    assert "Metadata filepath must end with '.json'" in str(e.value)

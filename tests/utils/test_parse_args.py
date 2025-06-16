@@ -28,7 +28,10 @@ def test_str2bool_false_values():
             ["--ai_client.config", '{"memory_max_tokens": "1234"}'],
             {"ai_client.config": {"memory_max_tokens": "1234"}},
         ),
-        (["--commands", "run", "test"], {"commands": ["run", "test"]}),
+        (
+            ["--commands", '{"run": {}, "test": {}}'],
+            {"commands": {"run": {}, "test": {}}},
+        ),
     ],
 )
 def test_parse_args(monkeypatch, cli_args, expected):

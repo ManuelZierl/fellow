@@ -11,7 +11,7 @@ def test_init_client_creates_expected_file(tmp_path: Path):
     target_dir = tmp_path / "clients"
 
     # Act
-    result_path = init_client(client_name, str(target_dir))
+    result_path = init_client(client_name, target_dir)
 
     # Assert: File created
     assert result_path.exists()
@@ -26,4 +26,4 @@ def test_init_client_creates_expected_file(tmp_path: Path):
 
     # Assert: Raises on duplicate creation
     with pytest.raises(FileExistsError):
-        init_client(client_name, str(target_dir))
+        init_client(client_name, target_dir)

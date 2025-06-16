@@ -15,6 +15,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+
+---
+
+## [0.1.0] - 2025-06-16
+
+### Added
+- [Add Fellow secrets helper commands](https://github.com/ManuelZierl/fellow/issues/83)
+- [add --version command](https://github.com/ManuelZierl/fellow/pull/92)
+- [introduce task_id for every run](https://github.com/ManuelZierl/fellow/issues/32)
+- [configure logging for memory and metadata](https://github.com/ManuelZierl/fellow/issues/32)
+- [restructure logging directory](https://github.com/ManuelZierl/fellow/issues/32)
+- [fixed typed badge by adding classifiers](https://github.com/ManuelZierl/fellow/issues/87)
+- [E2E Testing](https://github.com/ManuelZierl/fellow/issues/89)
+- [Add caching for pip dependencies in CI workflow](https://github.com/ManuelZierl/fellow/issues/97)
+
+### Changed
+- [use Path instead of str for paths in config](https://github.com/ManuelZierl/fellow/issues/32)
+- [Replace Codecov badge with Shield.io badge for improved visibility](https://github.com/ManuelZierl/fellow/issues/104)
+
+### Removed
+
 ---
 
 ## [0.0.4] - 2025-06-09
