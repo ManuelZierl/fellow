@@ -61,21 +61,22 @@ Controls whether output is saved to a file and how it is formatted.
 
 - `log.active`: Enable/disable logging
 - `log.spoiler`: Whether to wrap logs in collapsible blocks (for Markdown)
-- `log.filepath`: Where logs are written (e.g. `fellow_log.md`)
+- `log.filepath`: Where logs are written (normally `.fellow/runs/{% raw %}{{task_id}}{% endraw %}/log.md`)
+
 
 ### `memory`
 
 Controls whether the memory state of the run is persisted after completion.
 
 - `memory.log`: Enable/disable writing the memory to disk
-- `memory.filepath`: Path to the memory file (must end with `.json`), e.g. `.fellow/runs/{{task_id}}/memory.json`
+- `memory.filepath`: Path to the memory file (must end with `.json`), e.g. `.fellow/runs/{% raw %}{{task_id}}{% endraw %}/memory.json`
 
 ### `metadata`
 
 Controls whether metadata about the run (e.g. task details, environment) is stored.
 
 - `metadata.log`: Enable/disable metadata output
-- `metadata.filepath`: Path to the metadata file (must end with `.json`), e.g. `.fellow/runs/{{task_id}}/metadata.json`
+- `metadata.filepath`: Path to the metadata file (must end with `.json`), e.g. `.fellow/runs/{% raw %}{{task_id}}{% endraw %}/metadata.json`
 
 ### `ai_client`
 
