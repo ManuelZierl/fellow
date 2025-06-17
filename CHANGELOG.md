@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Changed
-
+- [Docs: Fix register command in custom commands](https://github.com/ManuelZierl/fellow/issues/113)
 
 ### Removed
 

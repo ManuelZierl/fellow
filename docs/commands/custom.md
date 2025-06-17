@@ -94,8 +94,8 @@ You must also register your command explicitly in the `commands` list:
 
 ```yml
 commands:
-  - "create_file"
-  - "count_word"
+  - create_file: {}
+  - count_word: {} # Registering the count_word command
   ...
 ```
 
@@ -162,7 +162,7 @@ Register it in your config:
 
 ```yml
     commands:
-      - git_push
+      - git_push: {}
 ```
 
 Now the assistant can use this command to commit code autonomously.
