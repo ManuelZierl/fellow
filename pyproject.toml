@@ -57,6 +57,6 @@ fellow = ["default_fellow_config.yml", "py.typed"]
 [project.urls]
 Homepage = "https://manuelzierl.github.io/fellow"
 Source = "https://github.com/ManuelZierl/fellow"
-Issue = "https://github.com/ManuelZierl/fellow/issues"
+Issues = "https://github.com/ManuelZierl/fellow/issues"
 Documentation = "https://manuelzierl.github.io/fellow"
 Changelog = "https://github.com/ManuelZierl/fellow/blob/main/CHANGELOG.md"
