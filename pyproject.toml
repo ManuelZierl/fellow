@@ -7,7 +7,6 @@ name = "fellow"
 version = "0.1.0"
 description = "Fellow CLI tool is a command line development assistant"
 readme = { file = "README.md", content-type = "text/markdown" }
-urls = { "Homepage" = "https://github.com/ManuelZierl/fellow", "Source" = "https://github.com/ManuelZierl/fellow", "Tracker" = "https://github.com/ManuelZierl/fellow/issues" }
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
@@ -54,3 +53,10 @@ include = ["fellow", "fellow.*"]
 
 [tool.setuptools.package-data]
 fellow = ["default_fellow_config.yml", "py.typed"]
+
+[project.urls]
+Homepage = "https://manuelzierl.github.io/fellow"
+Source = "https://github.com/ManuelZierl/fellow"
+Issues = "https://github.com/ManuelZierl/fellow/issues"
+Documentation = "https://manuelzierl.github.io/fellow"
+Changelog = "https://github.com/ManuelZierl/fellow/blob/main/CHANGELOG.md"
