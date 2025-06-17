@@ -75,7 +75,7 @@ Returns the JSON schema used for tool/function calling.
 Fellow includes a built-in helper to create a boilerplate file for your client:
 
 ```bash
-fellow init-client my_client
+fellow init-client my
 ```
 
 This will generate a file like `MyClient.py` in the first directory listed under `custom_clients_paths`.
