@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Improve pyproject.toml urls](https://github.com/ManuelZierl/fellow/issues/115)
 - [Docs: Fix register command in custom commands](https://github.com/ManuelZierl/fellow/issues/113)
 - [Docs: Wrong example in custom clients](https://github.com/ManuelZierl/fellow/issues/114)
+- [remove /img/logo.svg and ensure all use /docs/assets/img/logo.svg](https://github.com/ManuelZierl/fellow/issues/93)
 
 
 ### Removed
