@@ -1,5 +1,6 @@
 __pycache__/
 .venv/
+e2e_env/
 *.pyc
 *.pyo
 *.pyd
